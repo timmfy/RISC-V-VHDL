@@ -46,7 +46,6 @@ begin
         reset <= '1';
         wait for 20 ns;	
         reset <= '0';
-        wait for 20 ns;
 
         -- Test case 1: Normal increment (pc_src = '0')
         pc_src <= '0';
