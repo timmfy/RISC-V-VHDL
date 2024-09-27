@@ -11,23 +11,27 @@ entity IF_ID is
         pc_in: in std_logic_vector(31 downto 0);
         instruction_out: out std_logic_vector(31 downto 0) := (others => '0');
         pc_out: out std_logic_vector(31 downto 0) := (others => '0')
-    )
+    );
 end entity IF_ID;
 
 architecture behaviour of IF_ID is
+    signal pc_reg : std_logic_vector(31 downto 0);
+    signal instruction_reg : std_logic_vector(31 downto 0);
 begin
     process(clk,reset, IF_flush) is
     begin
         if reset = '1' then
-            instruction_out <= (others => '0');
-            pc_out <= (others => '0');
-        elsif rising_edge(clk) then
-            instruction_out <= instruction_in;
-            pc_out <= pc_in;
-        --Complete
+            instruction_reg <= (others => '0');
+            pc_reg <= (others => '0');
         elsif IF_flush = '1' then
-            instruction_out <= (others => '0');
-            pc_out <= (others => '0');
+            instruction_reg <= (others => '0');
+            pc_reg <= (others => '0');
+        elsif rising_edge(clk) then
+            instruction_reg <= instruction_in;
+            pc_reg <= pc_in;
         end if;
     end process;
+
+    pc_out <= pc_reg;
+    instruction_out <= instruction_reg;
 end architecture behaviour;

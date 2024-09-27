@@ -14,3 +14,26 @@ entity instruction_decoder is
 		imm : out std_logic_vector(31 downto 0)
 	);
 end instruction_decoder;
+
+architecture behavior of instruction_decoder is
+	signal immediate: std_logic_vector(31 downto 0);
+begin
+	process(instruction) is
+	begin
+
+		rs1 <= instruction(19 downto 15);
+		rs2 <= instruction(24 downto 20);
+		rd  <= instruction(11 downto  7);
+
+		funct3 <= instruction(14 downto 12);
+		funct7 <= instruction(31 downto 25);
+
+		immediate_decoder: entity work.immediate_decoder
+			port map(
+				instruction => instruction,
+				immediate => immediate
+			);
+		
+		imm <= immediate;
+	end process
+end architecture
