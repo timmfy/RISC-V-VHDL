@@ -13,7 +13,17 @@ entity control_unit is
         MemToReg   : out std_logic;                      -- Memory to register
         ALUSrc     : out std_logic;                      -- ALU source (register or immediate)
         Branch     : out std_logic;                      -- Branch signal
-        ALUOp      : out std_logic_vector(1 downto 0)    -- ALU operation selector
+        ALUOp      : out std_logic_vector(3 downto 0)    -- ALU operation
+        -- ALUOp = 0000 -> ADD
+        -- ALUOp = 0001 -> SUB
+        -- ALUOp = 0010 -> AND
+        -- ALUOp = 0011 -> OR
+        -- ALUOp = 0100 -> XOR
+        -- ALUOp = 0101 -> SLL
+        -- ALUOp = 0110 -> SRL
+        -- ALUOp = 0111 -> SRA
+        -- ALUOp = 1000 -> SLT
+        -- ALUOp = 1001 -> SLTU
     );
 end control_unit;
 
@@ -24,22 +34,23 @@ architecture behavior of control_unit is
     constant LOAD_TYPE : std_logic_vector(6 downto 0) := "0000011";  -- I-type (LW)
     constant STORE_TYPE: std_logic_vector(6 downto 0) := "0100011";  -- S-type (SW)
     constant BRANCH_TYPE: std_logic_vector(6 downto 0) := "1100011"; -- B-type (BEQ)
+    constant JALR_TYPE : std_logic_vector(6 downto 0) := "1100111";  -- I-type (JALR)
+    constant JAL_TYPE  : std_logic_vector(6 downto 0) := "1101111";  -- J-type (JAL)
+
     
 begin
-    -- Process the opcode to generate control signals
-    process(opcode, funct3, funct7)
+    -- Default values for control signals
+    RegWrite <= '0';
+    MemRead <= '0';
+    MemWrite <= '0';
+    MemToReg <= '0';
+    ALUSrc <= '0';
+    Branch <= '0';
+    ALUOp <= "0000";
+    process(opcode, funct3, funct7) is
     begin
-        -- Default values for control signals
-        RegWrite <= '0';
-        MemRead <= '0';
-        MemWrite <= '0';
-        MemToReg <= '0';
-        ALUSrc <= '0';
-        Branch <= '0';
-        ALUOp <= "00";  -- Default ALU operation (e.g., ADD)
-
         case opcode is
-            -- R-type instructions (ADD, SUB, AND, OR)
+            -- R-type instructions (ADD, SUB, AND, OR, SLL, SRL, SLT, SLTU)
             when R_TYPE =>
                 RegWrite <= '1';  -- Enable writing to register file
                 ALUSrc <= '0';    -- ALU source comes from register
@@ -47,23 +58,45 @@ begin
                 MemRead <= '0';   -- No memory read
                 MemWrite <= '0';  -- No memory write
                 Branch <= '0';    -- No branch
-
+    
                 -- Determine the specific ALU operation based on funct3 and funct7
-                case funct3 is
-                    when "000" =>  -- ADD/SUB
-                        if funct7 = "0000000" then
-                            ALUOp <= "10";  -- ADD
-                        elsif funct7 = "0100000" then
-                            ALUOp <= "11";  -- SUB
-                        end if;
-                    when "111" =>  -- AND
-                        ALUOp <= "00";  -- AND operation
-                    when "110" =>  -- OR
-                        ALUOp <= "01";  -- OR operation
+                case funct7 is
+                    when "0000000" =>
+                        case funct3 is
+                            when "000" =>
+                                ALUOp <= "0000";  -- ADD
+                            when "001" =>
+                                ALUOp <= "0101";  -- SLL
+                            when "010" =>
+                                ALUOp <= "1000"; -- SLT
+                            when "011" =>
+                                ALUOp <= "1001"; --SLTU
+                            when "100" =>
+                                ALUOp <= "0100"; -- XOR
+                            when "101" =>
+                                ALUOp <= "0110"; -- SRL
+                            when "110" =>
+                                ALUOp <= "0011"; -- OR
+                            when "111" =>
+                                ALUOp <= "0010"; -- AND
+                            when others =>
+                                ALUOp <= "0000"; -- Default to ADD
+                        end case;
+    
+                    when "0100000" =>
+                        case funct3 is
+                            when "000" =>
+                                ALUOp <= "0001";  -- SUB
+                            when "101" =>
+                                ALUOp <= "0111";  -- SRA
+                            when others =>
+                                ALUOp <= "0001";  -- Default to SUB
+                        end case;
+    
                     when others =>
-                        ALUOp <= "00";  -- Default to AND
+                        ALUOp <= "0000";  -- Default to ADD     
                 end case;
-
+    
             -- I-type instructions (ADDI, LW)
             when I_TYPE =>
                 RegWrite <= '1';  -- Enable writing to register file
@@ -72,8 +105,29 @@ begin
                 MemRead <= '0';   -- No memory read
                 MemWrite <= '0';  -- No memory write
                 Branch <= '0';    -- No branch
-                ALUOp <= "10";    -- ADD (for ADDI)
-
+                
+                --determine the specific ALU operation based on funct3
+                case funct3 is
+                    when "000" =>
+                        ALUOp <= "0000"; --ADDI
+                    when "001" =>
+                        ALUOp <= "0101"; --SLLI
+                    when "010" =>
+                        ALUOp <= "1000"; --SLTI
+                    when "011" =>
+                        ALUOp <= "1001"; --SLTIU
+                    when "100" =>
+                        ALUOp <= "0100"; --XORI
+                    when "101" =>
+                        ALUOp <= "0110"; --SRLI
+                    when "110" =>
+                        ALUOp <= "0011"; --ORI
+                    when "111" =>
+                        ALUOp <= "0010"; --ANDI
+                    when others =>
+                        ALUOp <= "0000"; -- Default to ADDI
+                end case;
+    
             when LOAD_TYPE =>  -- Load Word (LW)
                 RegWrite <= '1';  -- Write to register file
                 MemRead <= '1';   -- Enable memory read
@@ -81,8 +135,8 @@ begin
                 MemToReg <= '1';  -- Write memory data to register
                 ALUSrc <= '1';    -- ALU source is immediate (memory address)
                 Branch <= '0';    -- No branch
-                ALUOp <= "10";    -- ADD (address calculation)
-
+                ALUOp <= "0000"; --Default
+    
             -- S-type instructions (SW)
             when STORE_TYPE =>
                 RegWrite <= '0';  -- No register file write
@@ -90,8 +144,8 @@ begin
                 MemWrite <= '1';  -- Enable memory write
                 ALUSrc <= '1';    -- ALU source is immediate (memory address)
                 Branch <= '0';    -- No branch
-                ALUOp <= "10";    -- ADD (address calculation)
-
+                ALUOp <= "0000"; --Default
+    
             -- B-type instructions (BEQ)
             when BRANCH_TYPE =>
                 RegWrite <= '0';  -- No register file write
@@ -99,8 +153,23 @@ begin
                 MemWrite <= '0';  -- No memory write
                 Branch <= '1';    -- Enable branching
                 ALUSrc <= '0';    -- ALU source is register
-                ALUOp <= "11";    -- SUB (for BEQ)
-
+                ALUOp <= "0000"; --Default
+            when JALR_TYPE =>
+                RegWrite <= '1';  -- Write to register file
+                MemRead <= '0';   -- No memory read
+                MemWrite <= '0';  -- No memory write
+                MemToReg <= '0';  -- Write ALU result to register
+                ALUSrc <= '1';    -- ALU source is immediate
+                Branch <= '0';    -- No branch
+                ALUOp <= "0000"; --Default
+            when JAL_TYPE =>
+                RegWrite <= '1';  -- Write to register file
+                MemRead <= '0';   -- No memory read
+                MemWrite <= '0';  -- No memory write
+                MemToReg <= '0';  -- Write ALU result to register
+                ALUSrc <= '1';    -- ALU source is immediate
+                Branch <= '0';    -- No branch
+                ALUOp <= "0000"; --Default
             when others =>
                 -- Default values for unrecognized opcodes
                 RegWrite <= '0';
@@ -109,7 +178,7 @@ begin
                 MemToReg <= '0';
                 ALUSrc <= '0';
                 Branch <= '0';
-                ALUOp <= "00";    -- Default to ADD
+                ALUOp <= "0000";
         end case;
     end process;
 end architecture;

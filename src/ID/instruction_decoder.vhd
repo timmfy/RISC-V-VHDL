@@ -18,9 +18,6 @@ end instruction_decoder;
 architecture behavior of instruction_decoder is
 	signal immediate: std_logic_vector(31 downto 0);
 begin
-	process(instruction) is
-	begin
-
 		rs1 <= instruction(19 downto 15);
 		rs2 <= instruction(24 downto 20);
 		rd  <= instruction(11 downto  7);
@@ -33,7 +30,6 @@ begin
 				instruction => instruction,
 				immediate => immediate
 			);
-		
 		imm <= immediate;
-	end process
-end architecture
+		opcode <= instruction(6 downto 0);
+end behavior;
