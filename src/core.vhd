@@ -2,24 +2,234 @@ library ieee;
 use ieee.std_logic_1164.all;
 
 entity core is
+    port (
+        clk : in std_logic;
+        reset : in std_logic
+    );
 end entity core;
 
 architecture behaviour of core is
+    -- IF stage
+    signal instruction_if : std_logic_vector(31 downto 0);
+    signal pc_if : std_logic_vector(31 downto 0);
+    -- ID stage
+    signal instruction_id : std_logic_vector(31 downto 0);
+    signal pc_id : std_logic_vector(31 downto 0);
+    signal read_data1_id : std_logic_vector(63 downto 0);
+    signal read_data2_id : std_logic_vector(63 downto 0);
+    signal imm_id : std_logic_vector(63 downto 0);
+    signal func3_id : std_logic_vector(2 downto 0);
+    signal rd_id : std_logic_vector(4 downto 0);
+    signal ALUOp_id : std_logic_vector(3 downto 0);
+    signal ALUSrc_id : std_logic;
+    signal RegWrite_id : std_logic;
+    signal MemRead_id : std_logic;
+    signal MemWrite_id : std_logic;
+    signal MemToReg_id : std_logic;
+    signal MemSize_id : std_logic_vector(1 downto 0);
+    signal Branch_id : std_logic;
+    -- EX stage
+    signal ALUOp_ex : std_logic_vector(3 downto 0);
+    signal ALUSrc_ex : std_logic;
+    signal RegWrite_ex : std_logic;
+    signal MemRead_ex : std_logic;
+    signal MemWrite_ex : std_logic;
+    signal MemToReg_ex : std_logic;
+    signal MemSize_ex : std_logic_vector(1 downto 0);
+    signal Branch_ex : std_logic;
+    signal pc_ex : std_logic_vector(31 downto 0);
+    signal read_data1_ex : std_logic_vector(63 downto 0);
+    signal read_data2_ex : std_logic_vector(63 downto 0);
+    signal imm_ex : std_logic_vector(63 downto 0);
+    signal func3_ex : std_logic_vector(2 downto 0);
+    signal rd_ex : std_logic_vector(4 downto 0);
+    signal result_ex : std_logic_vector(63 downto 0);
+    signal zero_ex : std_logic;
+    signal next_pc_ex : std_logic_vector(31 downto 0);
+    -- MEM stage
+    signal MemWrite_mem : std_logic;
+    signal MemRead_mem : std_logic;
+    signal MemSize_mem : std_logic_vector(1 downto 0);
+    signal Branch_mem : std_logic;
+    signal MemToReg_mem : std_logic;
+    signal RegWrite_mem : std_logic;
+    signal PCSrc_mem : std_logic;
+    signal next_pc_mem : std_logic_vector(31 downto 0);
+    signal zero_mem : std_logic;
+    signal alu_result_mem : std_logic_vector(63 downto 0);
+    signal read_data2_mem : std_logic_vector(63 downto 0);
+    signal rd_mem : std_logic_vector(4 downto 0);
+    signal data_out_mem : std_logic_vector(63 downto 0);
+    -- WB stage
+    signal MemToReg_wb : std_logic;
+    signal RegWrite_wb : std_logic;
+    signal data_out_wb : std_logic_vector(63 downto 0);
+    signal write_reg_wb : std_logic_vector(4 downto 0);
+    signal alu_result_wb : std_logic_vector(63 downto 0);
+    signal write_data_wb : std_logic_vector(63 downto 0);
 begin
-    ---Inizialization---
-    --ToDO
-    ---Istruction Fetch Stage---
-    istruction_fetch: entity work.istruction_fetch
-        port map(
-            --ToDo
-        )
-    --ToDo
-    ---Istruction Decode Stage---
-    --ToDO
-    ---Execute Stage---
-    --ToDo
-    ---Memory Stage---
-    --ToDO
-    ---Wrire back Stage---
-    --ToDo
+    write_data_wb <= data_out_wb when MemToReg_wb = '1' else alu_result_wb;
+    -- IF stage
+    IF_stage: entity work.IF_core
+    port map(
+        clk => clk,
+        reset => reset,
+        instruction => instruction_if,
+        pc => pc_if
+    );
+
+    -- IF/ID pipeline register
+    IF_ID_inst: entity work.IF_ID
+     port map(
+        clk => clk,
+        reset => reset,
+        instruction_in => instruction_if,
+        pc_in => pc_if,
+        instruction_out => instruction_id,
+        pc_out => pc_id
+    );
+
+    -- ID stage
+    ID_core_inst: entity work.ID_core
+     port map(
+        pc => pc_id,
+        instruction => instruction_id,
+        reg_write => RegWrite_wb,
+        write_reg => write_reg_wb,
+        write_data => write_data_wb,
+        read_data1 => read_data1_id,
+        read_data2 => read_data2_id,
+        imm => imm_id,
+        func3 => func3_id,
+        rd => rd_id,
+        RegWrite => RegWrite_id,
+        MemRead => MemRead_id,
+        MemWrite => MemWrite_id,
+        MemToReg => MemToReg_id,
+        MemSize => MemSize_id,
+        ALUSrc => ALUSrc_id,
+        Branch => Branch_id,
+        ALUOp => ALUOp_id
+    );
+
+    -- ID/EX pipeline register
+    ID_EX_inst: entity work.ID_EX
+     port map(
+        clk => clk,
+        reset => reset,
+        ALUOp_in => ALUOp_id,
+        ALUSrc_in => ALUSrc_id,
+        RegWrite_in => RegWrite_id,
+        MemRead_in => MemRead_id,
+        MemWrite_in => MemWrite_id,
+        MemToReg_in => MemToReg_id,
+        MemSize_in => MemSize_id,
+        Branch_in => Branch_id,
+        read_data1_in => read_data1_id,
+        read_data2_in => read_data2_id,
+        imm_in => imm_id,
+        rd_in => rd_id,
+        pc_in => pc_id,
+        func3_in => func3_id,
+        ALUOp_out => ALUOp_ex,
+        ALUSrc_out => ALUSrc_ex,
+        RegWrite_out => RegWrite_ex,
+        MemRead_out => MemRead_ex,
+        MemWrite_out => MemWrite_ex,
+        MemToReg_out => MemToReg_ex,
+        MemSize_out => MemSize_ex,
+        Branch_out => Branch_ex,
+        read_data1_out => read_data1_ex,
+        read_data2_out => read_data2_ex,
+        imm_out => imm_ex,
+        rd_out => rd_ex,
+        pc_out => pc_ex,
+        func3_out => func3_ex
+    );
+
+    -- EX stage
+    EX_core_inst: entity work.EX_core
+     port map(
+        ALUOp => ALUOp_ex,
+        ALUSrc => ALUSrc_ex,
+        RegWrite => RegWrite_ex,
+        MemRead => MemRead_ex,
+        MemWrite => MemWrite_ex,
+        MemToReg => MemToReg_ex,
+        MemSize => MemSize_ex,
+        Branch => Branch_ex,
+        read_data1 => read_data1_ex,
+        read_data2 => read_data2_ex,
+        imm => imm_ex,
+        rd => rd_ex,
+        pc => pc_ex,
+        result => result_ex,
+        zero => zero_ex,
+        next_pc => next_pc_ex
+    );
+
+    -- EX/MEM pipeline register
+    EX_MEM_inst: entity work.EX_MEM
+     port map(
+        clk => clk,
+        reset => reset,
+        MemWrite_in => MemWrite_ex,
+        MemRead_in => MemRead_ex,
+        MemSize_in => MemSize_ex,
+        Branch_in => Branch_ex,
+        MemToReg_in => MemToReg_ex,
+        RegWrite_in => RegWrite_ex,
+        next_pc_in => next_pc_ex,
+        zero_in => zero_ex,
+        alu_result_in => result_ex,
+        read_data2_in => read_data2_ex,
+        rd_in => rd_ex,
+        MemWrite_out => MemWrite_mem,
+        MemRead_out => MemRead_mem,
+        MemSize_out => MemSize_mem,
+        Branch_out => Branch_mem,
+        MemToReg_out => MemToReg_mem,
+        RegWrite_out => RegWrite_mem,
+        next_pc_out => next_pc_mem,
+        zero_out => zero_mem,
+        alu_result_out => alu_result_mem,
+        read_data2_out => read_data2_mem,
+        rd_out => rd_mem
+    );
+
+    -- MEM stage
+    MEM_core_inst: entity work.MEM_core
+     port map(
+        MemWrite => MemWrite_mem,
+        MemRead => MemRead_mem,
+        MemSize => MemSize_mem,
+        Branch => Branch_mem,
+        MemToReg => MemToReg_mem,
+        RegWrite => RegWrite_mem,
+        next_pc => next_pc_mem,
+        zero => zero_mem,
+        alu_result => alu_result_mem,
+        read_data2 => read_data2_mem,
+        rd => rd_mem,
+        PCSrc => PCSrc_mem,
+        data_out => data_out_mem
+    );
+
+    -- MEM/WB pipeline register
+    MEM_WB_inst: entity work.MEM_WB
+     port map(
+        clk => clk,
+        reset => reset,
+        MemToReg_in => MemToReg_mem,
+        RegWrite_in => RegWrite_mem,
+        data_out_in => data_out_mem,
+        write_reg_in => rd_mem,
+        alu_result_in => alu_result_mem,
+        write_data_in => data_out_wb,
+        MemToReg_out => MemToReg_wb,
+        RegWrite_out => RegWrite_wb,
+        data_out_out => data_out_wb,
+        write_reg_out => write_reg_wb,
+        alu_result_out => alu_result_wb
+    );
 end architecture behaviour;
