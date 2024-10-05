@@ -11,6 +11,7 @@ entity control_unit is
         MemRead    : out std_logic;                      -- Read from memory
         MemWrite   : out std_logic;                      -- Write to memory
         MemToReg   : out std_logic;                      -- Memory to register
+        MemSize    : out std_logic_vector(1 downto 0);  -- Memory size (byte, halfword, word)
         ALUSrc     : out std_logic;                      -- ALU source (register or immediate)
         Branch     : out std_logic;                      -- Branch signal
         ALUOp      : out std_logic_vector(3 downto 0)    -- ALU operation
@@ -57,6 +58,7 @@ begin
                 MemToReg <= '0';  -- Write ALU result to register
                 MemRead <= '0';   -- No memory read
                 MemWrite <= '0';  -- No memory write
+                MemSize <= "11";  -- Doubleword
                 Branch <= '0';    -- No branch
     
                 -- Determine the specific ALU operation based on funct3 and funct7
@@ -110,12 +112,16 @@ begin
                 case funct3 is
                     when "000" =>
                         ALUOp <= "0000"; --ADDI
+                        MemSize <= "00"; -- Byte
                     when "001" =>
                         ALUOp <= "0101"; --SLLI
+                        MemSize <= "01"; -- Halfword
                     when "010" =>
                         ALUOp <= "1000"; --SLTI
+                        MemSize <= "10"; -- Word
                     when "011" =>
                         ALUOp <= "1001"; --SLTIU
+                        MemSize <= "11"; -- Doubleword
                     when "100" =>
                         ALUOp <= "0100"; --XORI
                     when "101" =>
@@ -133,39 +139,46 @@ begin
                 MemRead <= '1';   -- Enable memory read
                 MemWrite <= '0';  -- No memory write
                 MemToReg <= '1';  -- Write memory data to register
+                MemSize <= "11";  -- Doubleword
                 ALUSrc <= '1';    -- ALU source is immediate (memory address)
                 Branch <= '0';    -- No branch
-                ALUOp <= "0000"; --Default
+                ALUOp <= "0000"; --ADD
     
             -- S-type instructions (SW)
             when STORE_TYPE =>
                 RegWrite <= '0';  -- No register file write
                 MemRead <= '0';   -- No memory read
                 MemWrite <= '1';  -- Enable memory write
+                MemSize <= "11";  -- Doubleword
+                MemToReg <= '0';
                 ALUSrc <= '1';    -- ALU source is immediate (memory address)
                 Branch <= '0';    -- No branch
-                ALUOp <= "0000"; --Default
+                ALUOp <= "0000"; --ADD
     
             -- B-type instructions (BEQ)
             when BRANCH_TYPE =>
                 RegWrite <= '0';  -- No register file write
                 MemRead <= '0';   -- No memory read
                 MemWrite <= '0';  -- No memory write
+                MemSize <= "11";  -- Doubleword
+                MemToReg <= '0';
                 Branch <= '1';    -- Enable branching
                 ALUSrc <= '0';    -- ALU source is register
-                ALUOp <= "0000"; --Default
+                ALUOp <= "0000"; --ADD
             when JALR_TYPE =>
                 RegWrite <= '1';  -- Write to register file
                 MemRead <= '0';   -- No memory read
                 MemWrite <= '0';  -- No memory write
                 MemToReg <= '0';  -- Write ALU result to register
+                MemSize <= "11";  -- Doubleword
                 ALUSrc <= '1';    -- ALU source is immediate
                 Branch <= '0';    -- No branch
-                ALUOp <= "0000"; --Default
+                ALUOp <= "0000"; --ADD
             when JAL_TYPE =>
                 RegWrite <= '1';  -- Write to register file
                 MemRead <= '0';   -- No memory read
                 MemWrite <= '0';  -- No memory write
+                MemSize <= "11";  -- Doubleword
                 MemToReg <= '0';  -- Write ALU result to register
                 ALUSrc <= '1';    -- ALU source is immediate
                 Branch <= '0';    -- No branch
@@ -175,6 +188,7 @@ begin
                 RegWrite <= '0';
                 MemRead <= '0';
                 MemWrite <= '0';
+                MemSize <= "11";  -- Doubleword
                 MemToReg <= '0';
                 ALUSrc <= '0';
                 Branch <= '0';
