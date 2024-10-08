@@ -1,0 +1,12 @@
+GHDL = ghdl
+FLAGS = --std=08
+STAGE = IF
+UNIT_NAME = program_counter
+STOP_TIME = 1ms
+all:
+	$(GHDL) -a $(FLAGS) ../src/$(STAGE)/$(UNIT_NAME).vhd
+	$(GHDL) -a $(FLAGS) $(UNIT_NAME)_tb.vhd
+	$(GHDL) -e $(FLAGS) $(UNIT_NAME)_tb
+	$(GHDL) -r $(FLAGS) $(UNIT_NAME)_tb --wave=wave.ghw --stop-time=$(STOP_TIME) --ieee-asserts=disable
+	./../../../.cargo/bin/surfer.exe wave.ghw
+

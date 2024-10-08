@@ -12,6 +12,7 @@ end instruction_memory;
 architecture behaviour of instruction_memory is
     type memory is array(0 to 15) of std_logic_vector(31 downto 0);
     signal instructions : memory := (
+        --Test instructions
         x"11111110", x"11111111", x"11111100", x"11111101",
         x"11111010", x"11111011", x"11111000", x"11111001",
         x"11110110", x"11110111", x"11110100", x"11110101",

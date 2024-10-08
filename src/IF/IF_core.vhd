@@ -16,7 +16,7 @@ end IF_core;
 architecture behavior of IF_core is
     signal pc_sig : std_logic_vector(31 downto 0) := (others => '0');
 begin
-    program_counter: entity work.program_counter
+    program_counter: entity work.program_counter(behaviour)
     port map(
         clk           => clk,
         reset         => reset,
@@ -24,7 +24,7 @@ begin
         branch_target => branch_target,
         pc            => pc_sig
     );
-instruction_memory: entity work.instruction_memory
+    instruction_memory: entity work.instruction_memory(behaviour)
     port map(
         address      => pc_sig(11 downto 2),
         instruction  => instruction
