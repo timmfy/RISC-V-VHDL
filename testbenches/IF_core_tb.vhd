@@ -6,18 +6,6 @@ entity IF_core_tb is
 end entity IF_core_tb;
 
 architecture behavior of IF_core_tb is
-    -- Component declaration for the Unit Under Test (UUT)
-    component IF_core
-        port (
-            clk            : in std_logic;
-            reset          : in std_logic;
-            pc_src         : in std_logic;
-            branch_target  : in std_logic_vector(31 downto 0);
-            instruction    : out std_logic_vector(31 downto 0);
-            pc             : out std_logic_vector(31 downto 0)
-        );
-    end component;
-
     -- Inputs
     signal clk             : std_logic := '0';
     signal reset           : std_logic := '0';

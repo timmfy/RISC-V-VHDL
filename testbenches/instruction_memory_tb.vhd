@@ -4,14 +4,14 @@ use ieee.std_logic_1164.all;
 entity instruction_memory_tb is
 end entity instruction_memory_tb;
 
-architecture behaviour of instruction_memory_tb is
+architecture behavior of instruction_memory_tb is
     signal clk : std_logic := '0';
     signal address : std_logic_vector(11 downto 2);
     signal instruction : std_logic_vector(31 downto 0);
 
     constant clk_period : time := 10 ns;
 begin
-    dut: entity work.instruction_memory(behaviour)
+    dut: entity work.instruction_memory(behavior)
         port map (
             clk => clk,
             address => address,
@@ -47,4 +47,4 @@ begin
         assert instruction = x"11111101" report "Test case 4 failed" severity error;
 
     end process;
-end architecture behaviour;
+end architecture behavior;

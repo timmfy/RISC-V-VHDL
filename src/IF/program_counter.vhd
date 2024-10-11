@@ -12,7 +12,7 @@ entity program_counter is
 	);
 end entity program_counter;
 
-architecture behaviour of program_counter is
+architecture behavior of program_counter is
 	signal pc_next : std_logic_vector(31 downto 0) := (others => '0');
 begin
 	process(clk, reset)
@@ -28,4 +28,4 @@ begin
 		end if;
 	end process;
 	pc <= pc_next;
-end architecture behaviour;
+end architecture behavior;

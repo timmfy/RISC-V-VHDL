@@ -5,7 +5,7 @@ use ieee.numeric_std.all;
 entity program_counter_tb is
 end entity program_counter_tb;
 
-architecture behaviour of program_counter_tb is
+architecture behavior of program_counter_tb is
     -- Signals to connect to the UUT
     signal clk           : std_logic := '0';
     signal reset         : std_logic := '0';
@@ -19,7 +19,7 @@ architecture behaviour of program_counter_tb is
 begin
 
     -- Instantiate the Unit Under Test (UUT)
-    dut: entity work.program_counter(behaviour)
+    dut: entity work.program_counter(behavior)
         port map (
             clk           => clk,
             reset         => reset,
@@ -82,5 +82,5 @@ begin
         wait;
     end process;
 
-end architecture behaviour;
+end architecture behavior;
 

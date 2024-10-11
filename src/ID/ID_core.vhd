@@ -9,8 +9,8 @@ entity ID_core is
         reg_write : in std_logic;
         write_reg : in std_logic_vector(4 downto 0);
         write_data : in std_logic_vector(63 downto 0);
-        read_data1 : in std_logic_vector(63 downto 0);
-        read_data2 : in std_logic_vector(63 downto 0);
+        read_data1 : out std_logic_vector(63 downto 0);
+        read_data2 : out std_logic_vector(63 downto 0);
         imm : out std_logic_vector(63 downto 0);
         func3 : out std_logic_vector(2 downto 0);
         rd : out std_logic_vector(4 downto 0);
@@ -26,29 +26,28 @@ entity ID_core is
 end ID_core;
 
 architecture behavior of ID_core is
-    signal opcode : std_logic_vector(6 downto 0);
-    signal rs1 : std_logic_vector(4 downto 0);
-    signal rs2 : std_logic_vector(4 downto 0);
-    signal funct3 : std_logic_vector(2 downto 0);
-    signal funct7 : std_logic_vector(6 downto 0);
-    signal imm_32: std_logic_vector(31 downto 0);
+    signal opcode_sig : std_logic_vector(6 downto 0);
+    signal rs1_sig : std_logic_vector(4 downto 0);
+    signal rs2_sig : std_logic_vector(4 downto 0);
+    signal funct3_sig : std_logic_vector(2 downto 0);
+    signal funct7_sig : std_logic_vector(6 downto 0);
+    signal imm_32_sig: std_logic_vector(31 downto 0);
 begin
-    instruction_decoder : entity work.instruction_decoder
+    instruction_decoder : entity work.instruction_decoder(behavior)
     port map(
         instruction => instruction,
-        opcode => opcode,
-        rs1 => rs1,
-        rs2 => rs2,
-        rd => rd,
-        funct3 => funct3,
-        funct7 => funct7,
-        imm => imm_32
+        opcode => opcode_sig,
+        rs1 => rs1_sig,
+        rs2 => rs2_sig,
+        funct3 => funct3_sig,
+        funct7 => funct7_sig,
+        imm => imm_32_sig
     );
-    control_unit : entity work.control_unit
+    control_unit : entity work.control_unit(behavior)
     port map(
-        opcode => opcode,
-        funct3 => funct3,
-        funct7 => funct7,
+        opcode => opcode_sig,
+        funct3 => funct3_sig,
+        funct7 => funct7_sig,
         RegWrite => RegWrite,
         MemRead => MemRead,
         MemWrite => MemWrite,
@@ -58,15 +57,15 @@ begin
         Branch => Branch,
         ALUOp => ALUOp
     );
-    register_file : entity work.register_file
+    register_file : entity work.register_file(behavior)
     port map(
         reg_write => reg_write,
         write_reg => write_reg,
         write_data => write_data,
-        read_reg1 => rs1,
-        read_reg2 => rs2,
+        read_reg1 => rs1_sig,
+        read_reg2 => rs2_sig,
         read_data1 => read_data1,
         read_data2 => read_data2
     );
-    imm <= (63 downto 32 => imm_32(31)) & imm_32;
+    imm <= (63 downto 32 => imm_32_sig(31)) & imm_32_sig;
 end behavior;

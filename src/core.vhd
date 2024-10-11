@@ -8,7 +8,7 @@ entity core is
     );
 end entity core;
 
-architecture behaviour of core is
+architecture behavior of core is
     -- IF stage
     signal instruction_if : std_logic_vector(31 downto 0);
     signal pc_if : std_logic_vector(31 downto 0);
@@ -232,4 +232,4 @@ begin
         write_reg_out => write_reg_wb,
         alu_result_out => alu_result_wb
     );
-end architecture behaviour;
+end architecture behavior;

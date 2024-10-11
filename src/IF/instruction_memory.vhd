@@ -9,7 +9,7 @@ entity instruction_memory is
  );
 end instruction_memory;
 
-architecture behaviour of instruction_memory is
+architecture behavior of instruction_memory is
     type memory is array(0 to 15) of std_logic_vector(31 downto 0);
     signal instructions : memory := (
         --Test instructions

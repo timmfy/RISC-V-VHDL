@@ -40,14 +40,6 @@ architecture behavior of control_unit is
 
     
 begin
-    -- Default values for control signals
-    RegWrite <= '0';
-    MemRead <= '0';
-    MemWrite <= '0';
-    MemToReg <= '0';
-    ALUSrc <= '0';
-    Branch <= '0';
-    ALUOp <= "0000";
     process(opcode, funct3, funct7) is
     begin
         case opcode is

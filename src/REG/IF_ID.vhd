@@ -13,7 +13,7 @@ entity IF_ID is
     );
 end entity IF_ID;
 
-architecture behaviour of IF_ID is
+architecture behavior of IF_ID is
     signal pc_reg : std_logic_vector(31 downto 0);
     signal instruction_reg : std_logic_vector(31 downto 0);
 begin
@@ -29,4 +29,4 @@ begin
     end process;
     pc_out <= pc_reg;
     instruction_out <= instruction_reg;
-end architecture behaviour;
+end architecture behavior;

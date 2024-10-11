@@ -14,8 +14,8 @@ architecture behavior of ID_core_tb is
             reg_write : in std_logic;
             write_reg : in std_logic_vector(4 downto 0);
             write_data : in std_logic_vector(63 downto 0);
-            read_data1 : in std_logic_vector(63 downto 0);
-            read_data2 : in std_logic_vector(63 downto 0);
+            read_data1 : out std_logic_vector(63 downto 0);
+            read_data2 : out std_logic_vector(63 downto 0);
             imm : out std_logic_vector(63 downto 0);
             func3 : out std_logic_vector(2 downto 0);
             rd : out std_logic_vector(4 downto 0);
@@ -54,7 +54,7 @@ architecture behavior of ID_core_tb is
 
 begin
     -- Instantiate the Unit Under Test (UUT)
-    uut: ID_core port map (
+    dut: entity work.ID_core(behavior) port map (
         pc => pc,
         instruction => instruction,
         reg_write => reg_write,
@@ -78,24 +78,31 @@ begin
     -- Stimulus process
     stim_proc: process
     begin
-        -- Initialize inputs
+        -- Test case 1: ADDI x1, x2, 16 (I-Type)
+        pc <= x"00000000";
+        instruction <= x"00810113";
+        wait for 10 ns;
+        -- Test case 2: SUB x3, x4, x5 (R-Type)
+        instruction <= x"405101b3";
+        wait for 10 ns;
+        -- Test case 3: SW x6, 8(x7) (S-Type)
+        instruction <= x"0063a023";
+        wait for 10 ns;
+        -- Test case 4: BEQ x1, x2, -4 (B-Type)
+        instruction <= x"fe000ee3";
+        wait for 10 ns;
+        -- Test case 5: LUI x10, 0x12345 (U-Type)
+        instruction <= x"123450b7";
+        wait for 10 ns;
+        -- Test case 6: JAL x1, 2048 (J-Type)
+        instruction <= x"008000ef";
+        wait for 10 ns;
+        -- Case read and write register x1 ADDI x1, x2, 16
+        instruction <= x"00810113";
         reg_write <= '1';
         write_reg <= "00001";
         write_data <= x"0000000000000001";
-        read_data1 <= x"0000000000000002";
-        read_data2 <= x"0000000000000003";
-        instruction <= x"00000000"; -- Example instruction
-        pc <= x"00000000"; -- Example PC
-
-        -- Wait for a clock cycle
         wait for 10 ns;
-
-        -- Add more test cases as needed
-        -- Example: Change instruction and check outputs
-        instruction <= x"00000001"; -- Change instruction
-        wait for 10 ns;
-
-        -- End simulation
         wait;
     end process;
 
