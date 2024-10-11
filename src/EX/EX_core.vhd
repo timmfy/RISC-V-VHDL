@@ -7,16 +7,10 @@ entity EX_core is
     port (
         ALUOp      : in std_logic_vector(3 downto 0);    -- ALU operation
         ALUSrc     : in std_logic;                      -- ALU source (register or immediate)
-        RegWrite   : inout std_logic;                      -- Write to register file
-        MemRead    : inout std_logic;                      -- Read from memory
-        MemWrite   : inout std_logic;                      -- Write to memory
-        MemToReg   : inout std_logic;                      -- Memory to register
-        MemSize    : inout std_logic_vector(1 downto 0);  -- Memory size (byte, halfword, word)
-        Branch     : inout std_logic;                      -- Branch signal
         read_data1 : in std_logic_vector(63 downto 0);
-        read_data2 : inout std_logic_vector(63 downto 0);
+        read_data2 : in std_logic_vector(63 downto 0);
         imm : in std_logic_vector(63 downto 0);
-        rd : inout std_logic_vector(4 downto 0);
+        rd : in std_logic_vector(4 downto 0);
         pc : in std_logic_vector(31 downto 0);
         result : out std_logic_vector(63 downto 0);
         zero : out std_logic;

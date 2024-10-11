@@ -152,12 +152,6 @@ begin
      port map(
         ALUOp => ALUOp_ex,
         ALUSrc => ALUSrc_ex,
-        RegWrite => RegWrite_ex,
-        MemRead => MemRead_ex,
-        MemWrite => MemWrite_ex,
-        MemToReg => MemToReg_ex,
-        MemSize => MemSize_ex,
-        Branch => Branch_ex,
         read_data1 => read_data1_ex,
         read_data2 => read_data2_ex,
         imm => imm_ex,
@@ -204,18 +198,14 @@ begin
         MemRead => MemRead_mem,
         MemSize => MemSize_mem,
         Branch => Branch_mem,
-        MemToReg => MemToReg_mem,
-        RegWrite => RegWrite_mem,
-        next_pc => next_pc_mem,
         zero => zero_mem,
         alu_result => alu_result_mem,
         read_data2 => read_data2_mem,
-        rd => rd_mem,
         PCSrc => PCSrc_mem,
         data_out => data_out_mem
     );
 
-    -- MEM/WB pipeline register
+    --MEM/WB pipeline register
     MEM_WB_inst: entity work.MEM_WB
      port map(
         clk => clk,
