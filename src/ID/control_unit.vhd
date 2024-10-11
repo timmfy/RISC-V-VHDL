@@ -37,6 +37,8 @@ architecture behavior of control_unit is
     constant BRANCH_TYPE: std_logic_vector(6 downto 0) := "1100011"; -- B-type (BEQ)
     constant JALR_TYPE : std_logic_vector(6 downto 0) := "1100111";  -- I-type (JALR)
     constant JAL_TYPE  : std_logic_vector(6 downto 0) := "1101111";  -- J-type (JAL)
+    constant LUI_TYPE  : std_logic_vector(6 downto 0) := "0110111";  -- U-type (LUI)
+    constant AUIPC_TYPE: std_logic_vector(6 downto 0) := "0010111";  -- U-type (AUIPC)
 
     
 begin
@@ -167,6 +169,24 @@ begin
                 Branch <= '0';    -- No branch
                 ALUOp <= "0000"; --ADD
             when JAL_TYPE =>
+                RegWrite <= '1';  -- Write to register file
+                MemRead <= '0';   -- No memory read
+                MemWrite <= '0';  -- No memory write
+                MemSize <= "11";  -- Doubleword
+                MemToReg <= '0';  -- Write ALU result to register
+                ALUSrc <= '1';    -- ALU source is immediate
+                Branch <= '0';    -- No branch
+                ALUOp <= "0000"; --Default
+            when LUI_TYPE =>
+                RegWrite <= '1';  -- Write to register file
+                MemRead <= '0';   -- No memory read
+                MemWrite <= '0';  -- No memory write
+                MemSize <= "11";  -- Doubleword
+                MemToReg <= '0';  -- Write ALU result to register
+                ALUSrc <= '1';    -- ALU source is immediate
+                Branch <= '0';    -- No branch
+                ALUOp <= "0000"; --Default
+            when AUIPC_TYPE =>
                 RegWrite <= '1';  -- Write to register file
                 MemRead <= '0';   -- No memory read
                 MemWrite <= '0';  -- No memory write

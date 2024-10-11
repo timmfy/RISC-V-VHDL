@@ -80,28 +80,34 @@ begin
     begin
         -- Test case 1: ADDI x1, x2, 16 (I-Type)
         pc <= x"00000000";
-        instruction <= x"010100ff";
+        instruction <= x"01010093";
         wait for 10 ns;
         -- Test case 2: SUB x3, x4, x5 (R-Type)
-        instruction <= x"405101b3";
+        instruction <= x"405201b3";
         wait for 10 ns;
         -- Test case 3: SW x6, 8(x7) (S-Type)
         instruction <= x"0063a023";
         wait for 10 ns;
         -- Test case 4: BEQ x1, x2, -4 (B-Type)
-        instruction <= x"fe000ee3";
+        instruction <= x"fe208ee3";
         wait for 10 ns;
         -- Test case 5: LUI x10, 0x12345 (U-Type)
-        instruction <= x"123450b7";
+        instruction <= x"12345537";
         wait for 10 ns;
         -- Test case 6: JAL x1, 2048 (J-Type)
         instruction <= x"008000ef";
         wait for 10 ns;
-        -- Case read and write register x1 ADDI x1, x2, 16
-        instruction <= x"00810113";
+        --Simulate the write back
         reg_write <= '1';
         write_reg <= "00001";
         write_data <= x"0000000000000001";
+        wait for 10 ns;
+        -- ADDI x1, x1, 16 while reg_write is enabled
+        -- Should write 2 to register 1 and add 16 to it
+        -- So that the read_data1 should be 2
+        instruction <= x"01008093";
+        write_reg <= "00001";
+        write_data <= x"0000000000000010";
         wait for 10 ns;
         wait;
     end process;
