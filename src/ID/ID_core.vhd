@@ -12,7 +12,7 @@ entity ID_core is
         read_data1 : out std_logic_vector(63 downto 0);
         read_data2 : out std_logic_vector(63 downto 0);
         imm : out std_logic_vector(63 downto 0);
-        func3 : out std_logic_vector(2 downto 0);
+        funct3 : out std_logic_vector(2 downto 0);
         rd : out std_logic_vector(4 downto 0);
         RegWrite   : out std_logic;                      -- Write to register file
         MemRead    : out std_logic;                      -- Read from memory
@@ -32,6 +32,7 @@ architecture behavior of ID_core is
     signal funct3_sig : std_logic_vector(2 downto 0);
     signal funct7_sig : std_logic_vector(6 downto 0);
     signal imm_32_sig: std_logic_vector(31 downto 0);
+    signal rd_sig : std_logic_vector(4 downto 0);
 begin
     instruction_decoder : entity work.instruction_decoder(behavior)
     port map(
@@ -39,6 +40,7 @@ begin
         opcode => opcode_sig,
         rs1 => rs1_sig,
         rs2 => rs2_sig,
+        rd => rd_sig,
         funct3 => funct3_sig,
         funct7 => funct7_sig,
         imm => imm_32_sig
@@ -68,4 +70,6 @@ begin
         read_data2 => read_data2
     );
     imm <= (63 downto 32 => imm_32_sig(31)) & imm_32_sig;
+    rd <= rd_sig;
+    funct3 <= funct3_sig;
 end behavior;

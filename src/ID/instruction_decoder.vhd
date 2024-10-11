@@ -17,19 +17,19 @@ end instruction_decoder;
 
 architecture behavior of instruction_decoder is
 	signal immediate: std_logic_vector(31 downto 0);
+	signal instruction_sig: std_logic_vector(31 downto 0);
 begin
+		instruction_sig <= instruction;
 		rs1 <= instruction(19 downto 15);
 		rs2 <= instruction(24 downto 20);
-		rd  <= instruction(11 downto  7);
-
+		rd  <= instruction(11 downto 7);
 		funct3 <= instruction(14 downto 12);
 		funct7 <= instruction(31 downto 25);
-
-		immediate_decoder: entity work.immediate_decoder
+		opcode <= instruction_sig(6 downto 0);
+		immediate_decoder: entity work.immediate_decoder(behavior)
 			port map(
-				instruction => instruction,
+				instruction => instruction_sig,
 				immediate => immediate
 			);
 		imm <= immediate;
-		opcode <= instruction(6 downto 0);
 end behavior;

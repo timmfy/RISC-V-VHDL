@@ -17,7 +17,7 @@ architecture behavior of ID_core_tb is
             read_data1 : out std_logic_vector(63 downto 0);
             read_data2 : out std_logic_vector(63 downto 0);
             imm : out std_logic_vector(63 downto 0);
-            func3 : out std_logic_vector(2 downto 0);
+            funct3 : out std_logic_vector(2 downto 0);
             rd : out std_logic_vector(4 downto 0);
             RegWrite : out std_logic;
             MemRead : out std_logic;
@@ -41,7 +41,7 @@ architecture behavior of ID_core_tb is
 
     -- Outputs
     signal imm : std_logic_vector(63 downto 0);
-    signal func3 : std_logic_vector(2 downto 0);
+    signal funct3 : std_logic_vector(2 downto 0);
     signal rd : std_logic_vector(4 downto 0);
     signal RegWrite : std_logic;
     signal MemRead : std_logic;
@@ -63,7 +63,7 @@ begin
         read_data1 => read_data1,
         read_data2 => read_data2,
         imm => imm,
-        func3 => func3,
+        funct3 => funct3,
         rd => rd,
         RegWrite => RegWrite,
         MemRead => MemRead,
@@ -80,7 +80,7 @@ begin
     begin
         -- Test case 1: ADDI x1, x2, 16 (I-Type)
         pc <= x"00000000";
-        instruction <= x"00810113";
+        instruction <= x"010100ff";
         wait for 10 ns;
         -- Test case 2: SUB x3, x4, x5 (R-Type)
         instruction <= x"405101b3";
