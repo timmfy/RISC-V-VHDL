@@ -19,7 +19,9 @@ entity ID_EX is
         imm_in        : in std_logic_vector(63 downto 0);
         rd_in         : in std_logic_vector(4 downto 0);
         pc_in         : in std_logic_vector(63 downto 0);
-        funct3_in      : in std_logic_vector(2 downto 0);
+        funct3_in     : in std_logic_vector(2 downto 0);
+        rs1_in        : in std_logic_vector(4 downto 0);
+        rs2_in        : in std_logic_vector(4 downto 0);
         ALUOp_out         : out std_logic_vector(3 downto 0);    -- ALU operation
         ALUSrc_out        : out std_logic;                      -- ALU source (register or immediate)
         RegWrite_out      : out std_logic;                      -- Write to register file
@@ -33,7 +35,9 @@ entity ID_EX is
         imm_out           : out std_logic_vector(63 downto 0);
         rd_out            : out std_logic_vector(4 downto 0);
         pc_out            : out std_logic_vector(63 downto 0);
-        funct3_out         : out std_logic_vector(2 downto 0)
+        funct3_out        : out std_logic_vector(2 downto 0);
+        rs1_out            : out std_logic_vector(4 downto 0);
+        rs2_out            : out std_logic_vector(4 downto 0)
     );
 end entity ID_EX;
 
@@ -52,6 +56,8 @@ architecture behavior of ID_EX is
     signal rd_reg       : std_logic_vector(4 downto 0);
     signal pc_reg       : std_logic_vector(63 downto 0);
     signal funct3_reg    : std_logic_vector(2 downto 0);
+    signal rs1_reg       : std_logic_vector(4 downto 0);
+    signal rs2_reg       : std_logic_vector(4 downto 0);
 begin
     process(clk, reset)
     begin
@@ -70,6 +76,8 @@ begin
             rd_reg <= (others => '0');
             pc_reg <= (others => '0');
             funct3_reg <= (others => '0');
+            rs1_reg <= (others => '0');
+            rs2_reg <= (others => '0');
         elsif rising_edge(clk) then
             ALUOp_reg <= ALUOp_in;
             ALUSrc_reg <= ALUSrc_in;
@@ -85,6 +93,8 @@ begin
             rd_reg <= rd_in;
             pc_reg <= pc_in;
             funct3_reg <= funct3_in;
+            rs1_reg <= rs1_in;
+            rs1_reg <= rs2_in;
         end if;
     end process;
     ALUOp_out <= ALUOp_reg;
@@ -101,4 +111,6 @@ begin
     rd_out <= rd_reg;
     pc_out <= pc_reg;
     funct3_out <= funct3_reg;
+    rs1_out <= rs1_reg;
+    rs1_out <= rs2_reg;
 end architecture;

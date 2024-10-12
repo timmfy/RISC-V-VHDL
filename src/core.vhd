@@ -28,6 +28,8 @@ architecture behavior of core is
     signal MemToReg_id : std_logic;
     signal MemSize_id : std_logic_vector(1 downto 0);
     signal Branch_id : std_logic;
+    signal rs1_id : std_logic_vector(4 downto 0);
+    signal rs2_id : std_logic_vector(4 downto 0);
     -- EX stage
     signal ALUOp_ex : std_logic_vector(3 downto 0);
     signal ALUSrc_ex : std_logic;
@@ -46,6 +48,8 @@ architecture behavior of core is
     signal result_ex : std_logic_vector(63 downto 0);
     signal zero_ex : std_logic;
     signal next_pc_ex : std_logic_vector(63 downto 0);
+    signal rs1_ex : std_logic_vector(4 downto 0);
+    signal rs2_ex : std_logic_vector(4 downto 0);
     -- MEM stage
     signal MemWrite_mem : std_logic;
     signal MemRead_mem : std_logic;
@@ -111,7 +115,9 @@ begin
         MemSize => MemSize_id,
         ALUSrc => ALUSrc_id,
         Branch => Branch_id,
-        ALUOp => ALUOp_id
+        ALUOp => ALUOp_id,
+        rs1 => rs1_id,
+        rs2 => rs2_id
     );
 
     -- ID/EX pipeline register
@@ -133,6 +139,8 @@ begin
         rd_in => rd_id,
         pc_in => pc_id,
         funct3_in => funct3_id,
+        rs1_in => rs1_id,
+        rs2_in => rs2_id,
         ALUOp_out => ALUOp_ex,
         ALUSrc_out => ALUSrc_ex,
         RegWrite_out => RegWrite_ex,
@@ -147,6 +155,8 @@ begin
         rd_out => rd_ex,
         pc_out => pc_ex,
         funct3_out => funct3_ex
+        rs1_out => rs1_ex,
+        rs2_out => rs2_ex,
     );
 
     -- EX stage
@@ -156,9 +166,13 @@ begin
         ALUSrc => ALUSrc_ex,
         read_data1 => read_data1_ex,
         read_data2 => read_data2_ex,
+        rs1 => rs1_ex,
+        rs2 => rs2_ex,
         imm => imm_ex,
         rd => rd_ex,
         pc => pc_ex,
+        alu_result_mem => alu_result_mem,
+        data_out_wb => data_out_wb,
         result => result_ex,
         zero => zero_ex,
         next_pc => next_pc_ex

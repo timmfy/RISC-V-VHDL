@@ -21,7 +21,9 @@ entity ID_core is
         MemSize    : out std_logic_vector(1 downto 0);  -- Memory size (byte, halfword, word)
         ALUSrc     : out std_logic;                      -- ALU source (register or immediate)
         Branch     : out std_logic;                      -- Branch signal
-        ALUOp      : out std_logic_vector(3 downto 0)    -- ALU operation
+        ALUOp      : out std_logic_vector(3 downto 0);    -- ALU operation
+        rs1        : out std_logic_vector(4 downto 0);
+        rs2        : out std_logic_vector(4 downto 0)
     );
 end ID_core;
 
@@ -72,4 +74,6 @@ begin
     imm <= (63 downto 32 => imm_32_sig(31)) & imm_32_sig;
     rd <= rd_sig;
     funct3 <= funct3_sig;
+    rs1 <= rs1_sig;
+    rs2 <= rs2_sig;
 end behavior;
