@@ -12,7 +12,7 @@ entity EX_MEM is
         Branch_in : in std_logic;
         MemToReg_in : in std_logic;
         RegWrite_in : in std_logic;
-        next_pc_in : in std_logic_vector(31 downto 0);
+        next_pc_in : in std_logic_vector(63 downto 0);
         zero_in : in std_logic;
         alu_result_in : in std_logic_vector(63 downto 0);
         read_data2_in : in std_logic_vector(63 downto 0);
@@ -23,7 +23,7 @@ entity EX_MEM is
         Branch_out : out std_logic;
         MemToReg_out : out std_logic;
         RegWrite_out : out std_logic;
-        next_pc_out : out std_logic_vector(31 downto 0);
+        next_pc_out : out std_logic_vector(63 downto 0);
         zero_out : out std_logic;
         alu_result_out : out std_logic_vector(63 downto 0);
         read_data2_out : out std_logic_vector(63 downto 0);
@@ -38,7 +38,7 @@ architecture behavior of EX_MEM is
     signal Branch_reg : std_logic;
     signal MemToReg_reg : std_logic;
     signal RegWrite_reg : std_logic;
-    signal next_pc_reg : std_logic_vector(31 downto 0);
+    signal next_pc_reg : std_logic_vector(63 downto 0);
     signal zero_reg : std_logic;
     signal alu_result_reg : std_logic_vector(63 downto 0);
     signal read_data2_reg : std_logic_vector(63 downto 0);

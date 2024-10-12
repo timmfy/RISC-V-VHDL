@@ -17,7 +17,20 @@ end entity register_file;
 
 architecture behavior of register_file is
     type reg_array is array (0 to 31) of std_logic_vector(63 downto 0);
-    signal registers : reg_array := (others => (others => '0'));
+    signal registers : reg_array := (
+        0 => x"0000000000000000", -- x0
+        1 => x"0000000000000000", -- x1
+        2 => x"0000000000000000", -- x2
+        3 => x"0000000000000010", -- x3
+        4 => x"0000000000000001", -- x4
+        5 => x"0000000000000008", -- x5
+        6 => x"0000000000000000", -- x6
+        7 => x"0000000000000000", -- x7
+        8 => x"0000000000000000", -- x8
+        9 => x"0000000000000001", -- x9
+        10 => x"ffffffffffffffff", -- x10
+        others => (others => '0')
+    );
 begin
     process(reg_write, write_reg, write_data, read_reg1, read_reg2)
     begin

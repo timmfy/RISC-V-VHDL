@@ -13,10 +13,13 @@ architecture behavior of instruction_memory is
     type memory is array(0 to 15) of std_logic_vector(31 downto 0);
     signal instructions : memory := (
         --Test instructions
-        x"11111110", x"11111111", x"11111100", x"11111101",
-        x"11111010", x"11111011", x"11111000", x"11111001",
-        x"11110110", x"11110111", x"11110100", x"11110101",
-        x"11110010", x"11110011", x"11110000", x"11110001"
+        x"01010093", --addi x1, x2, 16
+        x"01010113", --addi x2, x2, 16
+        x"40518233", --sub x4 x3 x5
+        x"00A30293", --addi x5, x6, 10
+        x"00A483B3", --add x7 x9 x10
+        x"01008413", --addi x8 x1 16
+        others => (others => '0')
     );
 begin
     instruction <= instructions(to_integer(unsigned(address)));

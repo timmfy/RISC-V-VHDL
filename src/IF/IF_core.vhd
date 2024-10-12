@@ -7,14 +7,14 @@ entity IF_core is
         clk   : in std_logic;
 		reset : in std_logic;
 		pc_src : in std_logic;
-		branch_target : in std_logic_vector(31 downto 0);
+		branch_target : in std_logic_vector(63 downto 0);
         instruction : out std_logic_vector(31 downto 0);
-        pc : out std_logic_vector(31 downto 0)
+        pc : out std_logic_vector(63 downto 0)
     );
 end IF_core;
 
 architecture behavior of IF_core is
-    signal pc_sig : std_logic_vector(31 downto 0) := (others => '0');
+    signal pc_sig : std_logic_vector(63 downto 0) := (others => '0');
 begin
     program_counter: entity work.program_counter(behavior)
     port map(

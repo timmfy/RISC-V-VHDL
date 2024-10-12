@@ -7,14 +7,14 @@ entity IF_ID is
         clk: in std_logic;
         reset: in std_logic;
         instruction_in: in std_logic_vector(31 downto 0);
-        pc_in: in std_logic_vector(31 downto 0);
+        pc_in: in std_logic_vector(63 downto 0);
         instruction_out: out std_logic_vector(31 downto 0) := (others => '0');
-        pc_out: out std_logic_vector(31 downto 0) := (others => '0')
+        pc_out: out std_logic_vector(63 downto 0) := (others => '0')
     );
 end entity IF_ID;
 
 architecture behavior of IF_ID is
-    signal pc_reg : std_logic_vector(31 downto 0);
+    signal pc_reg : std_logic_vector(63 downto 0);
     signal instruction_reg : std_logic_vector(31 downto 0);
 begin
     process(clk,reset) is

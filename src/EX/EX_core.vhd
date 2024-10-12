@@ -11,10 +11,10 @@ entity EX_core is
         read_data2 : in std_logic_vector(63 downto 0);
         imm : in std_logic_vector(63 downto 0);
         rd : in std_logic_vector(4 downto 0);
-        pc : in std_logic_vector(31 downto 0);
+        pc : in std_logic_vector(63 downto 0);
         result : out std_logic_vector(63 downto 0);
         zero : out std_logic;
-        next_pc : out std_logic_vector(31 downto 0)
+        next_pc : out std_logic_vector(63 downto 0)
     );
 end EX_core;
 

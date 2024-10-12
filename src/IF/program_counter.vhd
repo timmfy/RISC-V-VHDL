@@ -7,13 +7,13 @@ entity program_counter is
 		clk   : in std_logic;
 		reset : in std_logic;
 		pc_src : in std_logic;
-		branch_target : in std_logic_vector(31 downto 0);
-		pc : out std_logic_vector(31 downto 0)
+		branch_target : in std_logic_vector(63 downto 0);
+		pc : out std_logic_vector(63 downto 0)
 	);
 end entity program_counter;
 
 architecture behavior of program_counter is
-	signal pc_next : std_logic_vector(31 downto 0) := (others => '0');
+	signal pc_next : std_logic_vector(63 downto 0) := (others => '0');
 begin
 	process(clk, reset)
 	begin

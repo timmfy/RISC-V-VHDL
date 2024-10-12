@@ -11,14 +11,14 @@ end entity core;
 architecture behavior of core is
     -- IF stage
     signal instruction_if : std_logic_vector(31 downto 0);
-    signal pc_if : std_logic_vector(31 downto 0);
+    signal pc_if : std_logic_vector(63 downto 0);
     -- ID stage
     signal instruction_id : std_logic_vector(31 downto 0);
-    signal pc_id : std_logic_vector(31 downto 0);
+    signal pc_id : std_logic_vector(63 downto 0);
     signal read_data1_id : std_logic_vector(63 downto 0);
     signal read_data2_id : std_logic_vector(63 downto 0);
     signal imm_id : std_logic_vector(63 downto 0);
-    signal func3_id : std_logic_vector(2 downto 0);
+    signal funct3_id : std_logic_vector(2 downto 0);
     signal rd_id : std_logic_vector(4 downto 0);
     signal ALUOp_id : std_logic_vector(3 downto 0);
     signal ALUSrc_id : std_logic;
@@ -37,15 +37,15 @@ architecture behavior of core is
     signal MemToReg_ex : std_logic;
     signal MemSize_ex : std_logic_vector(1 downto 0);
     signal Branch_ex : std_logic;
-    signal pc_ex : std_logic_vector(31 downto 0);
+    signal pc_ex : std_logic_vector(63 downto 0);
     signal read_data1_ex : std_logic_vector(63 downto 0);
     signal read_data2_ex : std_logic_vector(63 downto 0);
     signal imm_ex : std_logic_vector(63 downto 0);
-    signal func3_ex : std_logic_vector(2 downto 0);
+    signal funct3_ex : std_logic_vector(2 downto 0);
     signal rd_ex : std_logic_vector(4 downto 0);
     signal result_ex : std_logic_vector(63 downto 0);
     signal zero_ex : std_logic;
-    signal next_pc_ex : std_logic_vector(31 downto 0);
+    signal next_pc_ex : std_logic_vector(63 downto 0);
     -- MEM stage
     signal MemWrite_mem : std_logic;
     signal MemRead_mem : std_logic;
@@ -54,7 +54,7 @@ architecture behavior of core is
     signal MemToReg_mem : std_logic;
     signal RegWrite_mem : std_logic;
     signal PCSrc_mem : std_logic;
-    signal next_pc_mem : std_logic_vector(31 downto 0);
+    signal next_pc_mem : std_logic_vector(63 downto 0);
     signal zero_mem : std_logic;
     signal alu_result_mem : std_logic_vector(63 downto 0);
     signal read_data2_mem : std_logic_vector(63 downto 0);
@@ -74,6 +74,8 @@ begin
     port map(
         clk => clk,
         reset => reset,
+        pc_src => PCSrc_mem,
+        branch_target => next_pc_mem,
         instruction => instruction_if,
         pc => pc_if
     );
@@ -100,7 +102,7 @@ begin
         read_data1 => read_data1_id,
         read_data2 => read_data2_id,
         imm => imm_id,
-        func3 => func3_id,
+        funct3 => funct3_id,
         rd => rd_id,
         RegWrite => RegWrite_id,
         MemRead => MemRead_id,
@@ -130,7 +132,7 @@ begin
         imm_in => imm_id,
         rd_in => rd_id,
         pc_in => pc_id,
-        func3_in => func3_id,
+        funct3_in => funct3_id,
         ALUOp_out => ALUOp_ex,
         ALUSrc_out => ALUSrc_ex,
         RegWrite_out => RegWrite_ex,
@@ -144,7 +146,7 @@ begin
         imm_out => imm_ex,
         rd_out => rd_ex,
         pc_out => pc_ex,
-        func3_out => func3_ex
+        funct3_out => funct3_ex
     );
 
     -- EX stage
@@ -213,13 +215,12 @@ begin
         MemToReg_in => MemToReg_mem,
         RegWrite_in => RegWrite_mem,
         data_out_in => data_out_mem,
-        write_reg_in => rd_mem,
+        rd_in => rd_mem,
         alu_result_in => alu_result_mem,
-        write_data_in => data_out_wb,
         MemToReg_out => MemToReg_wb,
         RegWrite_out => RegWrite_wb,
         data_out_out => data_out_wb,
-        write_reg_out => write_reg_wb,
+        rd_out => write_reg_wb,
         alu_result_out => alu_result_wb
     );
 end architecture behavior;

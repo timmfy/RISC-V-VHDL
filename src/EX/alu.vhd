@@ -1,7 +1,6 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
-
 entity alu is
     port (
         a : in std_logic_vector(63 downto 0);
@@ -15,11 +14,8 @@ end alu;
 
 architecture behavioral of alu is
     signal shift_amount : integer;
-    signal msb : std_logic;
-    signal sra_shift : std_logic_vector(63 downto 0);
     signal result_sig : std_logic_vector(63 downto 0);
 begin
-    msb <= a(63);
     shift_amount <= to_integer(unsigned(b(4 downto 0)));
     process(a, b, ALUOp, ALUSrc) is
     begin
@@ -38,10 +34,9 @@ begin
         elsif ALUOp = "0110" then
             result_sig <= std_logic_vector(shift_right(unsigned(a), to_integer(unsigned(b(4 downto 0)))));
         elsif ALUOp = "0111" then
-            if msb  = '1' then
-                sra_shift <= (others => '0');
-                sra_shift(63 downto shift_amount) <= (others => '1');
-                result_sig <= std_logic_vector(shift_right(unsigned(a), to_integer(unsigned(b(4 downto 0))))) or sra_shift;
+            if a(63)  = '1' then
+                result_sig <= (63 downto (63 - shift_amount + 1) => '1') & (63 - shift_amount downto 0 => '0') or 
+                std_logic_vector(shift_right(unsigned(a), to_integer(unsigned(b(4 downto 0)))));
             else
                 result_sig <= std_logic_vector(shift_right(unsigned(a), to_integer(unsigned(b(4 downto 0)))));
             end if;

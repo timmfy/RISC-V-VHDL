@@ -4,7 +4,7 @@ use ieee.std_logic_1164.all;
 
 entity ID_core is
     port (
-        pc : in std_logic_vector(31 downto 0);
+        pc : in std_logic_vector(63 downto 0);
         instruction : in std_logic_vector(31 downto 0);
         reg_write : in std_logic;
         write_reg : in std_logic_vector(4 downto 0);
