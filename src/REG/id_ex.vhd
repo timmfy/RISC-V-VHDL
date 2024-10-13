@@ -94,7 +94,7 @@ begin
             pc_reg <= pc_in;
             funct3_reg <= funct3_in;
             rs1_reg <= rs1_in;
-            rs1_reg <= rs2_in;
+            rs2_reg <= rs2_in;
         end if;
     end process;
     ALUOp_out <= ALUOp_reg;
@@ -112,5 +112,5 @@ begin
     pc_out <= pc_reg;
     funct3_out <= funct3_reg;
     rs1_out <= rs1_reg;
-    rs1_out <= rs2_reg;
+    rs2_out <= rs2_reg;
 end architecture;

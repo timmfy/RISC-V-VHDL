@@ -10,7 +10,7 @@ entity EX_core is
         RegWrite_mem : in std_logic;
         RegWrite_wb : in std_logic;
         write_reg_wb : in std_logic_vector(4 downto 0);
-        rd_ex : in std_logic_vector(4 downto 0);
+        rd_mem : in std_logic_vector(4 downto 0);
         read_data1 : in std_logic_vector(63 downto 0);
         read_data2 : in std_logic_vector(63 downto 0);
         rs1 : in std_logic_vector(4 downto 0);
@@ -30,24 +30,41 @@ architecture behavior of EX_core is
     signal a : std_logic_vector(63 downto 0);
     signal b : std_logic_vector(63 downto 0);
 begin
-    next_pc <= std_logic_vector(unsigned(pc) + shift_left(unsigned(imm), 2));
-    if RegWrite_mem = '1' or RegWrite_wb = '1'then
-        if rs1 = rd_ex then
-            a <= alu_result_mem;
-        elsif rs1 = write_data_wb then
-            a <= data_out_wb;
-        elsif rs2 = rd_ex then
-            b <= alu_result_mem;
-        elsif rs2 = write_data_wb then
-            b <= data_out_wb;    
+    process(ALUOp, ALUSrc, RegWrite_wb, RegWrite_mem, imm, alu_result_mem, data_out_wb)
+    begin
+        next_pc <= std_logic_vector(unsigned(pc) + shift_left(unsigned(imm), 2));
+        if RegWrite_mem = '1' or RegWrite_wb = '1' then
+            if rs1 = rd_mem then
+                a <= alu_result_mem;
+            elsif rs1 = write_reg_wb then
+                a <= data_out_wb;
+            else
+                a <= read_data1;
+            end if;
+
+            if rs2 = rd_mem then
+                b <= alu_result_mem;
+            elsif rs2 = write_reg_wb then
+                b <= data_out_wb;
+            else
+                if ALUsrc = '1' then
+                    b <= imm;
+                else
+                    b <= read_data2;
+                end if;   
+            end if;
+        else
+            a <= read_data1;
+            if ALUsrc = '1' then
+                b <= imm;
+            else
+                b <= read_data2;
+            end if;
         end if;
-    else
-        a <= read_data1:
-        b <= imm when ALUSrc = '1' else read_data2;
-    end if;
+    end process;
     alu : entity work.alu
     port map(
-        a => read_data1,
+        a => a,
         b => b,
         ALUOp => ALUOp,
         ALUSrc => ALUSrc,

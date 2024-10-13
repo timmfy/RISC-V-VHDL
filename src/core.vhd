@@ -154,9 +154,9 @@ begin
         imm_out => imm_ex,
         rd_out => rd_ex,
         pc_out => pc_ex,
-        funct3_out => funct3_ex
+        funct3_out => funct3_ex,
         rs1_out => rs1_ex,
-        rs2_out => rs2_ex,
+        rs2_out => rs2_ex
     );
 
     -- EX stage
@@ -164,6 +164,10 @@ begin
      port map(
         ALUOp => ALUOp_ex,
         ALUSrc => ALUSrc_ex,
+        RegWrite_mem => RegWrite_mem,
+        RegWrite_wb => RegWrite_wb,
+        write_reg_wb => write_reg_wb,
+        rd_mem => rd_mem,
         read_data1 => read_data1_ex,
         read_data2 => read_data2_ex,
         rs1 => rs1_ex,
@@ -172,7 +176,7 @@ begin
         rd => rd_ex,
         pc => pc_ex,
         alu_result_mem => alu_result_mem,
-        data_out_wb => data_out_wb,
+        data_out_wb => write_data_wb,
         result => result_ex,
         zero => zero_ex,
         next_pc => next_pc_ex
