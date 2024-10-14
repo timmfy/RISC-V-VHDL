@@ -42,16 +42,14 @@ begin
                 a <= read_data1;
             end if;
 
-            if rs2 = rd_mem then
+            if ALUsrc = '1' then
+                b <= imm;
+            elsif rs2 = rd_mem then
                 b <= alu_result_mem;
             elsif rs2 = write_reg_wb then
                 b <= data_out_wb;
             else
-                if ALUsrc = '1' then
-                    b <= imm;
-                else
-                    b <= read_data2;
-                end if;   
+                b <= read_data2;   
             end if;
         else
             a <= read_data1;
