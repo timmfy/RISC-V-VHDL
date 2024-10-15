@@ -18,16 +18,15 @@ architecture behavior of program_counter is
 begin
 	process(clk, reset)
 	begin
-		if PCWrite = '1' then
-		else
-			if reset = '1' then
-				pc_next <= (others => '0');
-			elsif rising_edge(clk) then
-				if pc_src = '1' then
-					pc_next <= branch_target;
-				else
-					pc_next <= std_logic_vector(unsigned(pc_next) + 4);
-				end if;
+		if reset = '1' then
+			pc_next <= (others => '0');
+		elsif rising_edge(clk) then
+			if PCWrite = '1' then
+				pc_next <= pc_next;
+			elsif pc_src = '1' then
+				pc_next <= branch_target;
+			else
+				pc_next <= std_logic_vector(unsigned(pc_next) + 4);
 			end if;
 		end if;
 	end process;

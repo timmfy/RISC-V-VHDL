@@ -25,6 +25,8 @@ begin
             pc_reg <= (others => '0');
         elsif rising_edge(clk) then
             if IF_ID_Write = '1' then
+                instruction_reg <= instruction_reg;
+                pc_reg <= pc_reg;
             else
                 instruction_reg <= instruction_in;
                 pc_reg <= pc_in;

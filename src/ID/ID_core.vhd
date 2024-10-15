@@ -9,7 +9,7 @@ entity ID_core is
         reg_write : in std_logic;
         write_reg : in std_logic_vector(4 downto 0);
         write_data : in std_logic_vector(63 downto 0);
-        MemRead_ex : in std_logic;
+        MemToReg_ex : in std_logic;
         rd_ex : in std_logic_vector(4 downto 0);
         read_data1 : out std_logic_vector(63 downto 0);
         read_data2 : out std_logic_vector(63 downto 0);
@@ -54,11 +54,7 @@ begin
     );
     hazard_detection_unit : entity work.hazard_detection_unit(behavior)
     port map(
-        MemRead_ex => MemRead_ex,
-        opcode => opcode_sig,
-        rs1 => rs1_sig,
-        rs2 => rs2_sig,
-        rd_ex => rd_ex,
+        MemToReg_ex => MemToReg_ex,
         ctrl_zero => ctrl_zero_sig,
         PCWrite => PCWrite,
         IF_ID_Write => IF_ID_Write

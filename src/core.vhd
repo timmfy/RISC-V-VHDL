@@ -122,7 +122,7 @@ begin
         ALUOp => ALUOp_id,
         PCWrite => PCWrite,
         IF_ID_Write => IF_ID_Write,
-        MemRead_ex => MemRead_ex,
+        MemToReg_ex => MemToReg_ex,
         rd_ex => rd_ex,
         rs1 => rs1_id,
         rs2 => rs2_id

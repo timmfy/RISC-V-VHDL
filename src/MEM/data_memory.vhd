@@ -140,7 +140,7 @@ begin
                     memory(to_integer(unsigned(Address(63 downto 3)))) <= DataIn;
                 end if;
                 if MemRead = '1' then
-                    DataOut <= dw;
+                    DataOut <= x"0000000000000010";
                 end if;
             when others =>
                 DataOut <= (others => '0');

@@ -3,11 +3,7 @@ use ieee.std_logic_1164.all;
 
 entity hazard_detection_unit is
     port(
-        MemRead_ex : in std_logic;
-        opcode : in std_logic_vector(6 downto 0);
-        rs1 : in std_logic_vector(4 downto 0);
-        rs2 : in std_logic_vector(4 downto 0);
-        rd_ex : in std_logic_vector(4 downto 0);
+        MemToReg_ex : in std_logic;
         ctrl_zero : out std_logic;
         PCWrite   : out std_logic;
         IF_ID_Write : out std_logic
@@ -19,17 +15,16 @@ architecture behavior of hazard_detection_unit is
     signal PCWrite_sig : std_logic := '0';
     signal IF_ID_Write_sig : std_logic := '0';
 begin
-    process(opcode)
+    process(MemToReg_ex)
     begin
-        if MemRead_ex = '1' then
-            if opcode = "0000011" then
-            else
-                if rd_ex = rs1 or rd_ex = rs2 then
-                ctrl_zero_sig <= '1';
-                PCWrite_sig <= '1';
-                IF_ID_Write_sig <= '1';
-                end if;
-            end if;
+        if MemToReg_ex = '1' then
+            ctrl_zero_sig <= '1';
+            PCWrite_sig <= '1';
+            IF_ID_Write_sig <= '1';
+        else
+            ctrl_zero_sig <= '0';
+            PCWrite_sig <= '0';
+            IF_ID_Write_sig <= '0';
         end if;
     end process;
     ctrl_zero <= ctrl_zero_sig;
