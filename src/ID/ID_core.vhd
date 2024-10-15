@@ -9,6 +9,8 @@ entity ID_core is
         reg_write : in std_logic;
         write_reg : in std_logic_vector(4 downto 0);
         write_data : in std_logic_vector(63 downto 0);
+        MemRead_ex : in std_logic;
+        rd_ex : in std_logic_vector(4 downto 0);
         read_data1 : out std_logic_vector(63 downto 0);
         read_data2 : out std_logic_vector(63 downto 0);
         imm : out std_logic_vector(63 downto 0);
@@ -23,7 +25,9 @@ entity ID_core is
         Branch     : out std_logic;                      -- Branch signal
         ALUOp      : out std_logic_vector(3 downto 0);    -- ALU operation
         rs1        : out std_logic_vector(4 downto 0);
-        rs2        : out std_logic_vector(4 downto 0)
+        rs2        : out std_logic_vector(4 downto 0);
+        IF_ID_Write : out std_logic;
+        PCWrite : out std_logic
     );
 end ID_core;
 
@@ -35,6 +39,7 @@ architecture behavior of ID_core is
     signal funct7_sig : std_logic_vector(6 downto 0);
     signal imm_32_sig: std_logic_vector(31 downto 0);
     signal rd_sig : std_logic_vector(4 downto 0);
+    signal ctrl_zero_sig : std_logic;
 begin
     instruction_decoder : entity work.instruction_decoder(behavior)
     port map(
@@ -47,8 +52,20 @@ begin
         funct7 => funct7_sig,
         imm => imm_32_sig
     );
+    hazard_detection_unit : entity work.hazard_detection_unit(behavior)
+    port map(
+        MemRead_ex => MemRead_ex,
+        opcode => opcode_sig,
+        rs1 => rs1_sig,
+        rs2 => rs2_sig,
+        rd_ex => rd_ex,
+        ctrl_zero => ctrl_zero_sig,
+        PCWrite => PCWrite,
+        IF_ID_Write => IF_ID_Write
+    );
     control_unit : entity work.control_unit(behavior)
     port map(
+        ctrl_zero => ctrl_zero_sig,
         opcode => opcode_sig,
         funct3 => funct3_sig,
         funct7 => funct7_sig,

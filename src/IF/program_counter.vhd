@@ -7,6 +7,7 @@ entity program_counter is
 		clk   : in std_logic;
 		reset : in std_logic;
 		pc_src : in std_logic;
+		PCWrite : in std_logic;
 		branch_target : in std_logic_vector(63 downto 0);
 		pc : out std_logic_vector(63 downto 0)
 	);
@@ -17,13 +18,16 @@ architecture behavior of program_counter is
 begin
 	process(clk, reset)
 	begin
-		if reset = '1' then
-			pc_next <= (others => '0');
-		elsif rising_edge(clk) then
-			if pc_src = '1' then
-				pc_next <= branch_target;
-			else
-				pc_next <= std_logic_vector(unsigned(pc_next) + 4);
+		if PCWrite = '1' then
+		else
+			if reset = '1' then
+				pc_next <= (others => '0');
+			elsif rising_edge(clk) then
+				if pc_src = '1' then
+					pc_next <= branch_target;
+				else
+					pc_next <= std_logic_vector(unsigned(pc_next) + 4);
+				end if;
 			end if;
 		end if;
 	end process;

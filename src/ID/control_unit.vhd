@@ -4,6 +4,7 @@ use ieee.numeric_std.all;
 
 entity control_unit is 
     port(
+        ctrl_zero  : in std_logic;
         opcode     : in  std_logic_vector(6 downto 0);  -- The opcode from the instruction
         funct3     : in  std_logic_vector(2 downto 0);  -- For R-type and B-type instructions
         funct7     : in  std_logic_vector(6 downto 0);  -- For R-type instructions
@@ -44,7 +45,16 @@ architecture behavior of control_unit is
 begin
     process(opcode, funct3, funct7) is
     begin
-        case opcode is
+        if ctrl_zero = '1' then
+            RegWrite <= '0';  -- Enable writing to register file
+            ALUSrc <= '0';    -- ALU source comes from register
+            MemToReg <= '0';  -- Write ALU result to register
+            MemRead <= '0';   -- No memory read
+            MemWrite <= '0';  -- No memory write
+            MemSize <= "00";  -- Doubleword
+            Branch <= '0';    -- No branch
+        else
+            case opcode is
             -- R-type instructions (ADD, SUB, AND, OR, SLL, SRL, SLT, SLTU)
             when R_TYPE =>
                 RegWrite <= '1';  -- Enable writing to register file
@@ -54,7 +64,7 @@ begin
                 MemWrite <= '0';  -- No memory write
                 MemSize <= "11";  -- Doubleword
                 Branch <= '0';    -- No branch
-    
+
                 -- Determine the specific ALU operation based on funct3 and funct7
                 case funct7 is
                     when "0000000" =>
@@ -78,7 +88,7 @@ begin
                             when others =>
                                 ALUOp <= "0000"; -- Default to ADD
                         end case;
-    
+
                     when "0100000" =>
                         case funct3 is
                             when "000" =>
@@ -88,11 +98,11 @@ begin
                             when others =>
                                 ALUOp <= "0001";  -- Default to SUB
                         end case;
-    
+
                     when others =>
-                        ALUOp <= "0000";  -- Default to ADD     
+                        ALUOp <= "0000";  -- Default to ADD
                 end case;
-    
+
             -- I-type instructions (ADDI, LW)
             when I_TYPE =>
                 RegWrite <= '1';  -- Enable writing to register file
@@ -101,7 +111,7 @@ begin
                 MemRead <= '0';   -- No memory read
                 MemWrite <= '0';  -- No memory write
                 Branch <= '0';    -- No branch
-                
+
                 --determine the specific ALU operation based on funct3
                 case funct3 is
                     when "000" =>
@@ -127,7 +137,7 @@ begin
                     when others =>
                         ALUOp <= "0000"; -- Default to ADDI
                 end case;
-    
+
             when LOAD_TYPE =>  -- Load Word (LW)
                 RegWrite <= '1';  -- Write to register file
                 MemRead <= '1';   -- Enable memory read
@@ -137,7 +147,7 @@ begin
                 ALUSrc <= '1';    -- ALU source is immediate (memory address)
                 Branch <= '0';    -- No branch
                 ALUOp <= "0000"; --ADD
-    
+
             -- S-type instructions (SW)
             when STORE_TYPE =>
                 RegWrite <= '0';  -- No register file write
@@ -148,7 +158,7 @@ begin
                 ALUSrc <= '1';    -- ALU source is immediate (memory address)
                 Branch <= '0';    -- No branch
                 ALUOp <= "0000"; --ADD
-    
+
             -- B-type instructions (BEQ)
             when BRANCH_TYPE =>
                 RegWrite <= '0';  -- No register file write
@@ -205,6 +215,7 @@ begin
                 ALUSrc <= '0';
                 Branch <= '0';
                 ALUOp <= "0000";
-        end case;
+            end case;
+        end if;
     end process;
 end architecture;

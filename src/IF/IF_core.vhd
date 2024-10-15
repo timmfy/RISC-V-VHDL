@@ -7,6 +7,7 @@ entity IF_core is
         clk   : in std_logic;
 		reset : in std_logic;
 		pc_src : in std_logic;
+		PCWrite : in std_logic;
 		branch_target : in std_logic_vector(63 downto 0);
         instruction : out std_logic_vector(31 downto 0);
         pc : out std_logic_vector(63 downto 0)
@@ -21,6 +22,7 @@ begin
         clk           => clk,
         reset         => reset,
         pc_src        => pc_src,
+        PCWrite       => PCWrite,
         branch_target => branch_target,
         pc            => pc_sig
     );

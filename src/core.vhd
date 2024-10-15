@@ -26,6 +26,8 @@ architecture behavior of core is
     signal MemRead_id : std_logic;
     signal MemWrite_id : std_logic;
     signal MemToReg_id : std_logic;
+    signal PCWrite : std_logic;
+    signal IF_ID_Write : std_logic;
     signal MemSize_id : std_logic_vector(1 downto 0);
     signal Branch_id : std_logic;
     signal rs1_id : std_logic_vector(4 downto 0);
@@ -79,6 +81,7 @@ begin
         clk => clk,
         reset => reset,
         pc_src => PCSrc_mem,
+        PCWrite => PCWrite,
         branch_target => next_pc_mem,
         instruction => instruction_if,
         pc => pc_if
@@ -89,6 +92,7 @@ begin
      port map(
         clk => clk,
         reset => reset,
+        IF_ID_Write => IF_ID_Write,
         instruction_in => instruction_if,
         pc_in => pc_if,
         instruction_out => instruction_id,
@@ -116,6 +120,10 @@ begin
         ALUSrc => ALUSrc_id,
         Branch => Branch_id,
         ALUOp => ALUOp_id,
+        PCWrite => PCWrite,
+        IF_ID_Write => IF_ID_Write,
+        MemRead_ex => MemRead_ex,
+        rd_ex => rd_ex,
         rs1 => rs1_id,
         rs2 => rs2_id
     );
