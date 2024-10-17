@@ -32,7 +32,7 @@ end control_unit;
 architecture behavior of control_unit is
     -- Define opcode types for better readability
     constant R_TYPE    : std_logic_vector(6 downto 0) := "0110011";  -- R-type
-    constant I_TYPE    : std_logic_vector(6 downto 0) := "0010011";  -- I-type (ADDI, etc.)
+    constant I_TYPE    : std_logic_vector(6 downto 0) := "0010011";  -- I-type with immediate (ADDI, etc.)
     constant LOAD_TYPE : std_logic_vector(6 downto 0) := "0000011";  -- I-type (LW)
     constant STORE_TYPE: std_logic_vector(6 downto 0) := "0100011";  -- S-type (SW)
     constant BRANCH_TYPE: std_logic_vector(6 downto 0) := "1100011"; -- B-type (BEQ)
@@ -116,16 +116,12 @@ begin
                 case funct3 is
                     when "000" =>
                         ALUOp <= "0000"; --ADDI
-                        MemSize <= "00"; -- Byte
                     when "001" =>
                         ALUOp <= "0101"; --SLLI
-                        MemSize <= "01"; -- Halfword
                     when "010" =>
                         ALUOp <= "1000"; --SLTI
-                        MemSize <= "10"; -- Word
                     when "011" =>
                         ALUOp <= "1001"; --SLTIU
-                        MemSize <= "11"; -- Doubleword
                     when "100" =>
                         ALUOp <= "0100"; --XORI
                     when "101" =>
@@ -143,22 +139,40 @@ begin
                 MemRead <= '1';   -- Enable memory read
                 MemWrite <= '0';  -- No memory write
                 MemToReg <= '1';  -- Write memory data to register
-                MemSize <= "11";  -- Doubleword
                 ALUSrc <= '1';    -- ALU source is immediate (memory address)
                 Branch <= '0';    -- No branch
                 ALUOp <= "0000"; --ADD
+                case funct3 is 
+                    when "000" =>
+                        MemSize <= "00";  -- Byte (lb)
+                    when "001" =>
+                        MemSize <= "01";  -- Halfword (lh)
+                    when "010" =>
+                        MemSize <= "10";  -- Word (lw)
+                    when others =>
+                        MemSize <= "11";  -- Doubleword (ld)
+                end case;
 
             -- S-type instructions (SW)
             when STORE_TYPE =>
                 RegWrite <= '0';  -- No register file write
                 MemRead <= '0';   -- No memory read
                 MemWrite <= '1';  -- Enable memory write
-                MemSize <= "11";  -- Doubleword
                 MemToReg <= '0';
                 ALUSrc <= '1';    -- ALU source is immediate (memory address)
                 Branch <= '0';    -- No branch
                 ALUOp <= "0000"; --ADD
-
+                case funct3 is
+                    when "000" =>
+                        MemSize <= "00";  -- Byte (sb)
+                    when "001" =>
+                        MemSize <= "01";  -- Halfword (sh)
+                    when "010" =>
+                        MemSize <= "10";  -- Word (sw)
+                    when others =>
+                        MemSize <= "11";  -- Doubleword (sd)
+                end case;
+                
             -- B-type instructions (BEQ)
             when BRANCH_TYPE =>
                 RegWrite <= '0';  -- No register file write

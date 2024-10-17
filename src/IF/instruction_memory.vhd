@@ -13,12 +13,16 @@ architecture behavior of instruction_memory is
     type memory is array(0 to 15) of std_logic_vector(31 downto 0);
     signal instructions : memory := (
         --Test instructions
-        x"01010093", --addi x1, x2, 16
         x"01010113", --addi x2, x2, 16
-        x"01008413", --addi x8 x1 16
-        x"00810313", --addi x6 x2 8 --the output should be x"0000000000000018" in the register x6
-        x"00112023", --sw x1 0(x2)
-        x"00012403", --lw x8 0(x2)
+        x"01008413", --addi x1 x1 0
+        x"01008413", --addi x1 x1 0
+        x"01008413", --addi x1 x1 0
+        x"00010183", --lb x3 0(x2)
+        x"00010203", --lb x4 0(x2)
+        --Here it stalls the pipeline
+        x"00011283", --lh x5 0(x2)
+        x"00012303", --lw x6 0(x2)
+        x"00013383", --ld x7 0(x2)
         x"01040593", --addi x11, x8, 16
         x"40518233", --sub x4 x3 x5
         x"00A483B3", --add x7 x9 x10
