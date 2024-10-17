@@ -55,6 +55,9 @@ begin
     hazard_detection_unit : entity work.hazard_detection_unit(behavior)
     port map(
         MemToReg_ex => MemToReg_ex,
+        rd_ex => rd_ex,
+        rs1 => rs1_sig,
+        rs2 => rs2_sig,
         ctrl_zero => ctrl_zero_sig,
         PCWrite => PCWrite,
         IF_ID_Write => IF_ID_Write
