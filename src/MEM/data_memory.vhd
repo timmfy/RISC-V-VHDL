@@ -19,7 +19,7 @@ architecture behavioral of data_memory is
     signal memory : memory_array := (
         0 => x"0000000000000000",
         1 => x"0000000000000000",
-        2 => x"7766554433221100",
+        2 => x"8877665544332211",
         others => (others => '0'));
     signal im_here : std_logic := '0';
 begin
