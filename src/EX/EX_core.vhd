@@ -12,7 +12,8 @@ entity EX_core is
         write_reg_wb : in std_logic_vector(4 downto 0);
         rd_mem : in std_logic_vector(4 downto 0);
         read_data1 : in std_logic_vector(63 downto 0);
-        read_data2 : in std_logic_vector(63 downto 0);
+        read_data2_in : in std_logic_vector(63 downto 0);
+        read_data2_out : out std_logic_vector(63 downto 0);
         rs1 : in std_logic_vector(4 downto 0);
         rs2 : in std_logic_vector(4 downto 0);
         imm : in std_logic_vector(63 downto 0);
@@ -29,6 +30,7 @@ end EX_core;
 architecture behavior of EX_core is
     signal a : std_logic_vector(63 downto 0);
     signal b : std_logic_vector(63 downto 0);
+    signal read_data2_sig : std_logic_vector(63 downto 0);
 begin
     process(ALUOp, ALUSrc, RegWrite_wb, RegWrite_mem, imm, alu_result_mem, data_out_wb)
     begin
@@ -42,22 +44,22 @@ begin
                 a <= read_data1;
             end if;
 
-            if ALUsrc = '1' then
-                b <= imm;
-            elsif rs2 = rd_mem then
-                b <= alu_result_mem;
+            if rs2 = rd_mem then
+                read_data2_sig <= alu_result_mem;
             elsif rs2 = write_reg_wb then
-                b <= data_out_wb;
+                read_data2_sig <= data_out_wb;
             else
-                b <= read_data2;   
+                read_data2_sig <= read_data2_in;   
             end if;
         else
             a <= read_data1;
-            if ALUsrc = '1' then
-                b <= imm;
-            else
-                b <= read_data2;
-            end if;
+            read_data2_sig <= read_data2_in;
+        end if;
+
+        if ALUsrc = '1' then
+            b <= imm;
+        else
+            b <= read_data2_sig;
         end if;
     end process;
     alu : entity work.alu
@@ -69,4 +71,5 @@ begin
         result => result,
         zero => zero
     );
+    read_data2_out <= read_data2_sig;
 end architecture;

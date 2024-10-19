@@ -43,7 +43,8 @@ architecture behavior of core is
     signal Branch_ex : std_logic;
     signal pc_ex : std_logic_vector(63 downto 0);
     signal read_data1_ex : std_logic_vector(63 downto 0);
-    signal read_data2_ex : std_logic_vector(63 downto 0);
+    signal read_data2_in_ex : std_logic_vector(63 downto 0);
+    signal read_data2_out_ex : std_logic_vector(63 downto 0);
     signal imm_ex : std_logic_vector(63 downto 0);
     signal funct3_ex : std_logic_vector(2 downto 0);
     signal rd_ex : std_logic_vector(4 downto 0);
@@ -158,7 +159,7 @@ begin
         MemSize_out => MemSize_ex,
         Branch_out => Branch_ex,
         read_data1_out => read_data1_ex,
-        read_data2_out => read_data2_ex,
+        read_data2_out => read_data2_in_ex,
         imm_out => imm_ex,
         rd_out => rd_ex,
         pc_out => pc_ex,
@@ -177,7 +178,8 @@ begin
         write_reg_wb => write_reg_wb,
         rd_mem => rd_mem,
         read_data1 => read_data1_ex,
-        read_data2 => read_data2_ex,
+        read_data2_in => read_data2_in_ex,
+        read_data2_out => read_data2_out_ex,
         rs1 => rs1_ex,
         rs2 => rs2_ex,
         imm => imm_ex,
@@ -204,7 +206,7 @@ begin
         next_pc_in => next_pc_ex,
         zero_in => zero_ex,
         alu_result_in => result_ex,
-        read_data2_in => read_data2_ex,
+        read_data2_in => read_data2_out_ex,
         rd_in => rd_ex,
         MemWrite_out => MemWrite_mem,
         MemRead_out => MemRead_mem,
