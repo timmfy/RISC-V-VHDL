@@ -27,7 +27,7 @@ architecture behavior of register_file is
         6 => x"0000000000000000", -- x6
         7 => x"0000000000000000", -- x7
         8 => x"0000000000000000", -- x8
-        9 => x"0000000000000001", -- x9
+        9 => x"0000000000000000", -- x9
         10 => x"ffffffffffffffff", -- x10
         others => (others => '0')
     );
@@ -35,9 +35,18 @@ begin
     process(reg_write, write_reg, write_data, read_reg1, read_reg2)
     begin
         if reg_write = '1' then
-            registers(to_integer(unsigned(write_reg))) <= write_data;
+            if write_reg = read_reg1 then
+                read_data1 <= write_data;
+                registers(to_integer(unsigned(write_reg))) <= write_data;
+            elsif write_reg = read_reg2 then
+                read_data2 <= write_data;
+                registers(to_integer(unsigned(write_reg))) <= write_data;
+            else
+                registers(to_integer(unsigned(write_reg))) <= write_data;
+            end if;
+        else
+            read_data1 <= registers(to_integer(unsigned(read_reg1)));
+            read_data2 <= registers(to_integer(unsigned(read_reg2)));
         end if;
-        read_data1 <= registers(to_integer(unsigned(read_reg1)));
-        read_data2 <= registers(to_integer(unsigned(read_reg2)));
     end process;
 end architecture;

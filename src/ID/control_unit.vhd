@@ -43,7 +43,7 @@ architecture behavior of control_unit is
 
     
 begin
-    process(opcode, funct3, funct7) is
+    process(opcode, funct3, funct7, ctrl_zero) is
     begin
         if ctrl_zero = '1' then
             RegWrite <= '0';  -- Enable writing to register file

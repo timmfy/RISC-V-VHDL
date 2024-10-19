@@ -32,7 +32,7 @@ architecture behavior of EX_core is
     signal b : std_logic_vector(63 downto 0);
     signal read_data2_sig : std_logic_vector(63 downto 0);
 begin
-    process(ALUOp, ALUSrc, RegWrite_wb, RegWrite_mem, imm, alu_result_mem, data_out_wb)
+    process(write_reg_wb, ALUOp, ALUSrc, RegWrite_wb, RegWrite_mem, imm, alu_result_mem, data_out_wb, rs1, rs2, read_data1, read_data2_in, pc, rd, rd_mem)
     begin
         next_pc <= std_logic_vector(unsigned(pc) + shift_left(unsigned(imm), 2));
         if RegWrite_mem = '1' or RegWrite_wb = '1' then
@@ -49,7 +49,7 @@ begin
             elsif rs2 = write_reg_wb then
                 read_data2_sig <= data_out_wb;
             else
-                read_data2_sig <= read_data2_in;   
+                read_data2_sig <= read_data2_in; 
             end if;
         else
             a <= read_data1;

@@ -16,10 +16,7 @@ architecture behavior of instruction_memory is
         x"02008093", --addi x1 x1 32
         x"01010113", --addi x2, x2, 16
         x"00013383", --ld x7 0(x2)
-        --Without these 3 instructions, the behavior is incorrect
-        --x"00048493", --addi x9 x9 0
-        --x"00048493", --addi x9 x9 0
-        --x"00048493", --addi x9 x9 0
+        --Load hazard
         x"00708023", --sb x7 0(x1)
         x"00709023", --sh x7 0(x1)
         x"0070A023", --sw x7 0(x1)
