@@ -42,6 +42,8 @@ begin
                 read_data2 <= write_data;
                 registers(to_integer(unsigned(write_reg))) <= write_data;
             else
+                read_data1 <= registers(to_integer(unsigned(read_reg1)));
+                read_data2 <= registers(to_integer(unsigned(read_reg2)));
                 registers(to_integer(unsigned(write_reg))) <= write_data;
             end if;
         else
