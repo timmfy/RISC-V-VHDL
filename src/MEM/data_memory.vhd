@@ -121,6 +121,7 @@ begin
                         DataOut <= (others => '0');
                 end case;
             when "10" =>
+                im_here <= '1';
                 case Address(2) is
                     when '0' =>
                         if MemWrite = '1' then
@@ -144,7 +145,6 @@ begin
                     memory(to_integer(unsigned(Address(63 downto 3)))) <= DataIn;
                 end if;
                 if MemRead = '1' then
-                    im_here <= '1';
                     DataOut <= memory(to_integer(unsigned(Address(63 downto 3))));
                 end if;
             when others =>

@@ -28,9 +28,6 @@ begin
             if IF_ID_Write = '1' then
                 instruction_reg <= instruction_reg;
                 pc_reg <= pc_reg;
-            elsif IF_flush = '1' then
-                instruction_reg <= x"00000013"; -- NOP
-                pc_reg <= pc_reg;
             else
                 instruction_reg <= instruction_in;
                 pc_reg <= pc_in;
@@ -38,5 +35,5 @@ begin
         end if;
     end process;
     pc_out <= pc_reg;
-    instruction_out <= instruction_reg;
+    instruction_out <= x"00000013" when IF_flush = '1' else instruction_reg;
 end architecture behavior;
