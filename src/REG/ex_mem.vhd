@@ -10,6 +10,7 @@ entity EX_MEM is
         MemRead_in : in std_logic;
         MemSize_in : in std_logic_vector(1 downto 0);
         Branch_in : in std_logic;
+        EX_flush : in std_logic;
         MemToReg_in : in std_logic;
         RegWrite_in : in std_logic;
         next_pc_in : in std_logic_vector(63 downto 0);
@@ -47,29 +48,44 @@ begin
     process(clk, reset)
     begin
         if reset = '1' then
-            MemWrite_reg <= '0';
-            MemRead_reg <= '0';
-            MemSize_reg <= (others => '0');
-            Branch_reg <= '0';
-            MemToReg_reg <= '0';
-            RegWrite_reg <= '0';
-            next_pc_reg <= (others => '0');
-            zero_reg <= '0';
-            alu_result_reg <= (others => '0');
-            read_data2_reg <= (others => '0');
-            rd_reg <= (others => '0');
-        elsif rising_edge(clk) then
-            MemWrite_reg <= MemWrite_in;
-            MemRead_reg <= MemRead_in;
-            MemSize_reg <= MemSize_in;
-            Branch_reg <= Branch_in;
-            MemToReg_reg <= MemToReg_in;
-            RegWrite_reg <= RegWrite_in;
-            next_pc_reg <= next_pc_in;
-            zero_reg <= zero_in;
-            alu_result_reg <= alu_result_in;
-            read_data2_reg <= read_data2_in;
-            rd_reg <= rd_in;
+                MemWrite_reg <= '0';
+                MemRead_reg <= '0';
+                MemSize_reg <= (others => '0');
+                Branch_reg <= '0';
+                MemToReg_reg <= '0';
+                RegWrite_reg <= '0';
+                next_pc_reg <= (others => '0');
+                zero_reg <= '0';
+                alu_result_reg <= (others => '0');
+                read_data2_reg <= (others => '0');
+                rd_reg <= (others => '0');
+        end if;
+        if rising_edge(clk) then
+            if EX_flush = '1' then
+                MemWrite_reg <= '0';
+                MemRead_reg <= '0';
+                MemSize_reg <= (others => '0');
+                Branch_reg <= '0';
+                MemToReg_reg <= '0';
+                RegWrite_reg <= '0';
+                next_pc_reg <= (others => '0');
+                zero_reg <= '0';
+                alu_result_reg <= (others => '0');
+                read_data2_reg <= (others => '0');
+                rd_reg <= (others => '0');
+            else
+                MemWrite_reg <= MemWrite_in;
+                MemRead_reg <= MemRead_in;
+                MemSize_reg <= MemSize_in;
+                Branch_reg <= Branch_in;
+                MemToReg_reg <= MemToReg_in;
+                RegWrite_reg <= RegWrite_in;
+                next_pc_reg <= next_pc_in;
+                zero_reg <= zero_in;
+                alu_result_reg <= alu_result_in;
+                read_data2_reg <= read_data2_in;
+                rd_reg <= rd_in;
+            end if;
         end if;
     end process;
     MemWrite_out <= MemWrite_reg;

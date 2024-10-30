@@ -14,6 +14,7 @@ entity ID_EX is
         MemToReg_in   : in std_logic;                      -- Memory to register
         MemSize_in    : in std_logic_vector(1 downto 0);  -- Memory size (byte, halfword, word)
         Branch_in     : in std_logic;                      -- Branch signal
+        ID_flush      : in std_logic;                   -- Flush signal 
         read_data1_in : in std_logic_vector(63 downto 0);
         read_data2_in : in std_logic_vector(63 downto 0);
         imm_in        : in std_logic_vector(63 downto 0);
@@ -59,42 +60,44 @@ architecture behavior of ID_EX is
     signal rs1_reg       : std_logic_vector(4 downto 0);
     signal rs2_reg       : std_logic_vector(4 downto 0);
 begin
-    process(clk, reset)
+    process(clk)
     begin
-        if reset = '1' then
-            ALUOp_reg <= (others => '0');
-            ALUSrc_reg <= '0';
-            RegWrite_reg <= '0';
-            MemRead_reg <= '0';
-            MemWrite_reg <= '0';
-            MemToReg_reg <= '0';
-            MemSize_reg <= (others => '0');
-            Branch_reg <= '0';
-            read_data1_reg <= (others => '0');
-            read_data2_reg <= (others => '0');
-            imm_reg <= (others => '0');
-            rd_reg <= (others => '0');
-            pc_reg <= (others => '0');
-            funct3_reg <= (others => '0');
-            rs1_reg <= (others => '0');
-            rs2_reg <= (others => '0');
-        elsif rising_edge(clk) then
-            ALUOp_reg <= ALUOp_in;
-            ALUSrc_reg <= ALUSrc_in;
-            RegWrite_reg <= RegWrite_in;
-            MemRead_reg <= MemRead_in;
-            MemWrite_reg <= MemWrite_in;
-            MemToReg_reg <= MemToReg_in;
-            MemSize_reg <= MemSize_in;
-            Branch_reg <= Branch_in;
-            read_data1_reg <= read_data1_in;
-            read_data2_reg <= read_data2_in;
-            imm_reg <= imm_in;
-            rd_reg <= rd_in;
-            pc_reg <= pc_in;
-            funct3_reg <= funct3_in;
-            rs1_reg <= rs1_in;
-            rs2_reg <= rs2_in;
+        if rising_edge(clk) then
+            if reset = '1' or ID_flush = '1' then
+                ALUOp_reg <= (others => '0');
+                ALUSrc_reg <= '0';
+                RegWrite_reg <= '0';
+                MemRead_reg <= '0';
+                MemWrite_reg <= '0';
+                MemToReg_reg <= '0';
+                MemSize_reg <= (others => '0');
+                Branch_reg <= '0';
+                read_data1_reg <= (others => '0');
+                read_data2_reg <= (others => '0');
+                imm_reg <= (others => '0');
+                rd_reg <= (others => '0');
+                pc_reg <= (others => '0');
+                funct3_reg <= (others => '0');
+                rs1_reg <= (others => '0');
+                rs2_reg <= (others => '0');
+            else
+                ALUOp_reg <= ALUOp_in;
+                ALUSrc_reg <= ALUSrc_in;
+                RegWrite_reg <= RegWrite_in;
+                MemRead_reg <= MemRead_in;
+                MemWrite_reg <= MemWrite_in;
+                MemToReg_reg <= MemToReg_in;
+                MemSize_reg <= MemSize_in;
+                Branch_reg <= Branch_in;
+                read_data1_reg <= read_data1_in;
+                read_data2_reg <= read_data2_in;
+                imm_reg <= imm_in;
+                rd_reg <= rd_in;
+                pc_reg <= pc_in;
+                funct3_reg <= funct3_in;
+                rs1_reg <= rs1_in;
+                rs2_reg <= rs2_in;
+            end if;
         end if;
     end process;
     ALUOp_out <= ALUOp_reg;

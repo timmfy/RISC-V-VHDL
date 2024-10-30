@@ -58,6 +58,7 @@ architecture behavior of core is
     signal MemRead_mem : std_logic;
     signal MemSize_mem : std_logic_vector(1 downto 0);
     signal Branch_mem : std_logic;
+    signal flush_mem : std_logic;
     signal MemToReg_mem : std_logic;
     signal RegWrite_mem : std_logic;
     signal PCSrc_mem : std_logic;
@@ -70,6 +71,7 @@ architecture behavior of core is
     -- WB stage
     signal MemToReg_wb : std_logic;
     signal RegWrite_wb : std_logic;
+    signal flush_wb : std_logic;
     signal data_out_wb : std_logic_vector(63 downto 0);
     signal write_reg_wb : std_logic_vector(4 downto 0);
     signal alu_result_wb : std_logic_vector(63 downto 0);
@@ -94,6 +96,7 @@ begin
         clk => clk,
         reset => reset,
         IF_ID_Write => IF_ID_Write,
+        IF_flush => flush_wb,
         instruction_in => instruction_if,
         pc_in => pc_if,
         instruction_out => instruction_id,
@@ -142,6 +145,7 @@ begin
         MemToReg_in => MemToReg_id,
         MemSize_in => MemSize_id,
         Branch_in => Branch_id,
+        ID_flush => flush_wb,
         read_data1_in => read_data1_id,
         read_data2_in => read_data2_id,
         imm_in => imm_id,
@@ -201,6 +205,7 @@ begin
         MemRead_in => MemRead_ex,
         MemSize_in => MemSize_ex,
         Branch_in => Branch_ex,
+        EX_flush => flush_wb,
         MemToReg_in => MemToReg_ex,
         RegWrite_in => RegWrite_ex,
         next_pc_in => next_pc_ex,
@@ -232,6 +237,7 @@ begin
         alu_result => alu_result_mem,
         read_data2 => read_data2_mem,
         PCSrc => PCSrc_mem,
+        flush => flush_mem,
         data_out => data_out_mem
     );
 
@@ -244,11 +250,13 @@ begin
         RegWrite_in => RegWrite_mem,
         data_out_in => data_out_mem,
         rd_in => rd_mem,
+        flush_in => flush_mem,
         alu_result_in => alu_result_mem,
         MemToReg_out => MemToReg_wb,
         RegWrite_out => RegWrite_wb,
         data_out_out => data_out_wb,
         rd_out => write_reg_wb,
+        flush_out => flush_wb,
         alu_result_out => alu_result_wb
     );
 end architecture behavior;

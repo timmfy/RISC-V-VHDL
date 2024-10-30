@@ -12,6 +12,7 @@ entity MEM_core is
         alu_result : in std_logic_vector(63 downto 0);
         read_data2 : in std_logic_vector(63 downto 0);
         PCSrc : out std_logic;
+        flush : out std_logic := '0';
         data_out : out std_logic_vector(63 downto 0)
     );
 end MEM_core;
@@ -19,6 +20,10 @@ end MEM_core;
 architecture behavior of MEM_core is
 begin
     PCSrc <= Branch and zero;
+
+    -- flushing in case if the branch is taken (rn only for beq)
+    flush <= Branch and zero;
+
     data_memory_inst: entity work.data_memory
      port map(
         Address => alu_result,

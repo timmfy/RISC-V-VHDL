@@ -182,7 +182,7 @@ begin
                 MemToReg <= '0';
                 Branch <= '1';    -- Enable branching
                 ALUSrc <= '0';    -- ALU source is register
-                ALUOp <= "0000"; --ADD
+                ALUOp <= "0001"; --ADD
             when JALR_TYPE =>
                 RegWrite <= '1';  -- Write to register file
                 MemRead <= '0';   -- No memory read

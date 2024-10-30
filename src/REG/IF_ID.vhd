@@ -7,6 +7,7 @@ entity IF_ID is
         clk: in std_logic;
         reset: in std_logic;
         IF_ID_Write : in std_logic;
+        IF_flush : in std_logic;
         instruction_in: in std_logic_vector(31 downto 0);
         pc_in: in std_logic_vector(63 downto 0);
         instruction_out: out std_logic_vector(31 downto 0) := (others => '0');
@@ -26,6 +27,9 @@ begin
         elsif rising_edge(clk) then
             if IF_ID_Write = '1' then
                 instruction_reg <= instruction_reg;
+                pc_reg <= pc_reg;
+            elsif IF_flush = '1' then
+                instruction_reg <= x"00000013"; -- NOP
                 pc_reg <= pc_reg;
             else
                 instruction_reg <= instruction_in;
