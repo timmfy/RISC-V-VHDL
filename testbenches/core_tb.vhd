@@ -17,7 +17,7 @@ begin
     clk <= not clk after 5 ns;
     stimulus: process
     begin
-        wait for 100 ns;
+        wait for 150 ns;
         wait;
     end process;
 end behavior;

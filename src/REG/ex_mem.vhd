@@ -10,6 +10,7 @@ entity EX_MEM is
         MemRead_in : in std_logic;
         MemSize_in : in std_logic_vector(1 downto 0);
         Branch_in : in std_logic;
+        EX_flush : in std_logic;
         MemToReg_in : in std_logic;
         RegWrite_in : in std_logic;
         next_pc_in : in std_logic_vector(63 downto 0);
@@ -47,17 +48,18 @@ begin
     process(clk, reset)
     begin
         if reset = '1' then
-            MemWrite_reg <= '0';
-            MemRead_reg <= '0';
-            MemSize_reg <= (others => '0');
-            Branch_reg <= '0';
-            MemToReg_reg <= '0';
-            RegWrite_reg <= '0';
-            next_pc_reg <= (others => '0');
-            zero_reg <= '0';
-            alu_result_reg <= (others => '0');
-            read_data2_reg <= (others => '0');
-            rd_reg <= (others => '0');
+                MemWrite_reg <= '0';
+                MemRead_reg <= '0';
+                MemSize_reg <= (others => '0');
+                Branch_reg <= '0';
+                MemToReg_reg <= '0';
+                RegWrite_reg <= '0';
+                next_pc_reg <= (others => '0');
+                zero_reg <= '0';
+                alu_result_reg <= (others => '0');
+                read_data2_reg <= (others => '0');
+                rd_reg <= (others => '0');
+
         elsif rising_edge(clk) then
             MemWrite_reg <= MemWrite_in;
             MemRead_reg <= MemRead_in;
@@ -72,15 +74,15 @@ begin
             rd_reg <= rd_in;
         end if;
     end process;
-    MemWrite_out <= MemWrite_reg;
-    MemRead_out <= MemRead_reg;
-    MemSize_out <= MemSize_reg;
-    Branch_out <= Branch_reg;
-    MemToReg_out <= MemToReg_reg;
-    RegWrite_out <= RegWrite_reg;
-    next_pc_out <= next_pc_reg;
-    zero_out <= zero_reg;
-    alu_result_out <= alu_result_reg;
-    read_data2_out <= read_data2_reg;
-    rd_out <= rd_reg;
+    MemWrite_out <= '0' when EX_flush = '1' else MemWrite_reg;
+    MemRead_out <= '0' when EX_flush = '1' else MemRead_reg;
+    MemSize_out <= (others => '0') when EX_flush = '1' else MemSize_reg;
+    Branch_out <= '0' when EX_flush = '1' else Branch_reg;
+    MemToReg_out <= '0' when EX_flush = '1' else MemToReg_reg;
+    RegWrite_out <= '0' when EX_flush = '1' else RegWrite_reg;
+    next_pc_out <= (others => '0') when EX_flush = '1' else next_pc_reg;
+    zero_out <= '0' when EX_flush = '1' else zero_reg;
+    alu_result_out <= (others => '0') when EX_flush = '1' else alu_result_reg;
+    read_data2_out <= (others => '0') when EX_flush = '1' else read_data2_reg;
+    rd_out <= (others => '0') when EX_flush = '1' else rd_reg;
 end architecture;

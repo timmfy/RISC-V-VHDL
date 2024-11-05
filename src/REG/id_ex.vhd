@@ -14,12 +14,15 @@ entity ID_EX is
         MemToReg_in   : in std_logic;                      -- Memory to register
         MemSize_in    : in std_logic_vector(1 downto 0);  -- Memory size (byte, halfword, word)
         Branch_in     : in std_logic;                      -- Branch signal
+        ID_flush      : in std_logic;                   -- Flush signal 
         read_data1_in : in std_logic_vector(63 downto 0);
         read_data2_in : in std_logic_vector(63 downto 0);
         imm_in        : in std_logic_vector(63 downto 0);
         rd_in         : in std_logic_vector(4 downto 0);
         pc_in         : in std_logic_vector(63 downto 0);
-        funct3_in      : in std_logic_vector(2 downto 0);
+        funct3_in     : in std_logic_vector(2 downto 0);
+        rs1_in        : in std_logic_vector(4 downto 0);
+        rs2_in        : in std_logic_vector(4 downto 0);
         ALUOp_out         : out std_logic_vector(3 downto 0);    -- ALU operation
         ALUSrc_out        : out std_logic;                      -- ALU source (register or immediate)
         RegWrite_out      : out std_logic;                      -- Write to register file
@@ -33,7 +36,9 @@ entity ID_EX is
         imm_out           : out std_logic_vector(63 downto 0);
         rd_out            : out std_logic_vector(4 downto 0);
         pc_out            : out std_logic_vector(63 downto 0);
-        funct3_out         : out std_logic_vector(2 downto 0)
+        funct3_out        : out std_logic_vector(2 downto 0);
+        rs1_out            : out std_logic_vector(4 downto 0);
+        rs2_out            : out std_logic_vector(4 downto 0)
     );
 end entity ID_EX;
 
@@ -52,6 +57,8 @@ architecture behavior of ID_EX is
     signal rd_reg       : std_logic_vector(4 downto 0);
     signal pc_reg       : std_logic_vector(63 downto 0);
     signal funct3_reg    : std_logic_vector(2 downto 0);
+    signal rs1_reg       : std_logic_vector(4 downto 0);
+    signal rs2_reg       : std_logic_vector(4 downto 0);
 begin
     process(clk, reset)
     begin
@@ -70,6 +77,8 @@ begin
             rd_reg <= (others => '0');
             pc_reg <= (others => '0');
             funct3_reg <= (others => '0');
+            rs1_reg <= (others => '0');
+            rs2_reg <= (others => '0');
         elsif rising_edge(clk) then
             ALUOp_reg <= ALUOp_in;
             ALUSrc_reg <= ALUSrc_in;
@@ -85,20 +94,24 @@ begin
             rd_reg <= rd_in;
             pc_reg <= pc_in;
             funct3_reg <= funct3_in;
+            rs1_reg <= rs1_in;
+            rs2_reg <= rs2_in;
         end if;
     end process;
-    ALUOp_out <= ALUOp_reg;
-    ALUSrc_out <= ALUSrc_reg;
-    RegWrite_out <= RegWrite_reg;
-    MemRead_out <= MemRead_reg;
-    MemWrite_out <= MemWrite_reg;
-    MemToReg_out <= MemToReg_reg;
-    MemSize_out <= MemSize_reg;
-    Branch_out <= Branch_reg;
-    read_data1_out <= read_data1_reg;
-    read_data2_out <= read_data2_reg;
-    imm_out <= imm_reg;
-    rd_out <= rd_reg;
-    pc_out <= pc_reg;
-    funct3_out <= funct3_reg;
+    ALUOp_out <= (others => '0') when ID_flush = '1' else ALUOp_reg;
+    ALUSrc_out <= '0' when ID_flush = '1' else ALUSrc_reg;
+    RegWrite_out <= '0' when ID_flush = '1' else RegWrite_reg;
+    MemRead_out <= '0' when ID_flush = '1' else MemRead_reg;
+    MemWrite_out <= '0' when ID_flush = '1' else MemWrite_reg;
+    MemToReg_out <= '0' when ID_flush = '1' else MemToReg_reg;
+    MemSize_out <= (others => '0') when ID_flush = '1' else MemSize_reg;
+    Branch_out <= '0' when ID_flush = '1' else Branch_reg;
+    read_data1_out <= (others => '0') when ID_flush = '1' else read_data1_reg;
+    read_data2_out <= (others => '0') when ID_flush = '1' else read_data2_reg;
+    imm_out <= (others => '0') when ID_flush = '1' else imm_reg;
+    rd_out <= (others => '0') when ID_flush = '1' else rd_reg;
+    pc_out <= (others => '0') when ID_flush = '1' else pc_reg;
+    funct3_out <= (others => '0') when ID_flush = '1' else funct3_reg;
+    rs1_out <= (others => '0') when ID_flush = '1' else rs1_reg;
+    rs2_out <= (others => '0') when ID_flush = '1' else rs2_reg;
 end architecture;

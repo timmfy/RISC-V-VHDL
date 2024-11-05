@@ -26,8 +26,12 @@ architecture behavior of core is
     signal MemRead_id : std_logic;
     signal MemWrite_id : std_logic;
     signal MemToReg_id : std_logic;
+    signal PCWrite : std_logic;
+    signal IF_ID_Write : std_logic;
     signal MemSize_id : std_logic_vector(1 downto 0);
     signal Branch_id : std_logic;
+    signal rs1_id : std_logic_vector(4 downto 0);
+    signal rs2_id : std_logic_vector(4 downto 0);
     -- EX stage
     signal ALUOp_ex : std_logic_vector(3 downto 0);
     signal ALUSrc_ex : std_logic;
@@ -39,18 +43,22 @@ architecture behavior of core is
     signal Branch_ex : std_logic;
     signal pc_ex : std_logic_vector(63 downto 0);
     signal read_data1_ex : std_logic_vector(63 downto 0);
-    signal read_data2_ex : std_logic_vector(63 downto 0);
+    signal read_data2_in_ex : std_logic_vector(63 downto 0);
+    signal read_data2_out_ex : std_logic_vector(63 downto 0);
     signal imm_ex : std_logic_vector(63 downto 0);
     signal funct3_ex : std_logic_vector(2 downto 0);
     signal rd_ex : std_logic_vector(4 downto 0);
     signal result_ex : std_logic_vector(63 downto 0);
     signal zero_ex : std_logic;
     signal next_pc_ex : std_logic_vector(63 downto 0);
+    signal rs1_ex : std_logic_vector(4 downto 0);
+    signal rs2_ex : std_logic_vector(4 downto 0);
     -- MEM stage
     signal MemWrite_mem : std_logic;
     signal MemRead_mem : std_logic;
     signal MemSize_mem : std_logic_vector(1 downto 0);
     signal Branch_mem : std_logic;
+    signal flush_mem : std_logic;
     signal MemToReg_mem : std_logic;
     signal RegWrite_mem : std_logic;
     signal PCSrc_mem : std_logic;
@@ -63,6 +71,7 @@ architecture behavior of core is
     -- WB stage
     signal MemToReg_wb : std_logic;
     signal RegWrite_wb : std_logic;
+    signal flush_wb : std_logic;
     signal data_out_wb : std_logic_vector(63 downto 0);
     signal write_reg_wb : std_logic_vector(4 downto 0);
     signal alu_result_wb : std_logic_vector(63 downto 0);
@@ -75,6 +84,7 @@ begin
         clk => clk,
         reset => reset,
         pc_src => PCSrc_mem,
+        PCWrite => PCWrite,
         branch_target => next_pc_mem,
         instruction => instruction_if,
         pc => pc_if
@@ -85,6 +95,8 @@ begin
      port map(
         clk => clk,
         reset => reset,
+        IF_ID_Write => IF_ID_Write,
+        IF_flush => flush_wb,
         instruction_in => instruction_if,
         pc_in => pc_if,
         instruction_out => instruction_id,
@@ -111,7 +123,13 @@ begin
         MemSize => MemSize_id,
         ALUSrc => ALUSrc_id,
         Branch => Branch_id,
-        ALUOp => ALUOp_id
+        ALUOp => ALUOp_id,
+        PCWrite => PCWrite,
+        IF_ID_Write => IF_ID_Write,
+        MemToReg_ex => MemToReg_ex,
+        rd_ex => rd_ex,
+        rs1 => rs1_id,
+        rs2 => rs2_id
     );
 
     -- ID/EX pipeline register
@@ -127,12 +145,15 @@ begin
         MemToReg_in => MemToReg_id,
         MemSize_in => MemSize_id,
         Branch_in => Branch_id,
+        ID_flush => flush_wb,
         read_data1_in => read_data1_id,
         read_data2_in => read_data2_id,
         imm_in => imm_id,
         rd_in => rd_id,
         pc_in => pc_id,
         funct3_in => funct3_id,
+        rs1_in => rs1_id,
+        rs2_in => rs2_id,
         ALUOp_out => ALUOp_ex,
         ALUSrc_out => ALUSrc_ex,
         RegWrite_out => RegWrite_ex,
@@ -142,11 +163,13 @@ begin
         MemSize_out => MemSize_ex,
         Branch_out => Branch_ex,
         read_data1_out => read_data1_ex,
-        read_data2_out => read_data2_ex,
+        read_data2_out => read_data2_in_ex,
         imm_out => imm_ex,
         rd_out => rd_ex,
         pc_out => pc_ex,
-        funct3_out => funct3_ex
+        funct3_out => funct3_ex,
+        rs1_out => rs1_ex,
+        rs2_out => rs2_ex
     );
 
     -- EX stage
@@ -154,11 +177,20 @@ begin
      port map(
         ALUOp => ALUOp_ex,
         ALUSrc => ALUSrc_ex,
+        RegWrite_mem => RegWrite_mem,
+        RegWrite_wb => RegWrite_wb,
+        write_reg_wb => write_reg_wb,
+        rd_mem => rd_mem,
         read_data1 => read_data1_ex,
-        read_data2 => read_data2_ex,
+        read_data2_in => read_data2_in_ex,
+        read_data2_out => read_data2_out_ex,
+        rs1 => rs1_ex,
+        rs2 => rs2_ex,
         imm => imm_ex,
         rd => rd_ex,
         pc => pc_ex,
+        alu_result_mem => alu_result_mem,
+        data_out_wb => write_data_wb,
         result => result_ex,
         zero => zero_ex,
         next_pc => next_pc_ex
@@ -173,12 +205,13 @@ begin
         MemRead_in => MemRead_ex,
         MemSize_in => MemSize_ex,
         Branch_in => Branch_ex,
+        EX_flush => flush_wb,
         MemToReg_in => MemToReg_ex,
         RegWrite_in => RegWrite_ex,
         next_pc_in => next_pc_ex,
         zero_in => zero_ex,
         alu_result_in => result_ex,
-        read_data2_in => read_data2_ex,
+        read_data2_in => read_data2_out_ex,
         rd_in => rd_ex,
         MemWrite_out => MemWrite_mem,
         MemRead_out => MemRead_mem,
@@ -204,6 +237,7 @@ begin
         alu_result => alu_result_mem,
         read_data2 => read_data2_mem,
         PCSrc => PCSrc_mem,
+        flush => flush_mem,
         data_out => data_out_mem
     );
 
@@ -216,11 +250,13 @@ begin
         RegWrite_in => RegWrite_mem,
         data_out_in => data_out_mem,
         rd_in => rd_mem,
+        flush_in => flush_mem,
         alu_result_in => alu_result_mem,
         MemToReg_out => MemToReg_wb,
         RegWrite_out => RegWrite_wb,
         data_out_out => data_out_wb,
         rd_out => write_reg_wb,
+        flush_out => flush_wb,
         alu_result_out => alu_result_wb
     );
 end architecture behavior;
