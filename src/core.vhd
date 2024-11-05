@@ -4,7 +4,8 @@ use ieee.std_logic_1164.all;
 entity core is
     port (
         clk : in std_logic;
-        reset : in std_logic
+        reset : in std_logic;
+        reg_out : out std_logic_vector(15 downto 0)
     );
 end entity core;
 
@@ -259,4 +260,5 @@ begin
         flush_out => flush_wb,
         alu_result_out => alu_result_wb
     );
+    reg_out <= read_data2_out_ex(15 downto 0);
 end architecture behavior;

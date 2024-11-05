@@ -19,7 +19,7 @@ architecture behavior of instruction_memory is
         --Load hazard
         x"00708023", --sb x7 0(x1)
         x"00709023", --sh x7 0(x1)
-        x"00108A63", --beq x1 x1 20
+        --x"00108A63", --beq x1 x1 20
         x"0070A023", --sw x7 0(x1)
         x"0070B023", --sd x7 0(x1)
         x"01040593", --addi x11, x8, 16

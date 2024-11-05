@@ -33,13 +33,13 @@ begin
             result_sig <= std_logic_vector(shift_left(unsigned(a), to_integer(unsigned(b(4 downto 0)))));
         elsif ALUOp = "0110" then
             result_sig <= std_logic_vector(shift_right(unsigned(a), to_integer(unsigned(b(4 downto 0)))));
-        elsif ALUOp = "0111" then
-            if a(63)  = '1' then
-                result_sig <= (63 downto (63 - shift_amount + 1) => '1') & (63 - shift_amount downto 0 => '0') or 
-                std_logic_vector(shift_right(unsigned(a), to_integer(unsigned(b(4 downto 0)))));
-            else
-                result_sig <= std_logic_vector(shift_right(unsigned(a), to_integer(unsigned(b(4 downto 0)))));
-            end if;
+--        elsif ALUOp = "0111" then
+--            if a(63)  = '1' then
+--                result_sig <= (63 downto (63 - shift_amount + 1) => '1') & (63 - shift_amount downto 0 => '0') or 
+--                std_logic_vector(shift_right(unsigned(a), to_integer(unsigned(b(4 downto 0)))));
+--            else
+--                result_sig <= std_logic_vector(shift_right(unsigned(a), to_integer(unsigned(b(4 downto 0)))));
+--            end if;
         elsif ALUOp = "1000" then
             if signed(a) < signed(b) then
                 result_sig <= (others => '0');
