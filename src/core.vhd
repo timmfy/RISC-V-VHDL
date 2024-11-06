@@ -77,6 +77,7 @@ architecture behavior of core is
     signal write_reg_wb : std_logic_vector(4 downto 0);
     signal alu_result_wb : std_logic_vector(63 downto 0);
     signal write_data_wb : std_logic_vector(63 downto 0);
+    signal mem_debug : std_logic_vector(15 downto 0);
 begin
     write_data_wb <= data_out_wb when MemToReg_wb = '1' else alu_result_wb;
     -- IF stage
@@ -239,7 +240,8 @@ begin
         read_data2 => read_data2_mem,
         PCSrc => PCSrc_mem,
         flush => flush_mem,
-        data_out => data_out_mem
+        data_out => data_out_mem,
+        mem_debug => mem_debug
     );
 
     --MEM/WB pipeline register
@@ -261,5 +263,5 @@ begin
         alu_result_out => alu_result_wb
     );
 
-    test_out <= read_data2_out_ex(15 downto 0);
+    test_out <= mem_debug;
 end architecture behavior;

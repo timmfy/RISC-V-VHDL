@@ -13,7 +13,8 @@ entity MEM_core is
         read_data2 : in std_logic_vector(63 downto 0);
         PCSrc : out std_logic;
         flush : out std_logic := '0';
-        data_out : out std_logic_vector(63 downto 0)
+        data_out : out std_logic_vector(63 downto 0);
+        mem_debug : out std_logic_vector(15 downto 0)
     );
 end MEM_core;
 
@@ -31,6 +32,7 @@ begin
         MemRead => MemRead,
         MemWrite => MemWrite,
         MemSize => MemSize,
-        DataOut => data_out
+        DataOut => data_out,
+        mem_debug => mem_debug
     );
 end architecture;

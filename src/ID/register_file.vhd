@@ -32,23 +32,7 @@ architecture behavior of register_file is
         others => (others => '0')
     );
 begin
-    process(reg_write, write_reg, write_data, read_reg1, read_reg2)
-    begin
-        if reg_write = '1' then
-            if write_reg = read_reg1 then
-                read_data1 <= write_data;
-                registers(to_integer(unsigned(write_reg))) <= write_data;
-            elsif write_reg = read_reg2 then
-                read_data2 <= write_data;
-                registers(to_integer(unsigned(write_reg))) <= write_data;
-            else
-                read_data1 <= registers(to_integer(unsigned(read_reg1)));
-                read_data2 <= registers(to_integer(unsigned(read_reg2)));
-                registers(to_integer(unsigned(write_reg))) <= write_data;
-            end if;
-        else
-            read_data1 <= registers(to_integer(unsigned(read_reg1)));
-            read_data2 <= registers(to_integer(unsigned(read_reg2)));
-        end if;
-    end process;
+    read_data1 <= write_data when reg_write = '1' and write_reg = read_reg1 else registers(to_integer(unsigned(read_reg1)));
+    read_data2 <= write_data when reg_write = '1' and write_reg = read_reg2 else registers(to_integer(unsigned(read_reg2)));
+    registers(to_integer(unsigned(write_reg))) <= write_data when reg_write = '1' else registers(to_integer(unsigned(write_reg)));
 end architecture;
