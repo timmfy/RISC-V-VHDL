@@ -17,47 +17,20 @@ architecture behavioral of alu is
     signal result_sig : std_logic_vector(63 downto 0);
 begin
     shift_amount <= to_integer(unsigned(b(4 downto 0)));
-    process(a, b, ALUOp, ALUSrc) is
-    begin
-        if ALUOp = "0000" then
-            result_sig <= std_logic_vector(unsigned(a) + unsigned(b));
-        elsif ALUOp = "0001" then
-            result_sig <= std_logic_vector(unsigned(a) - unsigned(b));
-        elsif ALUOp = "0010" then
-            result_sig <= a and b;
-        elsif ALUOp = "0011" then
-            result_sig <= a or b;
-        elsif ALUOp = "0100" then
-            result_sig <= a xor b;
-        elsif ALUOp = "0101" then
-            result_sig <= std_logic_vector(shift_left(unsigned(a), to_integer(unsigned(b(4 downto 0)))));
-        elsif ALUOp = "0110" then
-            result_sig <= std_logic_vector(shift_right(unsigned(a), to_integer(unsigned(b(4 downto 0)))));
---        elsif ALUOp = "0111" then
---            if a(63)  = '1' then
---                result_sig <= (63 downto (63 - shift_amount + 1) => '1') & (63 - shift_amount downto 0 => '0') or 
---                std_logic_vector(shift_right(unsigned(a), to_integer(unsigned(b(4 downto 0)))));
---            else
---                result_sig <= std_logic_vector(shift_right(unsigned(a), to_integer(unsigned(b(4 downto 0)))));
---            end if;
-        elsif ALUOp = "1000" then
-            if signed(a) < signed(b) then
-                result_sig <= (others => '0');
-                result_sig(0) <= '1';
-            else
-                result_sig <= (others => '0');
-            end if;
-        elsif ALUOp = "1001" then
-            if unsigned(a) < unsigned(b) then
-                result_sig <= (others => '0');
-                result_sig(0) <= '1';
-            else
-                result_sig <= (others => '0');
-            end if;
-        else
-            result_sig <= (others => 'X');
-        end if;
-    end process;    
+    result_sig <= std_logic_vector(unsigned(a) + unsigned(b)) when ALUOp = "0000" else
+                  std_logic_vector(unsigned(a) - unsigned(b)) when ALUOp = "0001" else
+                  a and b when ALUOp = "0010" else
+                  a or b when ALUOp = "0011" else
+                  a xor b when ALUOp = "0100" else
+                  std_logic_vector(shift_left(unsigned(a), shift_amount)) when ALUOp = "0101" else
+                  std_logic_vector(shift_right(unsigned(a), shift_amount)) when ALUOp = "0110" else
+                  std_logic_vector(shift_right(signed(a), shift_amount)) when ALUOp = "0111" else
+                  (63 downto 1 => '0') & '1' when (ALUOp = "1000" and signed(a) < signed(b)) or
+                                              (ALUOp = "1001" and unsigned(a) < unsigned(b)) else
+                  (others => '0') when (ALUOp = "1000" and signed(a) > signed(b)) or (ALUOp = "1000" and signed(a) = signed(b)) or
+                                     (ALUOp = "1001" and unsigned(a) > unsigned(b)) or (ALUOp = "1001" and unsigned(a) = unsigned(b)) else
+                  (others => 'X');
+    
     result <= result_sig;
     zero <= '1' when result_sig = X"0000000000000000" else '0';
 end behavioral;

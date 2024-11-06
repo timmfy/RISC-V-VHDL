@@ -30,48 +30,33 @@ end EX_core;
 architecture behavior of EX_core is
     signal a : std_logic_vector(63 downto 0);
     signal b : std_logic_vector(63 downto 0);
-    signal read_data2_sig : std_logic_vector(63 downto 0);
     signal read_data1_sig : std_logic_vector(63 downto 0);
+    signal read_data2_sig : std_logic_vector(63 downto 0);
 begin
-    process(write_reg_wb, ALUOp, ALUSrc, RegWrite_wb, RegWrite_mem, imm, alu_result_mem, data_out_wb, rs1, rs2, read_data1, read_data2_in, pc, rd, rd_mem)
-    begin
-        next_pc <= std_logic_vector(unsigned(pc) + shift_left(unsigned(imm), 1));
-        if RegWrite_mem = '1' or RegWrite_wb = '1' then
-            if rs1 = rd_mem then
-                read_data1_sig <= alu_result_mem;
-            elsif rs1 = write_reg_wb then
-                read_data1_sig <= data_out_wb;
-            else
-                read_data1_sig <= read_data1;
-            end if;
+    next_pc <= std_logic_vector(unsigned(pc) + shift_left(unsigned(imm), 1));
 
-            if rs2 = rd_mem then
-                read_data2_sig <= alu_result_mem;
-            elsif rs2 = write_reg_wb then
-                read_data2_sig <= data_out_wb;
-            else
-                read_data2_sig <= read_data2_in; 
-            end if;
-        else
-            read_data1_sig <= read_data1;
-            read_data2_sig <= read_data2_in;
-        end if;
+    read_data1_sig <= alu_result_mem when (RegWrite_mem = '1' or RegWrite_wb = '1') and (rs1 = rd_mem) else
+                      data_out_wb   when (RegWrite_mem = '1' or RegWrite_wb = '1') and (rs1 = write_reg_wb) else
+                      read_data1;
 
-        if ALUsrc = '1' then
-            b <= imm;
-        else
-            b <= read_data2_sig;
-        end if;
-        a <= read_data1_sig;
-    end process;
+    read_data2_sig <= alu_result_mem when (RegWrite_mem = '1' or RegWrite_wb = '1') and (rs2 = rd_mem) else
+                      data_out_wb   when (RegWrite_mem = '1' or RegWrite_wb = '1') and (rs2 = write_reg_wb) else
+                      read_data2_in;
+
+    a <= read_data1_sig;
+
+    b <= imm              when ALUSrc = '1' else
+         read_data2_sig;
+
     alu : entity work.alu
-    port map(
-        a => a,
-        b => b,
-        ALUOp => ALUOp,
-        ALUSrc => ALUSrc,
-        result => result,
-        zero => zero
-    );
+        port map (
+            a       => a,
+            b       => b,
+            ALUOp   => ALUOp,
+            ALUSrc  => ALUSrc,
+            result  => result,
+            zero    => zero
+        );
+
     read_data2_out <= read_data2_sig;
 end architecture;
