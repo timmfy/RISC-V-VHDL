@@ -21,8 +21,7 @@ architecture behavior of immediate_decoder is
     -- Function for J-type immediate
     function J_type_imm(instr : std_logic_vector(31 downto 0)) return std_logic_vector is
     begin
-        return (instr(31) & instr(19 downto 12) & instr(20) & instr(30 downto 21) & '0') &
-               (11 downto 0 => '0');
+        return (31 downto 20 => instr(31)) & instr(19 downto 12) & instr(20) & instr(30 downto 21) & '0';
     end function;
 
     -- Function for I-type immediate

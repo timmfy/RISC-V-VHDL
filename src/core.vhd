@@ -113,8 +113,6 @@ begin
         reg_write => RegWrite_wb,
         write_reg => write_reg_wb,
         write_data => write_data_wb,
-        read_data1 => read_data1_id,
-        read_data2 => read_data2_id,
         imm => imm_id,
         funct3 => funct3_id,
         rd => rd_id,
@@ -132,6 +130,19 @@ begin
         rd_ex => rd_ex,
         rs1 => rs1_id,
         rs2 => rs2_id
+    );
+
+    --register file
+    register_file_inst: entity work.register_file
+    port map(
+        clk => clk,
+        reg_write => RegWrite_wb,
+        write_reg => write_reg_wb,
+        write_data => write_data_wb,
+        read_reg1 => rs1_id,
+        read_reg2 => rs2_id,
+        read_data1 => read_data1_id,
+        read_data2 => read_data2_id
     );
 
     -- ID/EX pipeline register
@@ -229,18 +240,20 @@ begin
     );
 
     -- MEM stage
-    MEM_core_inst: entity work.MEM_core
+    PCSrc_mem <= Branch_mem and zero_mem;
+    -- flushing in case if the branch is taken (rn only for beq)
+    flush_mem <= Branch_mem and zero_mem;
+    --Data Memory
+    data_memory_inst: entity work.data_memory
      port map(
-        MemWrite => MemWrite_mem,
-        MemRead => MemRead_mem,
-        MemSize => MemSize_mem,
-        Branch => Branch_mem,
-        zero => zero_mem,
-        alu_result => alu_result_mem,
-        read_data2 => read_data2_mem,
-        PCSrc => PCSrc_mem,
-        flush => flush_mem,
-        data_out => data_out_mem,
+        clk => clk,
+        Address => result_ex,
+        DataIn => read_data2_out_ex,
+        MemRead => MemRead_ex,
+        MemWrite => MemWrite_ex,
+        MemSize => MemSize_ex,
+        FlushMem => flush_mem,
+        DataOut => data_out_mem,
         mem_debug => mem_debug
     );
 
