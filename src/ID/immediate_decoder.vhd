@@ -45,7 +45,6 @@ architecture behavior of immediate_decoder is
 
 begin
 
-    -- Concurrent assignment replacing the process
     immediate <= U_type_imm(instruction) when instruction(6 downto 2) = "01101" or instruction(6 downto 2) = "00101" else -- U-type
                  J_type_imm(instruction) when instruction(6 downto 2) = "11011" else -- J-type
                  I_type_imm(instruction) when instruction(6 downto 2) = "11001" or instruction(6 downto 2) = "00000" or

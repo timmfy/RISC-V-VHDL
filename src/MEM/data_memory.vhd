@@ -10,7 +10,7 @@ entity data_memory is
         MemRead : in std_logic;
         MemWrite : in std_logic;
         MemSize : in std_logic_vector(1 downto 0);
-        FlushMem : in std_logic;
+        Flush : in std_logic;
         DataOut : out std_logic_vector(63 downto 0);
         mem_debug : out std_logic_vector(15 downto 0)
     );
@@ -37,7 +37,7 @@ begin
     begin
         if rising_edge(clk) then
             -- Memory Read Logic
-            if MemRead = '1' and FlushMem = '0' then
+            if MemRead = '1' and Flush = '0' then
                 case MemSize is
                     when "00" => -- Byte access
                         case Address(2 downto 0) is
@@ -75,7 +75,7 @@ begin
             end if;
 
             -- Memory Write Logic
-            if MemWrite = '1' and FlushMem = '0' then
+            if MemWrite = '1' and Flush = '0' then
                 case MemSize is
                     when "00" => -- Byte write
                         case Address(2 downto 0) is

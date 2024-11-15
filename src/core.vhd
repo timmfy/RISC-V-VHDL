@@ -98,7 +98,7 @@ begin
         clk => clk,
         reset => reset,
         IF_ID_Write => IF_ID_Write,
-        IF_flush => flush_wb,
+        IF_flush => flush_mem,
         instruction_in => instruction_if,
         pc_in => pc_if,
         instruction_out => instruction_id,
@@ -158,7 +158,7 @@ begin
         MemToReg_in => MemToReg_id,
         MemSize_in => MemSize_id,
         Branch_in => Branch_id,
-        ID_flush => flush_wb,
+        ID_flush => flush_mem,
         read_data1_in => read_data1_id,
         read_data2_in => read_data2_id,
         imm_in => imm_id,
@@ -218,7 +218,7 @@ begin
         MemRead_in => MemRead_ex,
         MemSize_in => MemSize_ex,
         Branch_in => Branch_ex,
-        EX_flush => flush_wb,
+        EX_flush => flush_mem,
         MemToReg_in => MemToReg_ex,
         RegWrite_in => RegWrite_ex,
         next_pc_in => next_pc_ex,
@@ -240,21 +240,20 @@ begin
     );
 
     -- MEM stage
-    PCSrc_mem <= Branch_mem and zero_mem;
-    -- flushing in case if the branch is taken (rn only for beq)
-    flush_mem <= Branch_mem and zero_mem;
-    --Data Memory
-    data_memory_inst: entity work.data_memory
+    MEM_core_inst: entity work.MEM_core
      port map(
         clk => clk,
-        Address => result_ex,
-        DataIn => read_data2_out_ex,
-        MemRead => MemRead_ex,
-        MemWrite => MemWrite_ex,
-        MemSize => MemSize_ex,
-        FlushMem => flush_mem,
+        Address => alu_result_mem,
+        DataIn => write_data_wb,
+        MemRead => MemRead_mem,
+        MemWrite => MemWrite_mem,
+        MemSize => MemSize_mem,
+        Branch => Branch_mem,
+        Zero => zero_mem,
         DataOut => data_out_mem,
-        mem_debug => mem_debug
+        mem_debug => mem_debug,
+        PCSrc => PCSrc_mem,
+        Flush => flush_mem
     );
 
     --MEM/WB pipeline register
