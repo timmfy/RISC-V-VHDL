@@ -9,8 +9,8 @@ entity EX_core is
         ALUSrc     : in std_logic;                      -- ALU source (register or immediate)
         RegWrite_mem : in std_logic;                    -- Instruction in the MEM stage writes to a register
         RegWrite_wb : in std_logic;                     -- Instruction in the WB stage writes to a register
-        write_reg_wb : in std_logic_vector(4 downto 0);
-        rd_mem : in std_logic_vector(4 downto 0);
+        write_reg_wb : in std_logic_vector(4 downto 0); -- Register to write to in the WB stage
+        rd_mem : in std_logic_vector(4 downto 0);       -- Register to write to in the MEM stage
         read_data1 : in std_logic_vector(63 downto 0);
         read_data2_in : in std_logic_vector(63 downto 0);
         read_data2_out : out std_logic_vector(63 downto 0);
@@ -34,17 +34,17 @@ architecture behavior of EX_core is
 begin
     next_pc <= std_logic_vector(unsigned(pc) + shift_left(unsigned(imm), 1));
 
-    read_data1_sig <= alu_result_mem when (RegWrite_mem = '1' or RegWrite_wb = '1') and (rs1 = rd_mem) else
-                      data_out_wb   when (RegWrite_mem = '1' or RegWrite_wb = '1') and (rs1 = write_reg_wb) else
+    read_data1_sig <= alu_result_mem when RegWrite_mem = '1' and (rs1 = rd_mem) else
+                      data_out_wb   when RegWrite_wb = '1' and (rs1 = write_reg_wb) else
                       read_data1;
 
-    read_data2_sig <= alu_result_mem when (RegWrite_mem = '1' or RegWrite_wb = '1') and (rs2 = rd_mem) else
-                      data_out_wb   when (RegWrite_mem = '1' or RegWrite_wb = '1') and (rs2 = write_reg_wb) else
+    read_data2_sig <= alu_result_mem when RegWrite_mem = '1' and (rs2 = rd_mem) else
+                      data_out_wb   when RegWrite_wb = '1' and (rs2 = write_reg_wb) else
                       read_data2_in;
 
     a <= read_data1_sig;
 
-    b <= imm              when ALUSrc = '1' else
+    b <= imm when ALUSrc = '1' else
          read_data2_sig;
 
     alu : entity work.alu

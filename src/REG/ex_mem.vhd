@@ -33,17 +33,6 @@ entity EX_MEM is
 end entity EX_MEM;
 
 architecture behavior of EX_MEM is
-    --signal MemWrite_reg : std_logic;
-    --signal MemRead_reg : std_logic;
-    --signal MemSize_reg : std_logic_vector(1 downto 0);
-    signal Branch_reg : std_logic;
-    signal MemToReg_reg : std_logic;
-    signal RegWrite_reg : std_logic;
-    signal next_pc_reg : std_logic_vector(63 downto 0);
-    signal zero_reg : std_logic;
-    signal alu_result_reg : std_logic_vector(63 downto 0);
-    signal read_data2_reg : std_logic_vector(63 downto 0);
-    signal rd_reg : std_logic_vector(4 downto 0);
 begin
     process(clk)
     begin
@@ -52,35 +41,24 @@ begin
             --MemRead_reg <= MemRead_in when EX_flush = '0' else '0';
             --MemSize_reg <= MemSize_in when EX_flush = '0' else (others => '0');
             if EX_flush = '0' then
-                Branch_reg <= Branch_in;
-                MemToReg_reg <= MemToReg_in;
-                RegWrite_reg <= RegWrite_in;
-                next_pc_reg <= next_pc_in;
-                zero_reg <= zero_in;
-                alu_result_reg <= alu_result_in;
-                --read_data2_reg <= read_data2_in;
-                rd_reg <= rd_in;
+                Branch_out <= Branch_in;
+                MemToReg_out <= MemToReg_in;
+                RegWrite_out <= RegWrite_in;
+                next_pc_out <= next_pc_in;
+                zero_out <= zero_in;
+                alu_result_out <= alu_result_in;
+                --read_data2_out <= read_data2_in;
+                rd_out <= rd_in;
             else
-                Branch_reg <= '0';
-                MemToReg_reg <= '0';
-                RegWrite_reg <= '0';
-                next_pc_reg <= (others => '0');
-                zero_reg <= '0';
-                alu_result_reg <= (others => '0');
-                --read_data2_reg <= (others => '0');
-                rd_reg <= (others => '0');
+                Branch_out <= '0';
+                MemToReg_out <= '0';
+                RegWrite_out <= '0';
+                next_pc_out <= (others => '0');
+                zero_out <= '0';
+                alu_result_out <= (others => '0');
+                --read_data2_out <= (others => '0');
+                rd_out <= (others => '0');
             end if;
         end if;
     end process;
-    --MemWrite_out <= MemWrite_reg;
-    --MemRead_out <= MemRead_reg;
-    --MemSize_out <= MemSize_reg;
-    Branch_out <= Branch_reg;
-    MemToReg_out <= MemToReg_reg;
-    RegWrite_out <= RegWrite_reg;
-    next_pc_out <= next_pc_reg;
-    zero_out <= zero_reg;
-    alu_result_out <= alu_result_reg;
-    --read_data2_out <= read_data2_reg;
-    rd_out <= rd_reg;
 end architecture;
