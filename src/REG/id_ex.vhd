@@ -5,7 +5,7 @@ use ieee.numeric_std.all;
 entity ID_EX is
     port(
         clk: in std_logic;
-        reset: in std_logic;
+        --reset: in std_logic;
         ALUOp_in      : in std_logic_vector(3 downto 0);    -- ALU operation
         ALUSrc_in     : in std_logic;                      -- ALU source (register or immediate)
         RegWrite_in   : in std_logic;                      -- Write to register file
@@ -60,26 +60,9 @@ architecture behavior of ID_EX is
     signal rs1_reg       : std_logic_vector(4 downto 0);
     signal rs2_reg       : std_logic_vector(4 downto 0);
 begin
-    process(clk, reset)
+    process(clk)
     begin
-        if reset = '1' then
-            ALUOp_reg <= (others => '0');
-            ALUSrc_reg <= '0';
-            RegWrite_reg <= '0';
-            MemRead_reg <= '0';
-            MemWrite_reg <= '0';
-            MemToReg_reg <= '0';
-            MemSize_reg <= (others => '0');
-            Branch_reg <= '0';
-            read_data1_reg <= (others => '0');
-            read_data2_reg <= (others => '0');
-            imm_reg <= (others => '0');
-            rd_reg <= (others => '0');
-            pc_reg <= (others => '0');
-            funct3_reg <= (others => '0');
-            rs1_reg <= (others => '0');
-            rs2_reg <= (others => '0');
-        elsif rising_edge(clk) then
+        if rising_edge(clk) then
             ALUOp_reg <= ALUOp_in;
             ALUSrc_reg <= ALUSrc_in;
             RegWrite_reg <= RegWrite_in;

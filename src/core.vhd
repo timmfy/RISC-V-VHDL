@@ -96,7 +96,7 @@ begin
     IF_ID_inst: entity work.IF_ID
      port map(
         clk => clk,
-        reset => reset,
+        --reset => reset,
         IF_ID_Write => IF_ID_Write,
         IF_flush => flush_mem,
         instruction_in => instruction_if,
@@ -108,11 +108,7 @@ begin
     -- ID stage
     ID_core_inst: entity work.ID_core
      port map(
-        pc => pc_id,
         instruction => instruction_id,
-        reg_write => RegWrite_wb,
-        write_reg => write_reg_wb,
-        write_data => write_data_wb,
         imm => imm_id,
         funct3 => funct3_id,
         rd => rd_id,
@@ -149,7 +145,7 @@ begin
     ID_EX_inst: entity work.ID_EX
      port map(
         clk => clk,
-        reset => reset,
+        --reset => reset,
         ALUOp_in => ALUOp_id,
         ALUSrc_in => ALUSrc_id,
         RegWrite_in => RegWrite_id,
@@ -200,7 +196,6 @@ begin
         rs1 => rs1_ex,
         rs2 => rs2_ex,
         imm => imm_ex,
-        rd => rd_ex,
         pc => pc_ex,
         alu_result_mem => alu_result_mem,
         data_out_wb => write_data_wb,
@@ -213,7 +208,7 @@ begin
     EX_MEM_inst: entity work.EX_MEM
      port map(
         clk => clk,
-        reset => reset,
+        --reset => reset,
         --MemWrite_in => MemWrite_ex,
         --MemRead_in => MemRead_ex,
         --MemSize_in => MemSize_ex,
@@ -243,7 +238,7 @@ begin
     MEM_core_inst: entity work.MEM_core
      port map(
         clk => clk,
-        Address => result_ex,
+        Address => result_ex(8 downto 0),
         DataIn => read_data2_out_ex,
         MemRead => MemRead_ex,
         MemWrite => MemWrite_ex,
@@ -260,7 +255,7 @@ begin
     MEM_WB_inst: entity work.MEM_WB
      port map(
         clk => clk,
-        reset => reset,
+        --reset => reset,
         MemToReg_in => MemToReg_mem,
         RegWrite_in => RegWrite_mem,
         data_out_in => data_out_mem,

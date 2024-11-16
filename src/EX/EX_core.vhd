@@ -17,7 +17,6 @@ entity EX_core is
         rs1 : in std_logic_vector(4 downto 0);
         rs2 : in std_logic_vector(4 downto 0);
         imm : in std_logic_vector(63 downto 0);
-        rd : in std_logic_vector(4 downto 0);
         pc : in std_logic_vector(63 downto 0);
         alu_result_mem : in std_logic_vector(63 downto 0);
         data_out_wb : in std_logic_vector(63 downto 0);
@@ -53,7 +52,6 @@ begin
             a       => a,
             b       => b,
             ALUOp   => ALUOp,
-            ALUSrc  => ALUSrc,
             result  => result,
             zero    => zero
         );

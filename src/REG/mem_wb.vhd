@@ -5,7 +5,7 @@ use ieee.numeric_std.all;
 entity MEM_WB is
     port (
         clk : in std_logic;
-        reset : in std_logic;
+        --reset : in std_logic;
         RegWrite_in : in std_logic;
         MemToReg_in : in std_logic;
         flush_in : in std_logic;
@@ -29,16 +29,9 @@ architecture behavior of MEM_WB is
     signal alu_result_reg : std_logic_vector(63 downto 0);
     signal rd_reg : std_logic_vector(4 downto 0);
 begin
-    process(clk, reset)
+    process(clk)
     begin
-        if reset = '1' then
-            RegWrite_reg <= '0';
-            MemToReg_reg <= '0';
-            flush_reg <= '0';
-            data_out_reg <= (others => '0');
-            alu_result_reg <= (others => '0');
-            rd_reg <= (others => '0');
-        elsif rising_edge(clk) then
+        if rising_edge(clk) then
             RegWrite_reg <= RegWrite_in;
             MemToReg_reg <= MemToReg_in;
             data_out_reg <= data_out_in;

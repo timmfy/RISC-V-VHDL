@@ -6,7 +6,6 @@ entity alu is
         a : in std_logic_vector(63 downto 0);
         b : in std_logic_vector(63 downto 0);
         ALUOp : in std_logic_vector(3 downto 0);
-        ALUSrc : in std_logic;
         result : out std_logic_vector(63 downto 0);
         zero : out std_logic
     );
