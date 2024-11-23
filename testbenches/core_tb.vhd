@@ -8,13 +8,11 @@ end core_tb;
 architecture behavior of core_tb is
     signal clk : std_logic := '1';
     signal reset : std_logic := '0';
-    signal test_out : std_logic_vector(15 downto 0);
 begin
     dut: entity work.core
     port map(
         clk => clk,
-        reset => reset,
-        test_out => test_out
+        reset => reset
     );
     clk <= not clk after 5 ns;
     stimulus: process

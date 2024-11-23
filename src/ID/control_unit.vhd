@@ -25,79 +25,211 @@ entity control_unit is
         -- ALUOp = 0110 -> SRL
         -- ALUOp = 0111 -> SRA
         -- ALUOp = 1000 -> SLT
-        -- ALUOp = 1009 -> SLTU
+        -- ALUOp = 1001 -> SLTU
     );
 end control_unit;
 
 architecture behavior of control_unit is
     -- Define opcode types for better readability
-    constant R_TYPE     : std_logic_vector(6 downto 0) := "0110011";  -- R-type
-    constant I_TYPE     : std_logic_vector(6 downto 0) := "0010011";  -- I-type
-    constant LOAD_TYPE  : std_logic_vector(6 downto 0) := "0000011";  -- Load
-    constant STORE_TYPE : std_logic_vector(6 downto 0) := "0100011";  -- Store
-    constant BRANCH_TYPE: std_logic_vector(6 downto 0) := "1100011";  -- Branch
-    constant JALR_TYPE  : std_logic_vector(6 downto 0) := "1100111";  -- JALR
-    constant JAL_TYPE   : std_logic_vector(6 downto 0) := "1101111";  -- JAL
-    constant LUI_TYPE   : std_logic_vector(6 downto 0) := "0110111";  -- LUI
-    constant AUIPC_TYPE : std_logic_vector(6 downto 0) := "0010111";  -- AUIPC
+    constant R_TYPE    : std_logic_vector(6 downto 0) := "0110011";  -- R-type
+    constant I_TYPE    : std_logic_vector(6 downto 0) := "0010011";  -- I-type with immediate (ADDI, etc.)
+    constant LOAD_TYPE : std_logic_vector(6 downto 0) := "0000011";  -- I-type (LW)
+    constant STORE_TYPE: std_logic_vector(6 downto 0) := "0100011";  -- S-type (SW)
+    constant BRANCH_TYPE: std_logic_vector(6 downto 0) := "1100011"; -- B-type (BEQ)
+    constant JALR_TYPE : std_logic_vector(6 downto 0) := "1100111";  -- I-type (JALR)
+    constant JAL_TYPE  : std_logic_vector(6 downto 0) := "1101111";  -- J-type (JAL)
+    constant LUI_TYPE  : std_logic_vector(6 downto 0) := "0110111";  -- U-type (LUI)
+    constant AUIPC_TYPE: std_logic_vector(6 downto 0) := "0010111";  -- U-type (AUIPC)
 
+    
 begin
-    -- Control signals assignment without process
-    RegWrite <= '0' when ctrl_zero = '1' else
-                '1' when opcode = R_TYPE or opcode = I_TYPE or opcode = LOAD_TYPE or opcode = JALR_TYPE or opcode = JAL_TYPE or opcode = LUI_TYPE or opcode = AUIPC_TYPE else
-                '0';
+    process(opcode, funct3, funct7, ctrl_zero) is
+    begin
+        if ctrl_zero = '1' then
+            RegWrite <= '0';  -- Enable writing to register file
+            ALUSrc <= '0';    -- ALU source comes from register
+            MemToReg <= '0';  -- Write ALU result to register
+            MemRead <= '0';   -- No memory read
+            MemWrite <= '0';  -- No memory write
+            MemSize <= "00";  -- Doubleword
+            Branch <= '0';    -- No branch
+        else
+            case opcode is
+            -- R-type instructions (ADD, SUB, AND, OR, SLL, SRL, SLT, SLTU)
+            when R_TYPE =>
+                RegWrite <= '1';  -- Enable writing to register file
+                ALUSrc <= '0';    -- ALU source comes from register
+                MemToReg <= '0';  -- Write ALU result to register
+                MemRead <= '0';   -- No memory read
+                MemWrite <= '0';  -- No memory write
+                MemSize <= "11";  -- Doubleword
+                Branch <= '0';    -- No branch
 
-    MemRead <= '1' when opcode = LOAD_TYPE and ctrl_zero = '0' else '0';
+                -- Determine the specific ALU operation based on funct3 and funct7
+                case funct7 is
+                    when "0000000" =>
+                        case funct3 is
+                            when "000" =>
+                                ALUOp <= "0000";  -- ADD
+                            when "001" =>
+                                ALUOp <= "0101";  -- SLL
+                            when "010" =>
+                                ALUOp <= "1000"; -- SLT
+                            when "011" =>
+                                ALUOp <= "1001"; --SLTU
+                            when "100" =>
+                                ALUOp <= "0100"; -- XOR
+                            when "101" =>
+                                ALUOp <= "0110"; -- SRL
+                            when "110" =>
+                                ALUOp <= "0011"; -- OR
+                            when "111" =>
+                                ALUOp <= "0010"; -- AND
+                            when others =>
+                                ALUOp <= "0000"; -- Default to ADD
+                        end case;
 
-    MemWrite <= '1' when opcode = STORE_TYPE and ctrl_zero = '0' else '0';
+                    when "0100000" =>
+                        case funct3 is
+                            when "000" =>
+                                ALUOp <= "0001";  -- SUB
+                            when "101" =>
+                                ALUOp <= "0111";  -- SRA
+                            when others =>
+                                ALUOp <= "0001";  -- Default to SUB
+                        end case;
 
-    MemToReg <= '1' when opcode = LOAD_TYPE and ctrl_zero = '0' else '0';
+                    when others =>
+                        ALUOp <= "0000";  -- Default to ADD
+                end case;
 
-    ALUSrc <= '1' when (opcode = I_TYPE or opcode = LOAD_TYPE or opcode = STORE_TYPE or opcode = JALR_TYPE or opcode = LUI_TYPE or opcode = AUIPC_TYPE) and ctrl_zero = '0' else '0';
+            -- I-type instructions (ADDI, LW)
+            when I_TYPE =>
+                RegWrite <= '1';  -- Enable writing to register file
+                ALUSrc <= '1';    -- ALU source is immediate
+                MemToReg <= '0';  -- Write ALU result to register
+                MemRead <= '0';   -- No memory read
+                MemWrite <= '0';  -- No memory write
+                Branch <= '0';    -- No branch
 
-    Branch <= '1' when opcode = BRANCH_TYPE and ctrl_zero = '0' else '0';
+                --determine the specific ALU operation based on funct3
+                case funct3 is
+                    when "000" =>
+                        ALUOp <= "0000"; --ADDI
+                    when "001" =>
+                        ALUOp <= "0101"; --SLLI
+                    when "010" =>
+                        ALUOp <= "1000"; --SLTI
+                    when "011" =>
+                        ALUOp <= "1001"; --SLTIU
+                    when "100" =>
+                        ALUOp <= "0100"; --XORI
+                    when "101" =>
+                        ALUOp <= "0110"; --SRLI
+                    when "110" =>
+                        ALUOp <= "0011"; --ORI
+                    when "111" =>
+                        ALUOp <= "0010"; --ANDI
+                    when others =>
+                        ALUOp <= "0000"; -- Default to ADDI
+                end case;
 
-    MemSize <= 
-        "00" when (opcode = LOAD_TYPE or opcode = STORE_TYPE) and funct3 = "000" and ctrl_zero = '0' else  -- Byte
-        "01" when (opcode = LOAD_TYPE or opcode = STORE_TYPE) and funct3 = "001" and ctrl_zero = '0' else  -- Halfword
-        "10" when (opcode = LOAD_TYPE or opcode = STORE_TYPE) and funct3 = "010" and ctrl_zero = '0' else  -- Word
-        "11";  -- Default to Doubleword
+            when LOAD_TYPE =>  -- Load Word (LW)
+                RegWrite <= '1';  -- Write to register file
+                MemRead <= '1';   -- Enable memory read
+                MemWrite <= '0';  -- No memory write
+                MemToReg <= '1';  -- Write memory data to register
+                ALUSrc <= '1';    -- ALU source is immediate (memory address)
+                Branch <= '0';    -- No branch
+                ALUOp <= "0000"; --ADD
+                case funct3 is 
+                    when "000" =>
+                        MemSize <= "00";  -- Byte (lb)
+                    when "001" =>
+                        MemSize <= "01";  -- Halfword (lh)
+                    when "010" =>
+                        MemSize <= "10";  -- Word (lw)
+                    when others =>
+                        MemSize <= "11";  -- Doubleword (ld)
+                end case;
 
-    -- ALU operation assignment
-    ALUOp <=
-        -- R-type instructions
-        "0000" when opcode = R_TYPE and funct7 = "0000000" and funct3 = "000" and ctrl_zero = '0' else  -- ADD
-        "0101" when opcode = R_TYPE and funct7 = "0000000" and funct3 = "001" and ctrl_zero = '0' else  -- SLL
-        "1000" when opcode = R_TYPE and funct7 = "0000000" and funct3 = "010" and ctrl_zero = '0' else  -- SLT
-        "1001" when opcode = R_TYPE and funct7 = "0000000" and funct3 = "011" and ctrl_zero = '0' else  -- SLTU
-        "0100" when opcode = R_TYPE and funct7 = "0000000" and funct3 = "100" and ctrl_zero = '0' else  -- XOR
-        "0110" when opcode = R_TYPE and funct7 = "0000000" and funct3 = "101" and ctrl_zero = '0' else  -- SRL
-        "0011" when opcode = R_TYPE and funct7 = "0000000" and funct3 = "110" and ctrl_zero = '0' else  -- OR
-        "0010" when opcode = R_TYPE and funct7 = "0000000" and funct3 = "111" and ctrl_zero = '0' else  -- AND
-        "0001" when opcode = R_TYPE and funct7 = "0100000" and funct3 = "000" and ctrl_zero = '0' else  -- SUB
-        "0111" when opcode = R_TYPE and funct7 = "0100000" and funct3 = "101" and ctrl_zero = '0' else  -- SRA
-
-        -- I-type instructions
-        "0000" when opcode = I_TYPE and funct3 = "000" and ctrl_zero = '0' else  -- ADDI
-        "0101" when opcode = I_TYPE and funct3 = "001" and ctrl_zero = '0' else  -- SLLI
-        "1000" when opcode = I_TYPE and funct3 = "010" and ctrl_zero = '0' else  -- SLTI
-        "1001" when opcode = I_TYPE and funct3 = "011" and ctrl_zero = '0' else  -- SLTIU
-        "0100" when opcode = I_TYPE and funct3 = "100" and ctrl_zero = '0' else  -- XORI
-        "0110" when opcode = I_TYPE and funct3 = "101" and ctrl_zero = '0' and funct7 = "0000000" else  -- SRLI
-        "0111" when opcode = I_TYPE and funct3 = "101" and ctrl_zero = '0' and funct7 = "0100000" else  -- SRAI
-        "0011" when opcode = I_TYPE and funct3 = "110" and ctrl_zero = '0' else  -- ORI
-        "0010" when opcode = I_TYPE and funct3 = "111" and ctrl_zero = '0' else  -- ANDI
-
-        -- Load and Store instructions
-        "0000" when (opcode = LOAD_TYPE or opcode = STORE_TYPE) and ctrl_zero = '0' else  -- ADD
-
-        -- Branch instruction
-        "0001" when opcode = BRANCH_TYPE and ctrl_zero = '0' else  -- SUB (for comparison)
-
-        -- JALR, JAL, LUI, AUIPC instructions
-        "0000" when (opcode = JALR_TYPE or opcode = JAL_TYPE or opcode = LUI_TYPE or opcode = AUIPC_TYPE) and ctrl_zero = '0' else  -- Default ADD
-
-        -- Default case
-        "0000";
-
+            -- S-type instructions (SW)
+            when STORE_TYPE =>
+                RegWrite <= '0';  -- No register file write
+                MemRead <= '0';   -- No memory read
+                MemWrite <= '1';  -- Enable memory write
+                MemToReg <= '0';
+                ALUSrc <= '1';    -- ALU source is immediate (memory address)
+                Branch <= '0';    -- No branch
+                ALUOp <= "0000"; --ADD
+                case funct3 is
+                    when "000" =>
+                        MemSize <= "00";  -- Byte (sb)
+                    when "001" =>
+                        MemSize <= "01";  -- Halfword (sh)
+                    when "010" =>
+                        MemSize <= "10";  -- Word (sw)
+                    when others =>
+                        MemSize <= "11";  -- Doubleword (sd)
+                end case;
+                
+            -- B-type instructions (BEQ)
+            when BRANCH_TYPE =>
+                RegWrite <= '0';  -- No register file write
+                MemRead <= '0';   -- No memory read
+                MemWrite <= '0';  -- No memory write
+                MemSize <= "11";  -- Doubleword
+                MemToReg <= '0';
+                Branch <= '1';    -- Enable branching
+                ALUSrc <= '0';    -- ALU source is register
+                ALUOp <= "0001"; --ADD
+            when JALR_TYPE =>
+                RegWrite <= '1';  -- Write to register file
+                MemRead <= '0';   -- No memory read
+                MemWrite <= '0';  -- No memory write
+                MemToReg <= '0';  -- Write ALU result to register
+                MemSize <= "11";  -- Doubleword
+                ALUSrc <= '1';    -- ALU source is immediate
+                Branch <= '0';    -- No branch
+                ALUOp <= "0000"; --ADD
+            when JAL_TYPE =>
+                RegWrite <= '1';  -- Write to register file
+                MemRead <= '0';   -- No memory read
+                MemWrite <= '0';  -- No memory write
+                MemSize <= "11";  -- Doubleword
+                MemToReg <= '0';  -- Write ALU result to register
+                ALUSrc <= '1';    -- ALU source is immediate
+                Branch <= '0';    -- No branch
+                ALUOp <= "0000"; --Default
+            when LUI_TYPE =>
+                RegWrite <= '1';  -- Write to register file
+                MemRead <= '0';   -- No memory read
+                MemWrite <= '0';  -- No memory write
+                MemSize <= "11";  -- Doubleword
+                MemToReg <= '0';  -- Write ALU result to register
+                ALUSrc <= '1';    -- ALU source is immediate
+                Branch <= '0';    -- No branch
+                ALUOp <= "0000"; --Default
+            when AUIPC_TYPE =>
+                RegWrite <= '1';  -- Write to register file
+                MemRead <= '0';   -- No memory read
+                MemWrite <= '0';  -- No memory write
+                MemSize <= "11";  -- Doubleword
+                MemToReg <= '0';  -- Write ALU result to register
+                ALUSrc <= '1';    -- ALU source is immediate
+                Branch <= '0';    -- No branch
+                ALUOp <= "0000"; --Default
+            when others =>
+                -- Default values for unrecognized opcodes
+                RegWrite <= '0';
+                MemRead <= '0';
+                MemWrite <= '0';
+                MemSize <= "11";  -- Doubleword
+                MemToReg <= '0';
+                ALUSrc <= '0';
+                Branch <= '0';
+                ALUOp <= "0000";
+            end case;
+        end if;
+    end process;
 end architecture;

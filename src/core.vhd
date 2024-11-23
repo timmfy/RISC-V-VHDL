@@ -4,8 +4,7 @@ use ieee.std_logic_1164.all;
 entity core is
     port (
         clk : in std_logic;
-        reset : in std_logic;
-        test_out : out std_logic_vector(15 downto 0)
+        reset : in std_logic
     );
 end entity core;
 
@@ -77,7 +76,6 @@ architecture behavior of core is
     signal write_reg_wb : std_logic_vector(4 downto 0);
     signal alu_result_wb : std_logic_vector(63 downto 0);
     signal write_data_wb : std_logic_vector(63 downto 0);
-    signal mem_debug : std_logic_vector(15 downto 0);
 begin
     write_data_wb <= data_out_wb when MemToReg_wb = '1' else alu_result_wb;
     -- IF stage
@@ -96,9 +94,9 @@ begin
     IF_ID_inst: entity work.IF_ID
      port map(
         clk => clk,
-        --reset => reset,
+        reset => reset,
         IF_ID_Write => IF_ID_Write,
-        IF_flush => flush_mem,
+        IF_flush => flush_wb,
         instruction_in => instruction_if,
         pc_in => pc_if,
         instruction_out => instruction_id,
@@ -108,7 +106,13 @@ begin
     -- ID stage
     ID_core_inst: entity work.ID_core
      port map(
+        pc => pc_id,
         instruction => instruction_id,
+        reg_write => RegWrite_wb,
+        write_reg => write_reg_wb,
+        write_data => write_data_wb,
+        read_data1 => read_data1_id,
+        read_data2 => read_data2_id,
         imm => imm_id,
         funct3 => funct3_id,
         rd => rd_id,
@@ -128,24 +132,11 @@ begin
         rs2 => rs2_id
     );
 
-    --register file
-    register_file_inst: entity work.register_file
-    port map(
-        clk => clk,
-        reg_write => RegWrite_wb,
-        write_reg => write_reg_wb,
-        write_data => write_data_wb,
-        read_reg1 => rs1_id,
-        read_reg2 => rs2_id,
-        read_data1 => read_data1_id,
-        read_data2 => read_data2_id
-    );
-
     -- ID/EX pipeline register
     ID_EX_inst: entity work.ID_EX
      port map(
         clk => clk,
-        --reset => reset,
+        reset => reset,
         ALUOp_in => ALUOp_id,
         ALUSrc_in => ALUSrc_id,
         RegWrite_in => RegWrite_id,
@@ -154,7 +145,7 @@ begin
         MemToReg_in => MemToReg_id,
         MemSize_in => MemSize_id,
         Branch_in => Branch_id,
-        ID_flush => flush_mem,
+        ID_flush => flush_wb,
         read_data1_in => read_data1_id,
         read_data2_in => read_data2_id,
         imm_in => imm_id,
@@ -196,6 +187,7 @@ begin
         rs1 => rs1_ex,
         rs2 => rs2_ex,
         imm => imm_ex,
+        rd => rd_ex,
         pc => pc_ex,
         alu_result_mem => alu_result_mem,
         data_out_wb => write_data_wb,
@@ -208,54 +200,52 @@ begin
     EX_MEM_inst: entity work.EX_MEM
      port map(
         clk => clk,
-        --reset => reset,
-        --MemWrite_in => MemWrite_ex,
-        --MemRead_in => MemRead_ex,
-        --MemSize_in => MemSize_ex,
+        reset => reset,
+        MemWrite_in => MemWrite_ex,
+        MemRead_in => MemRead_ex,
+        MemSize_in => MemSize_ex,
         Branch_in => Branch_ex,
-        EX_flush => flush_mem,
+        EX_flush => flush_wb,
         MemToReg_in => MemToReg_ex,
         RegWrite_in => RegWrite_ex,
         next_pc_in => next_pc_ex,
         zero_in => zero_ex,
         alu_result_in => result_ex,
-        --read_data2_in => read_data2_out_ex,
+        read_data2_in => read_data2_out_ex,
         rd_in => rd_ex,
-        --MemWrite_out => MemWrite_mem,
-        --MemRead_out => MemRead_mem,
-        --MemSize_out => MemSize_mem,
+        MemWrite_out => MemWrite_mem,
+        MemRead_out => MemRead_mem,
+        MemSize_out => MemSize_mem,
         Branch_out => Branch_mem,
         MemToReg_out => MemToReg_mem,
         RegWrite_out => RegWrite_mem,
         next_pc_out => next_pc_mem,
         zero_out => zero_mem,
         alu_result_out => alu_result_mem,
-        --read_data2_out => read_data2_mem,
+        read_data2_out => read_data2_mem,
         rd_out => rd_mem
     );
 
     -- MEM stage
     MEM_core_inst: entity work.MEM_core
      port map(
-        clk => clk,
-        Address => result_ex(12 downto 0),
-        DataIn => read_data2_out_ex,
-        MemRead => MemRead_ex,
-        MemWrite => MemWrite_ex,
-        MemSize => MemSize_ex,
+        MemWrite => MemWrite_mem,
+        MemRead => MemRead_mem,
+        MemSize => MemSize_mem,
         Branch => Branch_mem,
-        Zero => zero_mem,
-        DataOut => data_out_mem,
-        mem_debug => mem_debug,
+        zero => zero_mem,
+        alu_result => alu_result_mem,
+        read_data2 => read_data2_mem,
         PCSrc => PCSrc_mem,
-        Flush => flush_mem
+        flush => flush_mem,
+        data_out => data_out_mem
     );
 
     --MEM/WB pipeline register
     MEM_WB_inst: entity work.MEM_WB
      port map(
         clk => clk,
-        --reset => reset,
+        reset => reset,
         MemToReg_in => MemToReg_mem,
         RegWrite_in => RegWrite_mem,
         data_out_in => data_out_mem,
@@ -269,6 +259,4 @@ begin
         flush_out => flush_wb,
         alu_result_out => alu_result_wb
     );
-
-    test_out <= mem_debug;
 end architecture behavior;
