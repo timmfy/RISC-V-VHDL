@@ -13,25 +13,50 @@ end alu;
 
 architecture behavioral of alu is
     signal shift_amount : integer;
-    signal result_sig : std_logic_vector(63 downto 0);
     signal alu_results : std_logic_vector(63 downto 0);
 begin
-    shift_amount <= to_integer(unsigned(b(4 downto 0)));
-
-    alu_results <= std_logic_vector(unsigned(a) + unsigned(b)) when ALUOp = "0000" else
-        std_logic_vector(unsigned(a) - unsigned(b)) when ALUOp = "0001" else
-        a and b when ALUOp = "0010" else
-        a or b when ALUOp = "0011" else
-        a xor b when ALUOp = "0100" else
-        std_logic_vector(shift_left(unsigned(a), shift_amount)) when ALUOp = "0101" else
-        std_logic_vector(shift_right(unsigned(a), shift_amount)) when ALUOp = "0110" else
-        std_logic_vector(shift_right(signed(a), shift_amount)) when ALUOp = "0111" else
-        (63 downto 1 => '0') & '1' when ALUOp = "1000" and signed(a) < signed(b) else
-        (others => '0') when ALUOp = "1000" else
-        (63 downto 1 => '0') & '1' when ALUOp = "1001" and unsigned(a) < unsigned(b) else
-        (others => '0') when ALUOp = "1001" else
-        (others => '0');
+    process(a, b, ALUOp)
+    begin
+        shift_amount <= to_integer(unsigned(b(4 downto 0)));
+        case ALUOp is
+            when "0000" => -- Addition
+                alu_results <= std_logic_vector(unsigned(a) + unsigned(b));
+            when "0001" => -- Subtraction
+                alu_results <= std_logic_vector(unsigned(a) - unsigned(b));
+            when "0010" => -- AND
+                alu_results <= a and b;
+            when "0011" => -- OR
+                alu_results <= a or b;
+            when "0100" => -- XOR
+                alu_results <= a xor b;
+            when "0101" => -- Shift left logical
+                alu_results <= std_logic_vector(shift_left(unsigned(a), shift_amount));
+            when "0110" => -- Shift right logical
+                alu_results <= std_logic_vector(shift_right(unsigned(a), shift_amount));
+            when "0111" => -- Shift right arithmetic
+                alu_results <= std_logic_vector(shift_right(signed(a), shift_amount));
+            when "1000" => -- Set less than
+                if signed(a) < signed(b) then
+                    alu_results <= (63 downto 1 => '0') & '1';
+                else
+                    alu_results <= (others => '0');
+                end if;
+            when "1001" => -- Set less than unsigned
+                if unsigned(a) < unsigned(b) then
+                    alu_results <= (63 downto 1 => '0') & '1';
+                else
+                    alu_results <= (others => '0');
+                end if;
+            when others =>
+                alu_results <= (others => '0');
+        end case;
+    end process;
 
     result <= alu_results;
-    zero <= '1' when alu_results = X"0000000000000000" else '0';
+    zero <= '1' when alu_results = x"0000000000000000" else '0';
 end behavioral;
+-- (63 downto 1 => '0') & '1' when ALUOp = "1000" and signed(a) < signed(b) else
+-- (others => '0') when ALUOp = "1000" and signed(a) >= signed(b) else
+-- (63 downto 1 => '0') & '1' when ALUOp = "1001" and unsigned(a) < unsigned(b) else
+-- (others => '0') when ALUOp = "1001" and unsigned(a) >= unsigned(b) else
+-- (others => '0');

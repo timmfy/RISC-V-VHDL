@@ -29,20 +29,17 @@ end EX_core;
 architecture behavior of EX_core is
     signal a : std_logic_vector(63 downto 0);
     signal b : std_logic_vector(63 downto 0);
-    signal read_data1_sig : std_logic_vector(63 downto 0);
     signal read_data2_sig : std_logic_vector(63 downto 0);
 begin
     next_pc <= std_logic_vector(unsigned(pc) + shift_left(unsigned(imm), 1));
 
-    read_data1_sig <= alu_result_mem when RegWrite_mem = '1' and (rs1 = rd_mem) else
+    a <= alu_result_mem when RegWrite_mem = '1' and (rs1 = rd_mem) else
                       data_out_wb   when RegWrite_wb = '1' and (rs1 = write_reg_wb) else
                       read_data1;
 
     read_data2_sig <= alu_result_mem when RegWrite_mem = '1' and (rs2 = rd_mem) else
                       data_out_wb   when RegWrite_wb = '1' and (rs2 = write_reg_wb) else
                       read_data2_in;
-
-    a <= read_data1_sig;
 
     b <= imm when ALUSrc = '1' else
          read_data2_sig;
