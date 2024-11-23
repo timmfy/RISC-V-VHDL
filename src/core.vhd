@@ -238,7 +238,7 @@ begin
     MEM_core_inst: entity work.MEM_core
      port map(
         clk => clk,
-        Address => result_ex(7 downto 0),
+        Address => result_ex(12 downto 0),
         DataIn => read_data2_out_ex,
         MemRead => MemRead_ex,
         MemWrite => MemWrite_ex,

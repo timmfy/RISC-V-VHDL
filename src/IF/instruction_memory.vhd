@@ -37,4 +37,4 @@ architecture behavior of instruction_memory is
     );
 begin
     instruction <= instructions(to_integer(unsigned(address)));
-end architecture;
+end architecture behavior;
