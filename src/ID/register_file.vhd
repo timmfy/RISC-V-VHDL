@@ -4,6 +4,7 @@ use ieee.numeric_std.all;
 
 entity register_file is
     port(
+        clk : in std_logic;
         reg_write: in std_logic;
         write_reg: in std_logic_vector(4 downto 0);
         write_data: in std_logic_vector(63 downto 0);
@@ -32,23 +33,14 @@ architecture behavior of register_file is
         others => (others => '0')
     );
 begin
-    process(reg_write, write_reg, write_data, read_reg1, read_reg2)
+    process(clk)
     begin
-        if reg_write = '1' then
-            if write_reg = read_reg1 then
-                read_data1 <= write_data;
-                registers(to_integer(unsigned(write_reg))) <= write_data;
-            elsif write_reg = read_reg2 then
-                read_data2 <= write_data;
-                registers(to_integer(unsigned(write_reg))) <= write_data;
-            else
-                read_data1 <= registers(to_integer(unsigned(read_reg1)));
-                read_data2 <= registers(to_integer(unsigned(read_reg2)));
+        if rising_edge(clk) then
+            if reg_write = '1' then
                 registers(to_integer(unsigned(write_reg))) <= write_data;
             end if;
-        else
-            read_data1 <= registers(to_integer(unsigned(read_reg1)));
-            read_data2 <= registers(to_integer(unsigned(read_reg2)));
         end if;
     end process;
+    read_data1 <= write_data when write_reg = read_reg1 else registers(to_integer(unsigned(read_reg1)));
+    read_data2 <= write_data when write_reg = read_reg2 else registers(to_integer(unsigned(read_reg2)));
 end architecture;

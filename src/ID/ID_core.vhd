@@ -4,15 +4,9 @@ use ieee.std_logic_1164.all;
 
 entity ID_core is
     port (
-        pc : in std_logic_vector(63 downto 0);
         instruction : in std_logic_vector(31 downto 0);
-        reg_write : in std_logic;
-        write_reg : in std_logic_vector(4 downto 0);
-        write_data : in std_logic_vector(63 downto 0);
         MemToReg_ex : in std_logic;
         rd_ex : in std_logic_vector(4 downto 0);
-        read_data1 : out std_logic_vector(63 downto 0);
-        read_data2 : out std_logic_vector(63 downto 0);
         imm : out std_logic_vector(63 downto 0);
         funct3 : out std_logic_vector(2 downto 0);
         rd : out std_logic_vector(4 downto 0);
@@ -76,16 +70,6 @@ begin
         ALUSrc => ALUSrc,
         Branch => Branch,
         ALUOp => ALUOp
-    );
-    register_file : entity work.register_file(behavior)
-    port map(
-        reg_write => reg_write,
-        write_reg => write_reg,
-        write_data => write_data,
-        read_reg1 => rs1_sig,
-        read_reg2 => rs2_sig,
-        read_data1 => read_data1,
-        read_data2 => read_data2
     );
     imm <= (63 downto 32 => imm_32_sig(31)) & imm_32_sig;
     rd <= rd_sig;

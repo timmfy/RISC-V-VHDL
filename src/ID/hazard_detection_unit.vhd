@@ -14,33 +14,8 @@ entity hazard_detection_unit is
 end hazard_detection_unit;
 
 architecture behavior of hazard_detection_unit is
-    signal ctrl_zero_sig : std_logic := '0';
-    signal PCWrite_sig : std_logic := '0';
-    signal IF_ID_Write_sig : std_logic := '0';
 begin
-    process(MemToReg_ex, rd_ex, rs1, rs2)
-    begin
-        if MemToReg_ex = '1' then
-            if rs1 = rd_ex then
-                ctrl_zero_sig <= '1';
-                PCWrite_sig <= '1';
-                IF_ID_Write_sig <= '1';
-            elsif rs2 = rd_ex then
-                ctrl_zero_sig <= '1';
-                PCWrite_sig <= '1';
-                IF_ID_Write_sig <= '1';
-            else
-                ctrl_zero_sig <= '0';
-                PCWrite_sig <= '0';
-                IF_ID_Write_sig <= '0';
-            end if;
-        else
-            ctrl_zero_sig <= '0';
-            PCWrite_sig <= '0';
-            IF_ID_Write_sig <= '0';
-        end if;
-    end process;
-    ctrl_zero <= ctrl_zero_sig;
-    PCWrite <= PCWrite_sig;
-    IF_ID_Write <= IF_ID_Write_sig;
+    ctrl_zero <= '1' when MemToReg_ex = '1' and (rs1 = rd_ex or rs2 = rd_ex) else '0';
+    PCWrite <= '1' when MemToReg_ex = '1' and (rs1 = rd_ex or rs2 = rd_ex) else '0';
+    IF_ID_Write <= '1' when MemToReg_ex = '1' and (rs1 = rd_ex or rs2 = rd_ex) else '0';
 end architecture;
