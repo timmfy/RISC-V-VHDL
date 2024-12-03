@@ -25,6 +25,8 @@ begin
             if IF_ID_Write = '1' then
                 instruction_reg <= instruction_reg;
                 pc_reg <= pc_reg;
+            elsif IF_flush = '1' then
+                instruction_reg <= x"00000013";
             else
                 instruction_reg <= instruction_in;
                 pc_reg <= pc_in;

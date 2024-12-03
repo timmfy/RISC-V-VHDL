@@ -29,11 +29,17 @@ architecture behavior of instruction_memory is
         x"00A483B3", --add x7 x9 x10
         x"00A483B3", --add x7 x9 x10
         x"00A483B3", --add x7 x9 x10
-        x"00A483B3", --add x7 x9 x10
-        x"00A483B3", --add x7 x9 x10
-        x"00A483B3", --add x7 x9 x10
-        x"00A483B3", --add x7 x9 x10
-        others => (others => '0')
+        x"00009303", --lh x6 0(x1)
+        x"00009303", --lh x6 0(x1)
+        x"00009303", --lh x6 0(x1)
+        x"00009303", --lh x6 0(x1)
+        x"00009303", --lh x6 0(x1)
+        x"00009303", --lh x6 0(x1)
+        x"00009303", --lh x6 0(x1)
+        x"00009303", --lh x6 0(x1)
+        x"00009303", --lh x6 0(x1)
+        x"00009303", --lh x6 0(x1)
+        others => x"00000013" --nop
     );
 begin
     instruction <= instructions(to_integer(unsigned(address)));
