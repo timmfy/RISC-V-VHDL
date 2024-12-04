@@ -240,7 +240,7 @@ begin
      port map(
         clk => clk,
         Address_ex => result_ex(12 downto 0),
-        Address_mem => alu_result_mem(12 downto 0),
+        Address_mem => alu_result_mem(2 downto 0),
         DataIn => read_data2_out_ex,
         MemRead => MemRead_ex,
         MemWrite => MemWrite_ex,
@@ -272,4 +272,5 @@ begin
         flush_out => flush_wb,
         alu_result_out => alu_result_wb
     );
+    --test_out <= mem_debug;
 end architecture behavior;

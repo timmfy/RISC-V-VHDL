@@ -6,7 +6,7 @@ entity MEM_core is
     port (
         clk : in std_logic;
         Address_ex : in std_logic_vector(12 downto 0);
-        Address_mem : in std_logic_vector(12 downto 0);
+        Address_mem : in std_logic_vector(2 downto 0);
         DataIn : in std_logic_vector(63 downto 0);
         MemRead : in std_logic;
         MemWrite : in std_logic;
