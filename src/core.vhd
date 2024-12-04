@@ -138,7 +138,8 @@ begin
         read_reg1 => rs1_id,
         read_reg2 => rs2_id,
         read_data1 => read_data1_id,
-        read_data2 => read_data2_id
+        read_data2 => read_data2_id,
+        debug => test_out
     );
 
     -- ID/EX pipeline register
@@ -211,7 +212,7 @@ begin
         --reset => reset,
         --MemWrite_in => MemWrite_ex,
         --MemRead_in => MemRead_ex,
-        --MemSize_in => MemSize_ex,
+        MemSize_in => MemSize_ex,
         Branch_in => Branch_ex,
         EX_flush => flush_mem,
         MemToReg_in => MemToReg_ex,
@@ -223,7 +224,7 @@ begin
         rd_in => rd_ex,
         --MemWrite_out => MemWrite_mem,
         --MemRead_out => MemRead_mem,
-        --MemSize_out => MemSize_mem,
+        MemSize_out => MemSize_mem,
         Branch_out => Branch_mem,
         MemToReg_out => MemToReg_mem,
         RegWrite_out => RegWrite_mem,
@@ -238,11 +239,13 @@ begin
     MEM_core_inst: entity work.MEM_core
      port map(
         clk => clk,
-        Address => result_ex(12 downto 0),
+        Address_ex => result_ex(12 downto 0),
+        Address_mem => alu_result_mem(12 downto 0),
         DataIn => read_data2_out_ex,
         MemRead => MemRead_ex,
         MemWrite => MemWrite_ex,
-        MemSize => MemSize_ex,
+        MemSize_ex => MemSize_ex,
+        MemSize_mem => MemSize_mem,
         Branch => Branch_mem,
         Zero => zero_mem,
         DataOut => data_out_mem,
@@ -269,6 +272,4 @@ begin
         flush_out => flush_wb,
         alu_result_out => alu_result_wb
     );
-
-    test_out <= mem_debug;
 end architecture behavior;

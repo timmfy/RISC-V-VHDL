@@ -18,6 +18,7 @@ architecture Behavior of data_memory is
         0 => x"0000000000000000",
         1 => x"0000000000000000",
         2 => x"8877665544332211",
+        3 => x"0000000077777777",
         others => (others => '0')
     );
 

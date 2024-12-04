@@ -22,7 +22,9 @@ begin
 		if reset = '1' then
 			pc_next <= (others => '0');
 		elsif rising_edge(clk) then
-			if PCWrite = '1' then
+			if pc_next > x"00000000000000ff" then
+				pc_next <= x"0000000000000020";
+			elsif PCWrite = '1' then
 				pc_next <= pc_next;
 			elsif pc_src = '1' then
 				pc_next <= branch_target;

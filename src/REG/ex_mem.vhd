@@ -8,7 +8,7 @@ entity EX_MEM is
         --reset : in std_logic;
         --MemWrite_in : in std_logic;
         --MemRead_in : in std_logic;
-        --MemSize_in : in std_logic_vector(1 downto 0);
+        MemSize_in : in std_logic_vector(1 downto 0);
         Branch_in : in std_logic;
         EX_flush : in std_logic;
         MemToReg_in : in std_logic;
@@ -20,7 +20,7 @@ entity EX_MEM is
         rd_in : in std_logic_vector(4 downto 0);
         --MemWrite_out : out std_logic;
         --MemRead_out : out std_logic;
-        --MemSize_out : out std_logic_vector(1 downto 0);
+        MemSize_out : out std_logic_vector(1 downto 0);
         Branch_out : out std_logic;
         MemToReg_out : out std_logic;
         RegWrite_out : out std_logic;
@@ -39,11 +39,11 @@ begin
         if rising_edge(clk) then
             --MemWrite_reg <= MemWrite_in when EX_flush = '0' else '0';
             --MemRead_reg <= MemRead_in when EX_flush = '0' else '0';
-            --MemSize_reg <= MemSize_in when EX_flush = '0' else (others => '0');
             if EX_flush = '0' then
                 Branch_out <= Branch_in;
                 MemToReg_out <= MemToReg_in;
                 RegWrite_out <= RegWrite_in;
+                MemSize_out <= MemSize_in;
                 next_pc_out <= next_pc_in;
                 zero_out <= zero_in;
                 alu_result_out <= alu_result_in;
@@ -53,6 +53,7 @@ begin
                 Branch_out <= '0';
                 MemToReg_out <= '0';
                 RegWrite_out <= '0';
+                MemSize_out <= (others => '0');
                 next_pc_out <= (others => '0');
                 zero_out <= '0';
                 alu_result_out <= (others => '0');
