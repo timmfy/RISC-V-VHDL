@@ -62,12 +62,16 @@ begin
             a <= alu_result_mem;
         elsif RegWrite_wb = '1' and (rs1 = write_reg_wb) then
             a <= data_out_wb;
-        elsif RegWrite_mem = '1' and (rs2 = rd_mem) then
+        else
+            a <= read_data1;
+        end if;
+        
+        
+        if RegWrite_mem = '1' and (rs2 = rd_mem) then
             read_data2_sig <= alu_result_mem;
         elsif RegWrite_wb = '1' and (rs2 = write_reg_wb) then
             read_data2_sig <= data_out_wb;
         else
-            a <= read_data1;
             read_data2_sig <= read_data2_in;
         end if;
 
