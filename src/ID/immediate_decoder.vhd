@@ -18,6 +18,15 @@ architecture behavior of immediate_decoder is
         return instr(31 downto 12) & (11 downto 0 => '0');
     end function;
 
+    -- Function for V-type immediate
+    function V_type_imm(instr : std_logic_vector(31 downto 0)) return std_logic_vector is
+        begin
+            return (31 downto 29 => '0') & instr(24 downto 20) &
+            (23 downto 21 => '0') & instr(24 downto 20) &
+            (15 downto 13 => '0') & instr(24 downto 20) &
+            (7 downto 5 => '0') & instr(24 downto 20);
+        end function;
+
     -- Function for J-type immediate
     function J_type_imm(instr : std_logic_vector(31 downto 0)) return std_logic_vector is
     begin
@@ -46,6 +55,7 @@ architecture behavior of immediate_decoder is
 begin
 
     immediate <= U_type_imm(instruction) when instruction(6 downto 2) = "01101" or instruction(6 downto 2) = "00101" else -- U-type
+                 V_type_imm(instruction) when instruction(6 downto 2) = "10101" else -- V-type
                  J_type_imm(instruction) when instruction(6 downto 2) = "11011" else -- J-type
                  I_type_imm(instruction) when instruction(6 downto 2) = "11001" or instruction(6 downto 2) = "00000" or
                                                instruction(6 downto 2) = "00100" or instruction(6 downto 2) = "11100" else -- I-type

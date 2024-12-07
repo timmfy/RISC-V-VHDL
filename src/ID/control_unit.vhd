@@ -9,6 +9,7 @@ entity control_unit is
         funct3     : in  std_logic_vector(2 downto 0);  -- For R-type and B-type instructions
         funct7     : in  std_logic_vector(6 downto 0);  -- For R-type instructions
         RegWrite   : out std_logic;                      -- Write to register file
+        VecSig     : out std_logic;                      -- Use vector register
         MemRead    : out std_logic;                      -- Read from memory
         MemWrite   : out std_logic;                      -- Write to memory
         MemToReg   : out std_logic;                      -- Memory to register
@@ -40,12 +41,15 @@ architecture behavior of control_unit is
     constant JAL_TYPE   : std_logic_vector(6 downto 0) := "1101111";  -- JAL
     constant LUI_TYPE   : std_logic_vector(6 downto 0) := "0110111";  -- LUI
     constant AUIPC_TYPE : std_logic_vector(6 downto 0) := "0010111";  -- AUIPC
+    constant V_TYPE     : std_logic_vector(6 downto 0) := "1010111";  -- Vector operation
 
 begin
     -- Control signals assignment without process
     RegWrite <= '0' when ctrl_zero = '1' else
-                '1' when opcode = R_TYPE or opcode = I_TYPE or opcode = LOAD_TYPE or opcode = JALR_TYPE or opcode = JAL_TYPE or opcode = LUI_TYPE or opcode = AUIPC_TYPE else
+                '1' when opcode = R_TYPE or opcode = I_TYPE or opcode = LOAD_TYPE or opcode = JALR_TYPE or opcode = JAL_TYPE or opcode = LUI_TYPE or opcode = AUIPC_TYPE or opcode = V_TYPE else
                 '0';
+
+    VecSig <= '1' when opcode = V_TYPE and ctrl_zero = '0' else '0';
 
     MemRead <= '1' when opcode = LOAD_TYPE and ctrl_zero = '0' else '0';
 
@@ -53,7 +57,7 @@ begin
 
     MemToReg <= '1' when opcode = LOAD_TYPE and ctrl_zero = '0' else '0';
 
-    ALUSrc <= '1' when (opcode = I_TYPE or opcode = LOAD_TYPE or opcode = STORE_TYPE or opcode = JALR_TYPE or opcode = LUI_TYPE or opcode = AUIPC_TYPE) and ctrl_zero = '0' else '0';
+    ALUSrc <= '1' when ((opcode = I_TYPE or opcode = LOAD_TYPE or opcode = STORE_TYPE or opcode = JALR_TYPE or opcode = LUI_TYPE or opcode = AUIPC_TYPE) or (opcode = V_TYPE and funct3 = "011")) and ctrl_zero = '0' else '0';
 
     Branch <= '1' when opcode = BRANCH_TYPE and ctrl_zero = '0' else '0';
 
@@ -76,6 +80,9 @@ begin
         "0010" when opcode = R_TYPE and funct7 = "0000000" and funct3 = "111" and ctrl_zero = '0' else  -- AND
         "0001" when opcode = R_TYPE and funct7 = "0100000" and funct3 = "000" and ctrl_zero = '0' else  -- SUB
         "0111" when opcode = R_TYPE and funct7 = "0100000" and funct3 = "101" and ctrl_zero = '0' else  -- SRA
+
+        -- V-type Instructions
+        "0000" when opcode = V_TYPE and funct7 = "0000000" and funct3 = "011" else -- ADDI
 
         -- I-type instructions
         "0000" when opcode = I_TYPE and funct3 = "000" and ctrl_zero = '0' else  -- ADDI

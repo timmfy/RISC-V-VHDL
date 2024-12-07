@@ -12,34 +12,37 @@ end instruction_memory;
 architecture behavior of instruction_memory is
     type memory is array(0 to 255) of std_logic_vector(31 downto 0);
     signal instructions : memory := (
+        x"0030B0D7", --vadd.vi v1 v1 3 (attention: imm and v1 are flipped cause in the documentation imm take the place of vs1 instaed of vs2)
+        x"00213157", --vadd.vi v2 v2 2
+        x"002081D7", --vadd.vv v3 v1 v2
         --Test instructions
-        x"02008093", --addi x1 x1 32
-        x"01010113", --addi x2, x2, 16
-        x"00013383", --ld x7 0(x2)
-        --Load hazard
-        x"00708023", --sb x7 0(x1)
-        x"00709023", --sh x7 0(x1)
-        x"0070B023", --sd x7 0(x1)
-        x"00108A63", --beq x1 x1 20
-        x"0070A023", --sw x7 0(x1)
-        x"01040593", --addi x11, x8, 16
-        x"40518233", --sub x4 x3 x5
-        x"00A483B3", --add x7 x9 x10
-        x"00A483B3", --add x7 x9 x10
-        x"00A483B3", --add x7 x9 x10
-        x"00A483B3", --add x7 x9 x10
-        x"00A483B3", --add x7 x9 x10
-        x"00009303", --lh x6 0(x1)
-        x"00009303", --lh x6 0(x1)
-        x"00009303", --lh x6 0(x1)
-        x"00009303", --lh x6 0(x1)
-        x"00009303", --lh x6 0(x1)
-        x"00009303", --lh x6 0(x1)
-        x"00009303", --lh x6 0(x1)
-        x"00009303", --lh x6 0(x1)
-        x"00009303", --lh x6 0(x1)
-        x"00009283", --lh x5 0(x1)
-        x"00061283", --lh x5 0(x12)
+        -- x"02008093", --addi x1 x1 32
+        -- x"01010113", --addi x2, x2, 16
+        -- x"00013383", --ld x7 0(x2)
+        -- --Load hazard
+        -- x"00708023", --sb x7 0(x1)
+        -- x"00709023", --sh x7 0(x1)
+        -- x"0070B023", --sd x7 0(x1)
+        -- x"00108A63", --beq x1 x1 20
+        -- x"0070A023", --sw x7 0(x1)
+        -- x"01040593", --addi x11, x8, 16
+        -- x"40518233", --sub x4 x3 x5
+        -- x"00A483B3", --add x7 x9 x10
+        -- x"00A483B3", --add x7 x9 x10
+        -- x"00A483B3", --add x7 x9 x10
+        -- x"00A483B3", --add x7 x9 x10
+        -- x"00A483B3", --add x7 x9 x10
+        -- x"00009303", --lh x6 0(x1)
+        -- x"00009303", --lh x6 0(x1)
+        -- x"00009303", --lh x6 0(x1)
+        -- x"00009303", --lh x6 0(x1)
+        -- x"00009303", --lh x6 0(x1)
+        -- x"00009303", --lh x6 0(x1)
+        -- x"00009303", --lh x6 0(x1)
+        -- x"00009303", --lh x6 0(x1)
+        -- x"00009303", --lh x6 0(x1)
+        -- x"00009283", --lh x5 0(x1)
+        -- x"00061283", --lh x5 0(x12)
         others => x"00000013" --nop
     );
 begin

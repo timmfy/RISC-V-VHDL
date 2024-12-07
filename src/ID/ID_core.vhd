@@ -11,6 +11,7 @@ entity ID_core is
         funct3 : out std_logic_vector(2 downto 0);
         rd : out std_logic_vector(4 downto 0);
         RegWrite   : out std_logic;                      -- Write to register file
+        VecSig     : out std_logic;                      -- Use vector register
         MemRead    : out std_logic;                      -- Read from memory
         MemWrite   : out std_logic;                      -- Write to memory
         MemToReg   : out std_logic;                      -- Memory to register
@@ -32,6 +33,9 @@ architecture behavior of ID_core is
     signal funct3_sig : std_logic_vector(2 downto 0);
     signal funct7_sig : std_logic_vector(6 downto 0);
     signal imm_32_sig: std_logic_vector(31 downto 0);
+    signal scalar_imm : std_logic_vector(63 downto 0);
+    signal vector_imm : std_logic_vector(63 downto 0);
+    signal VecSig_sig : std_logic;
     signal rd_sig : std_logic_vector(4 downto 0);
     signal ctrl_zero_sig : std_logic;
 begin
@@ -63,6 +67,7 @@ begin
         funct3 => funct3_sig,
         funct7 => funct7_sig,
         RegWrite => RegWrite,
+        VecSig => VecSig_sig,
         MemRead => MemRead,
         MemWrite => MemWrite,
         MemToReg => MemToReg,
@@ -71,7 +76,10 @@ begin
         Branch => Branch,
         ALUOp => ALUOp
     );
-    imm <= (63 downto 32 => imm_32_sig(31)) & imm_32_sig;
+    scalar_imm <= (63 downto 32 => imm_32_sig(31)) & imm_32_sig;
+    vector_imm <= imm_32_sig & imm_32_sig;
+    imm <= vector_imm when VecSig_sig else scalar_imm;
+    VecSig <= VecSig_sig;
     rd <= rd_sig;
     funct3 <= funct3_sig;
     rs1 <= rs1_sig;

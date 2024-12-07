@@ -7,6 +7,7 @@ entity EX_core is
     port (
         ALUOp      : in std_logic_vector(3 downto 0);    -- ALU operation
         ALUSrc     : in std_logic;                      -- ALU source (register or immediate)
+        VecSig     : in std_logic;
         RegWrite_mem : in std_logic;                    -- Instruction in the MEM stage writes to a register
         RegWrite_wb : in std_logic;                     -- Instruction in the WB stage writes to a register
         write_reg_wb : in std_logic_vector(4 downto 0); -- Register to write to in the WB stage
@@ -30,6 +31,10 @@ architecture behavior of EX_core is
     signal a : std_logic_vector(63 downto 0);
     signal b : std_logic_vector(63 downto 0);
     signal read_data2_sig : std_logic_vector(63 downto 0);
+    signal scalar_result : std_logic_vector(63 downto 0);
+    signal vector_result : std_logic_vector(63 downto 0);
+    signal scalar_zero : std_logic;
+    signal vector_zero : std_logic;
 begin
     -- next_pc <= std_logic_vector(unsigned(pc) + shift_left(unsigned(imm), 1));
 
@@ -54,7 +59,7 @@ begin
     --     );
 
     -- read_data2_out <= read_data2_sig;
-    process(pc, imm, RegWrite_mem, RegWrite_wb, write_reg_wb, rd_mem, read_data1, read_data2_in, rs1, rs2, alu_result_mem, data_out_wb)
+    process(pc, imm, RegWrite_mem, RegWrite_wb, write_reg_wb, rd_mem, read_data1, read_data2_in, rs1, rs2, alu_result_mem, data_out_wb, VecSig, ALUSrc)
     begin
         next_pc <= std_logic_vector(unsigned(pc) + shift_left(unsigned(imm), 1));
         
@@ -62,12 +67,15 @@ begin
             a <= alu_result_mem;
         elsif RegWrite_wb = '1' and (rs1 = write_reg_wb) then
             a <= data_out_wb;
-        elsif RegWrite_mem = '1' and (rs2 = rd_mem) then
+        else
+            a <= read_data1;
+        end if;
+        
+        if RegWrite_mem = '1' and (rs2 = rd_mem) then
             read_data2_sig <= alu_result_mem;
         elsif RegWrite_wb = '1' and (rs2 = write_reg_wb) then
             read_data2_sig <= data_out_wb;
         else
-            a <= read_data1;
             read_data2_sig <= read_data2_in;
         end if;
 
@@ -85,8 +93,18 @@ begin
             a       => a,
             b       => b,
             ALUOp   => ALUOp,
-            result  => result,
-            zero    => zero
+            result  => scalar_result,
+            zero    => scalar_zero
         );
+    vector_alu: entity work.vector_alu
+        port map (
+            a       => a,
+            b       => b,
+            ALUOp   => ALUOp,
+            result  => vector_result,
+            zero    => vector_zero
+        );
+    result <= vector_result when VecSig else scalar_result;
+    zero <= vector_zero when VecSig else scalar_zero;
 end architecture;
 

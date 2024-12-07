@@ -16,6 +16,10 @@ architecture behavior of core is
     -- ID stage
     signal instruction_id : std_logic_vector(31 downto 0);
     signal pc_id : std_logic_vector(63 downto 0);
+    signal scalar_read_data1_id : std_logic_vector(63 downto 0);
+    signal scalar_read_data2_id : std_logic_vector(63 downto 0);
+    signal vector_read_data1_id : std_logic_vector(63 downto 0);
+    signal vector_read_data2_id : std_logic_vector(63 downto 0);
     signal read_data1_id : std_logic_vector(63 downto 0);
     signal read_data2_id : std_logic_vector(63 downto 0);
     signal imm_id : std_logic_vector(63 downto 0);
@@ -23,7 +27,9 @@ architecture behavior of core is
     signal rd_id : std_logic_vector(4 downto 0);
     signal ALUOp_id : std_logic_vector(3 downto 0);
     signal ALUSrc_id : std_logic;
+    signal VALUSrc_id   : std_logic;
     signal RegWrite_id : std_logic;
+    signal VecSig_id      : std_logic;
     signal MemRead_id : std_logic;
     signal MemWrite_id : std_logic;
     signal MemToReg_id : std_logic;
@@ -37,6 +43,7 @@ architecture behavior of core is
     signal ALUOp_ex : std_logic_vector(3 downto 0);
     signal ALUSrc_ex : std_logic;
     signal RegWrite_ex : std_logic;
+    signal VecSig_ex : std_logic;
     signal MemRead_ex : std_logic;
     signal MemWrite_ex : std_logic;
     signal MemToReg_ex : std_logic;
@@ -62,6 +69,7 @@ architecture behavior of core is
     signal flush_mem : std_logic;
     signal MemToReg_mem : std_logic;
     signal RegWrite_mem : std_logic;
+    signal VecSig_mem : std_logic;
     signal PCSrc_mem : std_logic;
     signal next_pc_mem : std_logic_vector(63 downto 0);
     signal zero_mem : std_logic;
@@ -72,6 +80,7 @@ architecture behavior of core is
     -- WB stage
     signal MemToReg_wb : std_logic;
     signal RegWrite_wb : std_logic;
+    signal VecSig_wb : std_logic;
     signal flush_wb : std_logic;
     signal data_out_wb : std_logic_vector(63 downto 0);
     signal write_reg_wb : std_logic_vector(4 downto 0);
@@ -113,6 +122,7 @@ begin
         funct3 => funct3_id,
         rd => rd_id,
         RegWrite => RegWrite_id,
+        VecSig => VecSig_id,
         MemRead => MemRead_id,
         MemWrite => MemWrite_id,
         MemToReg => MemToReg_id,
@@ -132,15 +142,31 @@ begin
     register_file_inst: entity work.register_file
     port map(
         clk => clk,
-        reg_write => RegWrite_wb,
-        write_reg => write_reg_wb,
+        reg_write => RegWrite_wb and not(VecSig_wb),
+        write_reg => write_reg_wb and not(VecSig_wb),
         write_data => write_data_wb,
         read_reg1 => rs1_id,
         read_reg2 => rs2_id,
-        read_data1 => read_data1_id,
-        read_data2 => read_data2_id,
+        read_data1 => scalar_read_data1_id,
+        read_data2 => scalar_read_data2_id,
         debug => test_out
     );
+
+    --vector register file
+    vector_register_file_inst: entity work.vector_register_file
+    port map(
+        clk => clk,
+        reg_write => RegWrite_wb and VecSig_wb,
+        write_reg => write_reg_wb and VecSig_wb,
+        write_data => write_data_wb,
+        read_reg1 => rs1_id,
+        read_reg2 => rs2_id,
+        read_data1 => vector_read_data1_id,
+        read_data2 => vector_read_data2_id
+    );
+
+    read_data1_id <= vector_read_data1_id when VecSig_id else scalar_read_data1_id;
+    read_data2_id <= vector_read_data2_id when VecSig_id else scalar_read_data2_id;
 
     -- ID/EX pipeline register
     ID_EX_inst: entity work.ID_EX
@@ -150,6 +176,7 @@ begin
         ALUOp_in => ALUOp_id,
         ALUSrc_in => ALUSrc_id,
         RegWrite_in => RegWrite_id,
+        VecSig_in => VecSig_id,
         MemRead_in => MemRead_id,
         MemWrite_in => MemWrite_id,
         MemToReg_in => MemToReg_id,
@@ -167,6 +194,7 @@ begin
         ALUOp_out => ALUOp_ex,
         ALUSrc_out => ALUSrc_ex,
         RegWrite_out => RegWrite_ex,
+        VecSig_out => VecSig_ex,
         MemRead_out => MemRead_ex,
         MemWrite_out => MemWrite_ex,
         MemToReg_out => MemToReg_ex,
@@ -187,6 +215,7 @@ begin
      port map(
         ALUOp => ALUOp_ex,
         ALUSrc => ALUSrc_ex,
+        VecSig => VecSig_ex,
         RegWrite_mem => RegWrite_mem,
         RegWrite_wb => RegWrite_wb,
         write_reg_wb => write_reg_wb,
@@ -217,6 +246,7 @@ begin
         EX_flush => flush_mem,
         MemToReg_in => MemToReg_ex,
         RegWrite_in => RegWrite_ex,
+        VecSig_in => VecSig_ex,
         next_pc_in => next_pc_ex,
         zero_in => zero_ex,
         alu_result_in => result_ex,
@@ -228,6 +258,7 @@ begin
         Branch_out => Branch_mem,
         MemToReg_out => MemToReg_mem,
         RegWrite_out => RegWrite_mem,
+        VecSig_out => VecSig_mem,
         next_pc_out => next_pc_mem,
         zero_out => zero_mem,
         alu_result_out => alu_result_mem,
@@ -261,12 +292,14 @@ begin
         --reset => reset,
         MemToReg_in => MemToReg_mem,
         RegWrite_in => RegWrite_mem,
+        VecSig_in => VecSig_mem,
         data_out_in => data_out_mem,
         rd_in => rd_mem,
         flush_in => flush_mem,
         alu_result_in => alu_result_mem,
         MemToReg_out => MemToReg_wb,
         RegWrite_out => RegWrite_wb,
+        VecSig_out => VecSig_wb,
         data_out_out => data_out_wb,
         rd_out => write_reg_wb,
         flush_out => flush_wb,

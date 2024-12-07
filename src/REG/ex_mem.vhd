@@ -13,6 +13,7 @@ entity EX_MEM is
         EX_flush : in std_logic;
         MemToReg_in : in std_logic;
         RegWrite_in : in std_logic;
+        VecSig_in : in std_logic;
         next_pc_in : in std_logic_vector(63 downto 0);
         zero_in : in std_logic;
         alu_result_in : in std_logic_vector(63 downto 0);
@@ -24,6 +25,7 @@ entity EX_MEM is
         Branch_out : out std_logic;
         MemToReg_out : out std_logic;
         RegWrite_out : out std_logic;
+        VecSig_out : out std_logic;
         next_pc_out : out std_logic_vector(63 downto 0);
         zero_out : out std_logic;
         alu_result_out : out std_logic_vector(63 downto 0);
@@ -43,6 +45,7 @@ begin
                 Branch_out <= Branch_in;
                 MemToReg_out <= MemToReg_in;
                 RegWrite_out <= RegWrite_in;
+                VecSig_out <= VecSig_in;
                 MemSize_out <= MemSize_in;
                 next_pc_out <= next_pc_in;
                 zero_out <= zero_in;
@@ -52,6 +55,7 @@ begin
             else
                 Branch_out <= '0';
                 MemToReg_out <= '0';
+                VecSig_out <= '0';
                 RegWrite_out <= '0';
                 MemSize_out <= (others => '0');
                 next_pc_out <= (others => '0');
