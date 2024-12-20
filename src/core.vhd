@@ -5,6 +5,28 @@ entity core is
     port (
         clk : in std_logic;
         reset : in std_logic;
+        -- ethernet side connections
+        ETH_CRSDV : in std_logic;
+        ETH_RXERR : in std_logic;
+        ETH_RXD : in std_logic_vector( 1 downto 0 );
+        ETH_REFCLK : out std_logic;
+        ETH_TXEN : out std_logic;
+        ETH_TXD : out std_logic_vector( 1 downto 0 );
+        -- to display
+        LED : out std_logic_vector( 15 downto 0 );
+        -- to control display
+        SW : in std_logic_vector( 15 downto 0 );
+        -- to seven segment displays
+        CA, CB, CC, CD, CE, CF, CG, DP : out std_logic;
+        AN : out std_logic_vector( 7 downto 0 );
+        -- to start transmission, ARP message
+        BTNC : in std_logic;
+        -- to start transmission, UDP message
+        BTND : in std_logic;
+        -- to restart reception
+        BTNU : in std_logic;
+
+        --to debug
         test_out : out std_logic_vector(15 downto 0)
     );
 end entity core;
@@ -79,7 +101,35 @@ architecture behavior of core is
     signal write_data_wb : std_logic_vector(63 downto 0);
     signal mem_debug : std_logic_vector(15 downto 0);
 begin
+    -- Forwarding data for the WB/ID stage
     write_data_wb <= data_out_wb when MemToReg_wb = '1' else alu_result_wb;
+    
+    -- Network module
+    network_inst: entity work.network_top
+    port map(
+        sys_clock => clk,
+        reset => reset,
+        ETH_CRSDV => ETH_CRSDV,
+        ETH_RXERR => ETH_RXERR,
+        ETH_RXD => ETH_RXD,
+        ETH_REFCLK => ETH_REFCLK,
+        ETH_TXEN => ETH_TXEN,
+        ETH_TXD => ETH_TXD,
+        LED => LED,
+        SW => SW,
+        CA => CA,
+        CB => CB,
+        CC => CC,
+        CD => CD,
+        CE => CE,
+        CF => CF,
+        CG => CG,
+        DP => DP,
+        AN => AN,
+        BTNC => BTNC,
+        BTND => BTND,
+        BTNU => BTNU
+    );
     -- IF stage
     IF_stage: entity work.IF_core
     port map(
