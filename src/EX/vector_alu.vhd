@@ -26,6 +26,42 @@ begin
                                 std_logic_vector(unsigned(a(23 downto 16)) + unsigned(b(23 downto 16))) &
                                 std_logic_vector(unsigned(a(15 downto 8)) + unsigned(b(15 downto 8))) &
                                 std_logic_vector(unsigned(a(7 downto 0)) + unsigned(b(7 downto 0)));
+            when "0001" => -- Subtraction
+                alu_results <=  std_logic_vector(unsigned(a(63 downto 56)) - unsigned(b(63 downto 56))) &
+                                std_logic_vector(unsigned(a(55 downto 48)) - unsigned(b(55 downto 48))) &
+                                std_logic_vector(unsigned(a(47 downto 40)) - unsigned(b(47 downto 40))) &
+                                std_logic_vector(unsigned(a(39 downto 32)) - unsigned(b(39 downto 32))) &
+                                std_logic_vector(unsigned(a(31 downto 24)) - unsigned(b(31 downto 24))) &
+                                std_logic_vector(unsigned(a(23 downto 16)) - unsigned(b(23 downto 16))) &
+                                std_logic_vector(unsigned(a(15 downto 8)) - unsigned(b(15 downto 8))) &
+                                std_logic_vector(unsigned(a(7 downto 0)) - unsigned(b(7 downto 0)));
+            when "0010" => -- AND
+                alu_results <=  std_logic_vector(unsigned(a(63 downto 56)) and unsigned(b(63 downto 56))) &
+                                std_logic_vector(unsigned(a(55 downto 48)) and unsigned(b(55 downto 48))) &
+                                std_logic_vector(unsigned(a(47 downto 40)) and unsigned(b(47 downto 40))) &
+                                std_logic_vector(unsigned(a(39 downto 32)) and unsigned(b(39 downto 32))) &
+                                std_logic_vector(unsigned(a(31 downto 24)) and unsigned(b(31 downto 24))) &
+                                std_logic_vector(unsigned(a(23 downto 16)) and unsigned(b(23 downto 16))) &
+                                std_logic_vector(unsigned(a(15 downto 8)) and unsigned(b(15 downto 8))) &
+                                std_logic_vector(unsigned(a(7 downto 0)) and unsigned(b(7 downto 0)));
+            when "0011" => -- OR
+                alu_results <=  std_logic_vector(unsigned(a(63 downto 56)) or unsigned(b(63 downto 56))) &
+                                std_logic_vector(unsigned(a(55 downto 48)) or unsigned(b(55 downto 48))) &
+                                std_logic_vector(unsigned(a(47 downto 40)) or unsigned(b(47 downto 40))) &
+                                std_logic_vector(unsigned(a(39 downto 32)) or unsigned(b(39 downto 32))) &
+                                std_logic_vector(unsigned(a(31 downto 24)) or unsigned(b(31 downto 24))) &
+                                std_logic_vector(unsigned(a(23 downto 16)) or unsigned(b(23 downto 16))) &
+                                std_logic_vector(unsigned(a(15 downto 8)) or unsigned(b(15 downto 8))) &
+                                std_logic_vector(unsigned(a(7 downto 0)) or unsigned(b(7 downto 0)));
+            when "0100" => -- XOR
+                alu_results <=  std_logic_vector(unsigned(a(63 downto 56)) xor unsigned(b(63 downto 56))) &
+                                std_logic_vector(unsigned(a(55 downto 48)) xor unsigned(b(55 downto 48))) &
+                                std_logic_vector(unsigned(a(47 downto 40)) xor unsigned(b(47 downto 40))) &
+                                std_logic_vector(unsigned(a(39 downto 32)) xor unsigned(b(39 downto 32))) &
+                                std_logic_vector(unsigned(a(31 downto 24)) xor unsigned(b(31 downto 24))) &
+                                std_logic_vector(unsigned(a(23 downto 16)) xor unsigned(b(23 downto 16))) &
+                                std_logic_vector(unsigned(a(15 downto 8)) xor unsigned(b(15 downto 8))) &
+                                std_logic_vector(unsigned(a(7 downto 0)) xor unsigned(b(7 downto 0)));
             when others =>
                 alu_results <= (others => '0');
         end case;

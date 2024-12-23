@@ -43,6 +43,10 @@ architecture behavior of core is
     signal ALUOp_ex : std_logic_vector(3 downto 0);
     signal ALUSrc_ex : std_logic;
     signal RegWrite_ex : std_logic;
+    signal RegWrite_scalar : std_logic;
+    signal RegWrite_vector : std_logic;
+    signal write_reg_scalar : std_logic_vector(4 downto 0);
+    signal write_reg_vector : std_logic_vector(4 downto 0);
     signal VecSig_ex : std_logic;
     signal MemRead_ex : std_logic;
     signal MemWrite_ex : std_logic;
@@ -138,12 +142,17 @@ begin
         rs2 => rs2_id
     );
 
+    RegWrite_scalar <= RegWrite_wb and not(VecSig_wb);
+    write_reg_scalar <= write_reg_wb and not(VecSig_wb);
+    RegWrite_vector <= RegWrite_wb and VecSig_wb;
+    write_reg_vector <= write_reg_wb and VecSig_wb;    
+
     --register file
     register_file_inst: entity work.register_file
     port map(
         clk => clk,
-        reg_write => RegWrite_wb and not(VecSig_wb),
-        write_reg => write_reg_wb and not(VecSig_wb),
+        reg_write => RegWrite_scalar,
+        write_reg => write_reg_scalar,
         write_data => write_data_wb,
         read_reg1 => rs1_id,
         read_reg2 => rs2_id,
@@ -156,8 +165,8 @@ begin
     vector_register_file_inst: entity work.vector_register_file
     port map(
         clk => clk,
-        reg_write => RegWrite_wb and VecSig_wb,
-        write_reg => write_reg_wb and VecSig_wb,
+        reg_write => RegWrite_vector,
+        write_reg => write_reg_vector,
         write_data => write_data_wb,
         read_reg1 => rs1_id,
         read_reg2 => rs2_id,

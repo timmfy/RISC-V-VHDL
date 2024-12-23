@@ -82,7 +82,11 @@ begin
         "0111" when opcode = R_TYPE and funct7 = "0100000" and funct3 = "101" and ctrl_zero = '0' else  -- SRA
 
         -- V-type Instructions
-        "0000" when opcode = V_TYPE and funct7 = "0000000" and funct3 = "011" else -- ADDI
+        "0000" when opcode = V_TYPE and funct7 = "0000000" else -- ADD
+        "0001" when opcode = V_TYPE and funct7 = "0000100" else -- SUB
+        "0010" when opcode = V_TYPE and funct7 = "0010011" else -- AND
+        "0011" when opcode = V_TYPE and funct7 = "0010101" else -- OR
+        "0100" when opcode = V_TYPE and funct7 = "0010101" else -- XOR
 
         -- I-type instructions
         "0000" when opcode = I_TYPE and funct3 = "000" and ctrl_zero = '0' else  -- ADDI
