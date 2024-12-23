@@ -3,12 +3,18 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 entity data_memory is
     port(
-        clk  : in  std_logic;
-        we   : in  std_logic_vector(7 downto 0);
-        re   : in  std_logic;
-        addr : in  std_logic_vector(9 downto 0);
-        di   : in  std_logic_vector(63 downto 0);
-        do   : out std_logic_vector(63 downto 0)
+        clka  : in  std_logic;
+        wea   : in  std_logic_vector(7 downto 0);
+        rea   : in  std_logic;
+        addra : in  std_logic_vector(9 downto 0);
+        dia   : in  std_logic_vector(63 downto 0);
+        doa   : out std_logic_vector(63 downto 0);
+        clkb  : in  std_logic;
+        --web   : in  std_logic_vector(7 downto 0);
+        --reb   : in  std_logic;
+        addrb : in  std_logic_vector(9 downto 0);
+        --dib   : in  std_logic_vector(63 downto 0);
+        dob   : out std_logic_vector(63 downto 0)
     );
 end data_memory;
 
@@ -19,21 +25,32 @@ architecture Behavior of data_memory is
         1 => x"0000000000000000",
         2 => x"8877665544332211",
         3 => x"0000000077777777",
+        4 => x"1111111111111111",
+        5 => x"2222222222222222",
+        6 => x"3333333333333333",
+        7 => x"4444444444444444",
         others => (others => '0')
     );
 
 begin
-    process(clk)
+    process(clka)
     begin
-        if rising_edge(clk) then
-            if re = '1' then
-                do <= RAM(to_integer(unsigned(addr)));
-            end if;
+        if rising_edge(clka) then
             for i in 0 to 7 loop
-                if we(i) = '1' then
-                    RAM(to_integer(unsigned(addr)))((i + 1) * 8 - 1 downto i * 8) <= di((i + 1) * 8 - 1 downto i * 8);
+                if wea(i) = '1' then
+                    RAM(to_integer(unsigned(addra)))((i + 1) * 8 - 1 downto i * 8) <= dia((i + 1) * 8 - 1 downto i * 8);
                 end if;
             end loop;
+            if rea = '1' then
+                doa <= RAM(to_integer(unsigned(addra)));
+            end if;
+        end if;
+    end process;
+
+    process(clkb)
+    begin
+        if rising_edge(clkb) then
+            dob <= RAM(to_integer(unsigned(addrb)));
         end if;
     end process;
 end Behavior;

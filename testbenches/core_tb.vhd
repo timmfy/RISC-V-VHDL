@@ -23,7 +23,7 @@ architecture behavioral of core_tb is
   signal BTNC : std_logic;
   signal BTND : std_logic;
   signal BTNU : std_logic;
-  signal test_out : std_logic_vector( 15 downto 0 );
+  --signal test_out : std_logic_vector( 15 downto 0 );
 begin
 
   dut : entity work.core( behavior ) port map (
@@ -48,8 +48,8 @@ begin
     AN => AN,
     BTNC => BTNC,
     BTND => BTND,
-    BTNU => BTNU,
-    test_out => test_out
+    BTNU => BTNU
+    --test_out => test_out
   );
 
   process begin
@@ -59,12 +59,6 @@ begin
     wait for 5 ns;
   end process;
 
-  process begin
-    reset <= '1';
-    wait for 30 ns;
-    reset <= '0';
-    wait;
-  end process;
 
   ETH_CRSDV <= '0';
   ETH_RXERR <= '0';

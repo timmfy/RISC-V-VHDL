@@ -6,6 +6,8 @@ use ieee.numeric_std.all;
 entity network_top is port (
   sys_clock : in std_logic;
   reset : in std_logic;
+  load_enable : in std_logic;
+  user_data : in std_logic_vector( 31 downto 0 );
   -- ethernet side connections
   ETH_CRSDV : in std_logic;
   ETH_RXERR : in std_logic;
@@ -258,6 +260,8 @@ begin
   USER : entity work.user_process( behavioral ) port map (
     clock => sys_clock,
     reset => reset,
+    load_enable => load_enable,
+    user_data => user_data,
     user_configure => user_configure,
     user_write_udp_header => user_write_udp_header,
     user_transmit_frame => user_transmit_frame,
@@ -268,7 +272,7 @@ begin
     user_udp_destination_port => user_udp_destination_port,
     user_udp_data_length => user_udp_data_length,
     user_udp_data => user_udp_data,
-    pulse_btnu => pulse_btnu
+    pulse_btnu => BTNU
   );
 
   -- Instantiate the driver of the seven segment display

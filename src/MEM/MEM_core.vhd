@@ -15,10 +15,14 @@ entity MEM_core is
 
         Branch : in std_logic;
         Zero : in std_logic;
-        mem_debug : out std_logic_vector(15 downto 0);
+        --mem_debug : out std_logic_vector(15 downto 0);
         DataOut : out std_logic_vector(63 downto 0);
         PCSrc : out std_logic;
-        Flush : out std_logic
+        Flush : out std_logic;
+
+        --Network connections
+        mem_addr : in std_logic_vector(9 downto 0);
+        mem_data : out std_logic_vector(63 downto 0)
     );
 end entity MEM_core;
 
@@ -126,12 +130,15 @@ begin
     
     data_memory_inst: entity work.data_memory
      port map(
-        clk => clk,
-        re => MemRead,
-        we => we,
-        addr => addr,
-        di => di,
-        do => do
+        clka => clk,
+        rea => MemRead,
+        wea => we,
+        addra => addr,
+        dia => di,
+        doa => do,
+        clkb => clk,
+        addrb => mem_addr,
+        dob => mem_data
     );
-    mem_debug <= do(15 downto 0);
+    --mem_debug <= do(15 downto 0);
 end architecture Behaviour;
