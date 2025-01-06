@@ -143,9 +143,9 @@ begin
     );
 
     RegWrite_scalar <= RegWrite_wb and not(VecSig_wb);
-    write_reg_scalar <= write_reg_wb and not(VecSig_wb);
+    write_reg_scalar <= write_reg_wb;
     RegWrite_vector <= RegWrite_wb and VecSig_wb;
-    write_reg_vector <= write_reg_wb and VecSig_wb;    
+    write_reg_vector <= write_reg_wb;    
 
     --register file
     register_file_inst: entity work.register_file
@@ -157,7 +157,7 @@ begin
         read_reg1 => rs1_id,
         read_reg2 => rs2_id,
         read_data1 => scalar_read_data1_id,
-        read_data2 => scalar_read_data2_id,
+        read_data2 => scalar_read_data2_id
         debug => test_out
     );
 
@@ -174,8 +174,8 @@ begin
         read_data2 => vector_read_data2_id
     );
 
-    read_data1_id <= vector_read_data1_id when VecSig_id else scalar_read_data1_id;
-    read_data2_id <= vector_read_data2_id when VecSig_id else scalar_read_data2_id;
+    read_data1_id <= vector_read_data1_id when VecSig_id = '1' else scalar_read_data1_id;
+    read_data2_id <= vector_read_data2_id when VecSig_id = '1' else scalar_read_data2_id;
 
     -- ID/EX pipeline register
     ID_EX_inst: entity work.ID_EX

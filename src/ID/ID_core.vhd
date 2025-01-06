@@ -78,7 +78,7 @@ begin
     );
     scalar_imm <= (63 downto 32 => imm_32_sig(31)) & imm_32_sig;
     vector_imm <= imm_32_sig & imm_32_sig;
-    imm <= vector_imm when VecSig_sig else scalar_imm;
+    imm <= vector_imm when VecSig_sig = '1' else scalar_imm;
     VecSig <= VecSig_sig;
     rd <= rd_sig;
     funct3 <= funct3_sig;

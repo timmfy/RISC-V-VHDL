@@ -104,7 +104,7 @@ begin
             result  => vector_result,
             zero    => vector_zero
         );
-    result <= vector_result when VecSig else scalar_result;
-    zero <= vector_zero when VecSig else scalar_zero;
+    result <= vector_result when VecSig = '1' else scalar_result;
+    zero <= vector_zero when VecSig = '1' else scalar_zero;
 end architecture;
 
