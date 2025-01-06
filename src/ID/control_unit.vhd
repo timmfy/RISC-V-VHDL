@@ -86,7 +86,7 @@ begin
         "0001" when opcode = V_TYPE and funct7 = "0000100" else -- SUB
         "0010" when opcode = V_TYPE and funct7 = "0010011" else -- AND
         "0011" when opcode = V_TYPE and funct7 = "0010101" else -- OR
-        "0100" when opcode = V_TYPE and funct7 = "0010101" else -- XOR
+        "0100" when opcode = V_TYPE and funct7 = "0010111" else -- XOR
 
         -- I-type instructions
         "0000" when opcode = I_TYPE and funct3 = "000" and ctrl_zero = '0' else  -- ADDI
