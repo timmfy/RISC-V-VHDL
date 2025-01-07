@@ -29,7 +29,7 @@ entity controller is port (
 
     --to retrieve data from memory
     mem_addr : out std_logic_vector( 9 downto 0 );
-    mem_data : in std_logic_vector( 63 downto 0 )
+    mem_data : inout std_logic_vector( 31 downto 0 )
 );
 end entity controller;
 
@@ -48,10 +48,12 @@ signal message_packet : message_type := (
     x"53205052", -- S PR
     x"4f464553" -- OFES
   );
-  signal user_data : std_logic_vector( 31 downto 0 ) := ( others => '0' );
-  type addresses is array ( 0 to 3 ) of std_logic_vector( 9 downto 0 );
+  --signal user_data : std_logic_vector( 31 downto 0 ) := ( others => '0' );
+  type addresses is array ( 0 to 5 ) of std_logic_vector( 9 downto 0 );
   signal addr : addresses := (
-        "0000000100", --
+        "0000000010",
+        "0000000011",
+        "0000000100",
         "0000000101",
         "0000000110",
         "0000000111"
@@ -62,7 +64,7 @@ begin
             sys_clock => sys_clock,
             reset => reset,
             load_enable => load_enable,
-            user_data => user_data,
+            user_data => mem_data,
             ETH_CRSDV => ETH_CRSDV,
             ETH_RXERR => ETH_RXERR,
             ETH_RXD => ETH_RXD,
@@ -91,6 +93,9 @@ begin
             when idle =>
                 button_pressed <= '0';
                 if SW(15) = '1' and data_sent = '0' then
+                    --Start loading the message packet from the memory
+                    mem_addr <= addr(0);
+                    load_counter <= 1;
                     state <= loading;
                 elsif SW(15) = '0' and data_sent = '1' then
                     data_sent <= '0';  
@@ -101,7 +106,7 @@ begin
                     --user_data <= message_packet(load_counter);
                     --This is probably wrong because the mem data is delayed by one clock cycle
                     mem_addr <= addr(load_counter);
-                    user_data <= mem_data(31 downto 0);
+                    --user_data <= mem_data(31 downto 0);
                     load_counter <= load_counter + 1;
                 elsif load_counter = message_size_words then
                     state <= send;

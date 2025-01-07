@@ -63,13 +63,13 @@ begin
   ETH_CRSDV <= '0';
   ETH_RXERR <= '0';
   ETH_RXD <= "00";
-  SW <= "0000000000000000";
 
   process begin
-    BTNU <= '0';
+    SW <= "0000000000000000";
     wait for 500 ns;
-    BTNU <= '1';
-    wait;
+    SW <= "1000000000000000";
+    wait for 100 ns;
+    SW <= "0000000000000000";
   end process;
 
 end behavioral;

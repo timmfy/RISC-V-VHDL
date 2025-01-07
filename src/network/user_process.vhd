@@ -58,7 +58,7 @@ architecture behavioral of user_process is
   signal state : state_type;
   signal data_ready : std_logic := '0';
   signal load_counter : integer range 0 to message_size_words := 0;
-
+  signal debug_blyat : std_logic := '0';
 begin
 
   process ( clock, reset ) begin
@@ -71,6 +71,7 @@ begin
         when ready =>
           if pulse_btnu = '1' and data_ready = '1' then
             state <= udp_header;
+            debug_blyat <= '1';
           end if;
 
         when udp_header =>
@@ -93,8 +94,9 @@ begin
             if load_counter < message_size_words then
                 message_packet(load_counter) <= user_data;
                 load_counter <= load_counter + 1;
-            elsif load_counter = message_size_words then
-                data_ready <= '1';
+                if load_counter = message_size_words - 1 then
+                    data_ready <= '1';
+                end if;
             end if;
         elsif state = udp_header then
             data_ready <= '0';

@@ -134,7 +134,7 @@ begin
         BTND => BTND,
         BTNU => BTNU,
         mem_addr => mem_addr_sig,
-        mem_data => mem_data_sig
+        mem_data => mem_data_sig(31 downto 0)
     );
     SW_sig <= SW;
     -- IF stage
