@@ -41,23 +41,25 @@ architecture behavior of control_unit is
     constant JAL_TYPE   : std_logic_vector(6 downto 0) := "1101111";  -- JAL
     constant LUI_TYPE   : std_logic_vector(6 downto 0) := "0110111";  -- LUI
     constant AUIPC_TYPE : std_logic_vector(6 downto 0) := "0010111";  -- AUIPC
-    constant V_TYPE     : std_logic_vector(6 downto 0) := "1010111";  -- Vector operation
+    constant V_TYPE : std_logic_vector(6 downto 0) := "1010111";  -- Vector operation
+    constant V_LOAD_TYPE  : std_logic_vector(6 downto 0) := "0000111";  -- Vector Load
+    constant V_STORE_TYPE : std_logic_vector(6 downto 0) := "0100111";  -- Vector Store
 
 begin
-    -- Control signals assignment without process
+
     RegWrite <= '0' when ctrl_zero = '1' else
-                '1' when opcode = R_TYPE or opcode = I_TYPE or opcode = LOAD_TYPE or opcode = JALR_TYPE or opcode = JAL_TYPE or opcode = LUI_TYPE or opcode = AUIPC_TYPE or opcode = V_TYPE else
+                '1' when opcode = R_TYPE or opcode = I_TYPE or opcode = LOAD_TYPE or opcode = JALR_TYPE or opcode = JAL_TYPE or opcode = LUI_TYPE or opcode = AUIPC_TYPE or opcode = V_TYPE or opcode = V_LOAD_TYPE else
                 '0';
 
-    VecSig <= '1' when opcode = V_TYPE and ctrl_zero = '0' else '0';
+    VecSig <= '1' when (opcode = V_TYPE or opcode = V_LOAD_TYPE or opcode = V_STORE_TYPE) and ctrl_zero = '0' else '0';
 
-    MemRead <= '1' when opcode = LOAD_TYPE and ctrl_zero = '0' else '0';
+    MemRead <= '1' when (opcode = LOAD_TYPE or opcode = V_LOAD_TYPE) and ctrl_zero = '0' else '0';
 
-    MemWrite <= '1' when opcode = STORE_TYPE and ctrl_zero = '0' else '0';
+    MemWrite <= '1' when (opcode = STORE_TYPE or opcode = V_STORE_TYPE) and ctrl_zero = '0' else '0';
 
-    MemToReg <= '1' when opcode = LOAD_TYPE and ctrl_zero = '0' else '0';
+    MemToReg <= '1' when (opcode = LOAD_TYPE or opcode = V_LOAD_TYPE) and ctrl_zero = '0' else '0';
 
-    ALUSrc <= '1' when ((opcode = I_TYPE or opcode = LOAD_TYPE or opcode = STORE_TYPE or opcode = JALR_TYPE or opcode = LUI_TYPE or opcode = AUIPC_TYPE) or (opcode = V_TYPE and funct3 = "011")) and ctrl_zero = '0' else '0';
+    ALUSrc <= '1' when ((opcode = I_TYPE or opcode = LOAD_TYPE or opcode = STORE_TYPE or opcode = JALR_TYPE or opcode = LUI_TYPE or opcode = AUIPC_TYPE or opcode = V_LOAD_TYPE or opcode = V_STORE_TYPE) or (opcode = V_TYPE and funct3 = "011")) and ctrl_zero = '0' else '0';
 
     Branch <= '1' when opcode = BRANCH_TYPE and ctrl_zero = '0' else '0';
 
@@ -99,8 +101,11 @@ begin
         "0011" when opcode = I_TYPE and funct3 = "110" and ctrl_zero = '0' else  -- ORI
         "0010" when opcode = I_TYPE and funct3 = "111" and ctrl_zero = '0' else  -- ANDI
 
-        -- Load and Store instructions
+        -- Scalar Load and Store instructions
         "0000" when (opcode = LOAD_TYPE or opcode = STORE_TYPE) and ctrl_zero = '0' else  -- ADD
+
+        -- Vector Load and Store instructions
+        "0000" when (opcode = V_LOAD_TYPE or opcode = V_STORE_TYPE) and ctrl_zero = '0' else  -- ADD
 
         -- Branch instruction
         "0001" when opcode = BRANCH_TYPE and ctrl_zero = '0' else  -- SUB (for comparison)

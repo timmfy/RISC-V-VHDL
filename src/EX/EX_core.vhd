@@ -36,29 +36,6 @@ architecture behavior of EX_core is
     signal scalar_zero : std_logic;
     signal vector_zero : std_logic;
 begin
-    -- next_pc <= std_logic_vector(unsigned(pc) + shift_left(unsigned(imm), 1));
-
-    -- a <= alu_result_mem when RegWrite_mem = '1' and (rs1 = rd_mem) else
-    --                   data_out_wb   when RegWrite_wb = '1' and (rs1 = write_reg_wb) else
-    --                   read_data1;
-
-    -- read_data2_sig <= alu_result_mem when RegWrite_mem = '1' and (rs2 = rd_mem) else
-    --                   data_out_wb   when RegWrite_wb = '1' and (rs2 = write_reg_wb) else
-    --                   read_data2_in;
-
-    -- b <= imm when ALUSrc = '1' else
-    --      read_data2_sig;
-
-    -- alu : entity work.alu
-    --     port map (
-    --         a       => a,
-    --         b       => b,
-    --         ALUOp   => ALUOp,
-    --         result  => result,
-    --         zero    => zero
-    --     );
-
-    -- read_data2_out <= read_data2_sig;
     process(pc, imm, RegWrite_mem, RegWrite_wb, write_reg_wb, rd_mem, read_data1, read_data2_in, rs1, rs2, alu_result_mem, data_out_wb, VecSig, ALUSrc)
     begin
         next_pc <= std_logic_vector(unsigned(pc) + shift_left(unsigned(imm), 1));

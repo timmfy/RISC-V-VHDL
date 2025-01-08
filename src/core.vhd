@@ -175,7 +175,7 @@ begin
         debug => test_out
     );
 
-    read_data1_id <= vector_read_data1_id when VecSig_id = '1' else scalar_read_data1_id;
+    read_data1_id <= vector_read_data1_id when (VecSig_id = '1' and MemRead_id = '0' and MemWrite_id = '0') else scalar_read_data1_id;
     read_data2_id <= vector_read_data2_id when VecSig_id = '1' else scalar_read_data2_id;
 
     -- ID/EX pipeline register
