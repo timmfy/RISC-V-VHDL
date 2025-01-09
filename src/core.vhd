@@ -175,6 +175,7 @@ begin
         debug => test_out
     );
 
+    --Select the vector or scalar data from the register files
     read_data1_id <= vector_read_data1_id when (VecSig_id = '1' and MemRead_id = '0' and MemWrite_id = '0') else scalar_read_data1_id;
     read_data2_id <= vector_read_data2_id when VecSig_id = '1' else scalar_read_data2_id;
 
@@ -226,6 +227,8 @@ begin
         ALUOp => ALUOp_ex,
         ALUSrc => ALUSrc_ex,
         VecSig => VecSig_ex,
+        VecSig_mem => VecSig_mem,
+        VecSig_wb => VecSig_wb,
         RegWrite_mem => RegWrite_mem,
         RegWrite_wb => RegWrite_wb,
         write_reg_wb => write_reg_wb,

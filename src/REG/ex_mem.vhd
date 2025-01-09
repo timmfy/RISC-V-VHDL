@@ -19,8 +19,8 @@ entity EX_MEM is
         alu_result_in : in std_logic_vector(63 downto 0);
         --read_data2_in : in std_logic_vector(63 downto 0);
         rd_in : in std_logic_vector(4 downto 0);
-        --MemWrite_out : out std_logic;
-        --MemRead_out : out std_logic;
+        MemWrite_out : out std_logic;
+        MemRead_out : out std_logic;
         MemSize_out : out std_logic_vector(1 downto 0);
         Branch_out : out std_logic;
         MemToReg_out : out std_logic;
@@ -39,11 +39,11 @@ begin
     process(clk)
     begin
         if rising_edge(clk) then
-            --MemWrite_reg <= MemWrite_in when EX_flush = '0' else '0';
-            --MemRead_reg <= MemRead_in when EX_flush = '0' else '0';
             if EX_flush = '0' then
                 Branch_out <= Branch_in;
                 MemToReg_out <= MemToReg_in;
+                --MemWrite_out <= MemWrite_in;
+                --MemRead_out <= MemRead_in;
                 RegWrite_out <= RegWrite_in;
                 VecSig_out <= VecSig_in;
                 MemSize_out <= MemSize_in;
@@ -55,6 +55,8 @@ begin
             else
                 Branch_out <= '0';
                 MemToReg_out <= '0';
+                --MemWrite_out <= '0';
+                --MemRead_out <= '0';
                 VecSig_out <= '0';
                 RegWrite_out <= '0';
                 MemSize_out <= (others => '0');
