@@ -127,6 +127,7 @@ begin
         rd => rd_id,
         RegWrite => RegWrite_id,
         VecSig => VecSig_id,
+        VecSig_ex => VecSig_ex,
         MemRead => MemRead_id,
         MemWrite => MemWrite_id,
         MemToReg => MemToReg_id,

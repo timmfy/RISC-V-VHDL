@@ -23,7 +23,8 @@ architecture behavior of instruction_memory is
         x"2E6283D7", --vxor.vv v7 v6 v5
         x"02810407", -- vl1re8.v v8 0(x2)
         x"02708427", -- vs1r.v v7, 0(x1) (imm and vs1 are flipped as well)
-        x"02808487", -- vl1re8.v v9 0(x1)      
+        x"02808487", -- vl1re8.v v9 0(x1)
+        x"2E848557", -- vxor.vv v10 v8 v9      
         --Test instructions
         -- x"02008093", --addi x1 x1 32
         -- x"01010113", --addi x2, x2, 16

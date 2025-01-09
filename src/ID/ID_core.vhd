@@ -12,6 +12,7 @@ entity ID_core is
         rd : out std_logic_vector(4 downto 0);
         RegWrite   : out std_logic;                      -- Write to register file
         VecSig     : out std_logic;                      -- Use vector register
+        VecSig_ex  : in std_logic;
         MemRead    : out std_logic;                      -- Read from memory
         MemWrite   : out std_logic;                      -- Write to memory
         MemToReg   : out std_logic;                      -- Memory to register
@@ -53,6 +54,8 @@ begin
     hazard_detection_unit : entity work.hazard_detection_unit(behavior)
     port map(
         MemToReg_ex => MemToReg_ex,
+        VecSig => VecSig_sig,
+        VecSig_ex => VecSig_ex,
         rd_ex => rd_ex,
         rs1 => rs1_sig,
         rs2 => rs2_sig,
