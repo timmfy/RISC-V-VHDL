@@ -4,7 +4,6 @@ use ieee.numeric_std.all;
 
 entity control_unit is 
     port(
-        ctrl_zero  : in std_logic;
         opcode     : in  std_logic_vector(6 downto 0);  -- The opcode from the instruction
         funct3     : in  std_logic_vector(2 downto 0);  -- For R-type and B-type instructions
         funct7     : in  std_logic_vector(6 downto 0);  -- For R-type instructions
@@ -47,41 +46,40 @@ architecture behavior of control_unit is
 
 begin
 
-    RegWrite <= '0' when ctrl_zero = '1' else
-                '1' when opcode = R_TYPE or opcode = I_TYPE or opcode = LOAD_TYPE or opcode = JALR_TYPE or opcode = JAL_TYPE or opcode = LUI_TYPE or opcode = AUIPC_TYPE or opcode = V_TYPE or opcode = V_LOAD_TYPE else
+    RegWrite <= '1' when opcode = R_TYPE or opcode = I_TYPE or opcode = LOAD_TYPE or opcode = JALR_TYPE or opcode = JAL_TYPE or opcode = LUI_TYPE or opcode = AUIPC_TYPE or opcode = V_TYPE or opcode = V_LOAD_TYPE else
                 '0';
 
-    VecSig <= '1' when (opcode = V_TYPE or opcode = V_LOAD_TYPE or opcode = V_STORE_TYPE) and ctrl_zero = '0' else '0';
+    VecSig <= '1' when (opcode = V_TYPE or opcode = V_LOAD_TYPE or opcode = V_STORE_TYPE) else '0';
 
-    MemRead <= '1' when (opcode = LOAD_TYPE or opcode = V_LOAD_TYPE) and ctrl_zero = '0' else '0';
+    MemRead <= '1' when (opcode = LOAD_TYPE or opcode = V_LOAD_TYPE) else '0';
 
-    MemWrite <= '1' when (opcode = STORE_TYPE or opcode = V_STORE_TYPE) and ctrl_zero = '0' else '0';
+    MemWrite <= '1' when (opcode = STORE_TYPE or opcode = V_STORE_TYPE) else '0';
 
-    MemToReg <= '1' when (opcode = LOAD_TYPE or opcode = V_LOAD_TYPE) and ctrl_zero = '0' else '0';
+    MemToReg <= '1' when (opcode = LOAD_TYPE or opcode = V_LOAD_TYPE) else '0';
 
-    ALUSrc <= '1' when ((opcode = I_TYPE or opcode = LOAD_TYPE or opcode = STORE_TYPE or opcode = JALR_TYPE or opcode = LUI_TYPE or opcode = AUIPC_TYPE or opcode = V_LOAD_TYPE or opcode = V_STORE_TYPE) or (opcode = V_TYPE and funct3 = "011")) and ctrl_zero = '0' else '0';
+    ALUSrc <= '1' when ((opcode = I_TYPE or opcode = LOAD_TYPE or opcode = STORE_TYPE or opcode = JALR_TYPE or opcode = LUI_TYPE or opcode = AUIPC_TYPE or opcode = V_LOAD_TYPE or opcode = V_STORE_TYPE) or (opcode = V_TYPE and funct3 = "011")) else '0';
 
-    Branch <= '1' when opcode = BRANCH_TYPE and ctrl_zero = '0' else '0';
+    Branch <= '1' when opcode = BRANCH_TYPE else '0';
 
     MemSize <= 
-        "00" when (opcode = LOAD_TYPE or opcode = STORE_TYPE) and funct3 = "000" and ctrl_zero = '0' else  -- Byte
-        "01" when (opcode = LOAD_TYPE or opcode = STORE_TYPE) and funct3 = "001" and ctrl_zero = '0' else  -- Halfword
-        "10" when (opcode = LOAD_TYPE or opcode = STORE_TYPE) and funct3 = "010" and ctrl_zero = '0' else  -- Word
+        "00" when (opcode = LOAD_TYPE or opcode = STORE_TYPE) and funct3 = "000" else  -- Byte
+        "01" when (opcode = LOAD_TYPE or opcode = STORE_TYPE) and funct3 = "001" else  -- Halfword
+        "10" when (opcode = LOAD_TYPE or opcode = STORE_TYPE) and funct3 = "010" else  -- Word
         "11";  -- Default to Doubleword
 
     -- ALU operation assignment
     ALUOp <=
         -- R-type instructions
-        "0000" when opcode = R_TYPE and funct7 = "0000000" and funct3 = "000" and ctrl_zero = '0' else  -- ADD
-        "0101" when opcode = R_TYPE and funct7 = "0000000" and funct3 = "001" and ctrl_zero = '0' else  -- SLL
-        "1000" when opcode = R_TYPE and funct7 = "0000000" and funct3 = "010" and ctrl_zero = '0' else  -- SLT
-        "1001" when opcode = R_TYPE and funct7 = "0000000" and funct3 = "011" and ctrl_zero = '0' else  -- SLTU
-        "0100" when opcode = R_TYPE and funct7 = "0000000" and funct3 = "100" and ctrl_zero = '0' else  -- XOR
-        "0110" when opcode = R_TYPE and funct7 = "0000000" and funct3 = "101" and ctrl_zero = '0' else  -- SRL
-        "0011" when opcode = R_TYPE and funct7 = "0000000" and funct3 = "110" and ctrl_zero = '0' else  -- OR
-        "0010" when opcode = R_TYPE and funct7 = "0000000" and funct3 = "111" and ctrl_zero = '0' else  -- AND
-        "0001" when opcode = R_TYPE and funct7 = "0100000" and funct3 = "000" and ctrl_zero = '0' else  -- SUB
-        "0111" when opcode = R_TYPE and funct7 = "0100000" and funct3 = "101" and ctrl_zero = '0' else  -- SRA
+        "0000" when opcode = R_TYPE and funct7 = "0000000" and funct3 = "000" else  -- ADD
+        "0101" when opcode = R_TYPE and funct7 = "0000000" and funct3 = "001" else  -- SLL
+        "1000" when opcode = R_TYPE and funct7 = "0000000" and funct3 = "010" else  -- SLT
+        "1001" when opcode = R_TYPE and funct7 = "0000000" and funct3 = "011" else  -- SLTU
+        "0100" when opcode = R_TYPE and funct7 = "0000000" and funct3 = "100" else  -- XOR
+        "0110" when opcode = R_TYPE and funct7 = "0000000" and funct3 = "101" else  -- SRL
+        "0011" when opcode = R_TYPE and funct7 = "0000000" and funct3 = "110" else  -- OR
+        "0010" when opcode = R_TYPE and funct7 = "0000000" and funct3 = "111" else  -- AND
+        "0001" when opcode = R_TYPE and funct7 = "0100000" and funct3 = "000" else  -- SUB
+        "0111" when opcode = R_TYPE and funct7 = "0100000" and funct3 = "101" else  -- SRA
 
         -- V-type Instructions
         "0000" when opcode = V_TYPE and funct7 = "0000000" else -- ADD
@@ -91,27 +89,27 @@ begin
         "0100" when opcode = V_TYPE and funct7 = "0010111" else -- XOR
 
         -- I-type instructions
-        "0000" when opcode = I_TYPE and funct3 = "000" and ctrl_zero = '0' else  -- ADDI
-        "0101" when opcode = I_TYPE and funct3 = "001" and ctrl_zero = '0' else  -- SLLI
-        "1000" when opcode = I_TYPE and funct3 = "010" and ctrl_zero = '0' else  -- SLTI
-        "1001" when opcode = I_TYPE and funct3 = "011" and ctrl_zero = '0' else  -- SLTIU
-        "0100" when opcode = I_TYPE and funct3 = "100" and ctrl_zero = '0' else  -- XORI
-        "0110" when opcode = I_TYPE and funct3 = "101" and ctrl_zero = '0' and funct7 = "0000000" else  -- SRLI
-        "0111" when opcode = I_TYPE and funct3 = "101" and ctrl_zero = '0' and funct7 = "0100000" else  -- SRAI
-        "0011" when opcode = I_TYPE and funct3 = "110" and ctrl_zero = '0' else  -- ORI
-        "0010" when opcode = I_TYPE and funct3 = "111" and ctrl_zero = '0' else  -- ANDI
+        "0000" when opcode = I_TYPE and funct3 = "000" else  -- ADDI
+        "0101" when opcode = I_TYPE and funct3 = "001" else  -- SLLI
+        "1000" when opcode = I_TYPE and funct3 = "010" else  -- SLTI
+        "1001" when opcode = I_TYPE and funct3 = "011" else  -- SLTIU
+        "0100" when opcode = I_TYPE and funct3 = "100" else  -- XORI
+        "0110" when opcode = I_TYPE and funct3 = "101" and funct7 = "0000000" else  -- SRLI
+        "0111" when opcode = I_TYPE and funct3 = "101" and funct7 = "0100000" else  -- SRAI
+        "0011" when opcode = I_TYPE and funct3 = "110" else  -- ORI
+        "0010" when opcode = I_TYPE and funct3 = "111" else  -- ANDI
 
         -- Scalar Load and Store instructions
-        "0000" when (opcode = LOAD_TYPE or opcode = STORE_TYPE) and ctrl_zero = '0' else  -- ADD
+        "0000" when (opcode = LOAD_TYPE or opcode = STORE_TYPE) else  -- ADD
 
         -- Vector Load and Store instructions
-        "0000" when (opcode = V_LOAD_TYPE or opcode = V_STORE_TYPE) and ctrl_zero = '0' else  -- ADD
+        "0000" when (opcode = V_LOAD_TYPE or opcode = V_STORE_TYPE) else  -- ADD
 
         -- Branch instruction
-        "0001" when opcode = BRANCH_TYPE and ctrl_zero = '0' else  -- SUB (for comparison)
+        "0001" when opcode = BRANCH_TYPE else  -- SUB (for comparison)
 
         -- JALR, JAL, LUI, AUIPC instructions
-        "0000" when (opcode = JALR_TYPE or opcode = JAL_TYPE or opcode = LUI_TYPE or opcode = AUIPC_TYPE) and ctrl_zero = '0' else  -- Default ADD
+        "0000" when (opcode = JALR_TYPE or opcode = JAL_TYPE or opcode = LUI_TYPE or opcode = AUIPC_TYPE) else  -- Default ADD
 
         -- Default case
         "0000";

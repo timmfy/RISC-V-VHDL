@@ -39,6 +39,14 @@ architecture behavior of ID_core is
     signal VecSig_sig : std_logic;
     signal rd_sig : std_logic_vector(4 downto 0);
     signal ctrl_zero_sig : std_logic;
+    signal RegWrite_sig : std_logic;
+    signal MemRead_sig : std_logic;
+    signal MemWrite_sig : std_logic;
+    signal MemToReg_sig : std_logic;
+    signal MemSize_sig : std_logic_vector(1 downto 0);
+    signal ALUSrc_sig : std_logic;
+    signal Branch_sig : std_logic;
+    signal ALUOp_sig : std_logic_vector(3 downto 0);
 begin
     instruction_decoder : entity work.instruction_decoder(behavior)
     port map(
@@ -65,26 +73,33 @@ begin
     );
     control_unit : entity work.control_unit(behavior)
     port map(
-        ctrl_zero => ctrl_zero_sig,
         opcode => opcode_sig,
         funct3 => funct3_sig,
         funct7 => funct7_sig,
-        RegWrite => RegWrite,
+        RegWrite => RegWrite_sig,
         VecSig => VecSig_sig,
-        MemRead => MemRead,
-        MemWrite => MemWrite,
-        MemToReg => MemToReg,
-        MemSize => MemSize,
-        ALUSrc => ALUSrc,
-        Branch => Branch,
-        ALUOp => ALUOp
+        MemRead => MemRead_sig,
+        MemWrite => MemWrite_sig,
+        MemToReg => MemToReg_sig,
+        MemSize => MemSize_sig,
+        ALUSrc => ALUSrc_sig,
+        Branch => Branch_sig,
+        ALUOp => ALUOp_sig
     );
-    scalar_imm <= (63 downto 32 => imm_32_sig(31)) & imm_32_sig;
-    vector_imm <= imm_32_sig & imm_32_sig;
+    scalar_imm <= (63 downto 32 => imm_32_sig(31)) & imm_32_sig when ctrl_zero_sig = '0' else (others => '0');
+    vector_imm <= imm_32_sig & imm_32_sig when ctrl_zero_sig = '0' else (others => '0');
     imm <= vector_imm when VecSig_sig = '1' else scalar_imm;
-    VecSig <= VecSig_sig;
-    rd <= rd_sig;
-    funct3 <= funct3_sig;
-    rs1 <= rs1_sig;
-    rs2 <= rs2_sig;
+    VecSig <= VecSig_sig when ctrl_zero_sig = '0' else VecSig_ex;
+    rd <= rd_sig when ctrl_zero_sig = '0' else rd_ex;
+    funct3 <= funct3_sig when ctrl_zero_sig = '0' else (others => '0');
+    rs1 <= rs1_sig when ctrl_zero_sig = '0' else (others => '0');
+    rs2 <= rs2_sig when ctrl_zero_sig = '0' else (others => '0');
+    RegWrite <= RegWrite_sig when ctrl_zero_sig = '0' else '0';
+    MemRead <= MemRead_sig when ctrl_zero_sig = '0' else '0';
+    MemWrite <= MemWrite_sig when ctrl_zero_sig = '0' else '0';
+    MemToReg <= MemToReg_sig when ctrl_zero_sig = '0' else '0';
+    MemSize <= MemSize_sig when ctrl_zero_sig = '0' else (others => '0');
+    ALUSrc <= ALUSrc_sig when ctrl_zero_sig = '0' else '0';
+    Branch <= Branch_sig when ctrl_zero_sig = '0' else '0';
+    ALUOp <= ALUOp_sig when ctrl_zero_sig = '0' else (others => '0');
 end behavior;
