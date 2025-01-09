@@ -16,14 +16,8 @@ entity hazard_detection_unit is
 end hazard_detection_unit;
 
 architecture behavior of hazard_detection_unit is
-    signal ctrl_zero_dbg : std_logic;
-    signal PCWrite_dbg : std_logic;
-    signal IF_ID_Write_dbg : std_logic;
 begin
-    ctrl_zero_dbg <= '1' when (VecSig = '0' and VecSig_ex = '0' and MemToReg_ex = '1' and (rs1 = rd_ex or rs2 = rd_ex)) or (VecSig = '1' and VecSig_ex = '1' and MemToReg_ex = '1' and (rs1 = rd_ex or rs2 = rd_ex)) else '0';
-    PCWrite_dbg <= '1' when (VecSig = '0' and VecSig_ex = '0' and MemToReg_ex = '1' and (rs1 = rd_ex or rs2 = rd_ex)) or (VecSig = '1' and VecSig_ex = '1' and MemToReg_ex = '1' and (rs1 = rd_ex or rs2 = rd_ex)) else '0';
-    IF_ID_Write_dbg <= '1' when (VecSig = '0' and VecSig_ex = '0' and MemToReg_ex = '1' and (rs1 = rd_ex or rs2 = rd_ex)) or (VecSig = '1' and VecSig_ex = '1' and MemToReg_ex = '1' and (rs1 = rd_ex or rs2 = rd_ex)) else '0';
-    ctrl_zero <= '1' when MemToReg_ex = '1' and (rs1 = rd_ex or rs2 = rd_ex) else '0';
-    PCWrite <= '1' when MemToReg_ex = '1' and (rs1 = rd_ex or rs2 = rd_ex) else '0';
-    IF_ID_Write <= '1' when MemToReg_ex = '1' and (rs1 = rd_ex or rs2 = rd_ex) else '0';
+    ctrl_zero <= '1' when (VecSig = '0' and VecSig_ex = '0' and MemToReg_ex = '1' and (rs1 = rd_ex or rs2 = rd_ex)) or (VecSig = '1' and VecSig_ex = '1' and MemToReg_ex = '1' and (rs1 = rd_ex or rs2 = rd_ex)) else '0';
+    PCWrite <= '1' when (VecSig = '0' and VecSig_ex = '0' and MemToReg_ex = '1' and (rs1 = rd_ex or rs2 = rd_ex)) or (VecSig = '1' and VecSig_ex = '1' and MemToReg_ex = '1' and (rs1 = rd_ex or rs2 = rd_ex)) else '0';
+    IF_ID_Write <= '1' when (VecSig = '0' and VecSig_ex = '0' and MemToReg_ex = '1' and (rs1 = rd_ex or rs2 = rd_ex)) or (VecSig = '1' and VecSig_ex = '1' and MemToReg_ex = '1' and (rs1 = rd_ex or rs2 = rd_ex)) else '0';
 end architecture;
