@@ -5,7 +5,29 @@ entity core is
     port (
         clk : in std_logic;
         reset : in std_logic;
-        test_out : out std_logic_vector(15 downto 0)
+        -- ethernet side connections
+        ETH_CRSDV : in std_logic;
+        ETH_RXERR : in std_logic;
+        ETH_RXD : in std_logic_vector( 1 downto 0 );
+        ETH_REFCLK : out std_logic;
+        ETH_TXEN : out std_logic;
+        ETH_TXD : out std_logic_vector( 1 downto 0 );
+        -- to display
+        LED : out std_logic_vector( 15 downto 0 );
+        -- to control display
+        SW : in std_logic_vector( 15 downto 0 );
+        -- to seven segment displays
+        CA, CB, CC, CD, CE, CF, CG, DP : out std_logic;
+        AN : out std_logic_vector( 7 downto 0 );
+        -- to start transmission, ARP message
+        BTNC : in std_logic;
+        -- to start transmission, UDP message
+        BTND : in std_logic;
+        -- to restart reception
+        BTNU : in std_logic
+
+        --to debug
+        --test_out : out std_logic_vector(15 downto 0)
     );
 end entity core;
 
@@ -90,9 +112,44 @@ architecture behavior of core is
     signal write_reg_wb : std_logic_vector(4 downto 0);
     signal alu_result_wb : std_logic_vector(63 downto 0);
     signal write_data_wb : std_logic_vector(63 downto 0);
-    signal mem_debug : std_logic_vector(15 downto 0);
+
+    --Network controller
+    signal mem_addr_sig : std_logic_vector(9 downto 0);
+    signal mem_data_sig : std_logic_vector(63 downto 0);
+    signal SW_sig : std_logic_vector(15 downto 0);
 begin
+    -- Forwarding data for the WB/ID stage
     write_data_wb <= data_out_wb when MemToReg_wb = '1' else alu_result_wb;
+    
+    -- Network module
+    controller_inst: entity work.controller
+    port map(
+        sys_clock => clk,
+        reset => reset,
+        ETH_CRSDV => ETH_CRSDV,
+        ETH_RXERR => ETH_RXERR,
+        ETH_RXD => ETH_RXD,
+        ETH_REFCLK => ETH_REFCLK,
+        ETH_TXEN => ETH_TXEN,
+        ETH_TXD => ETH_TXD,
+        LED => LED,
+        SW => SW_sig,
+        CA => CA,
+        CB => CB,
+        CC => CC,
+        CD => CD,
+        CE => CE,
+        CF => CF,
+        CG => CG,
+        DP => DP,
+        AN => AN,
+        BTNC => BTNC,
+        BTND => BTND,
+        BTNU => BTNU,
+        mem_addr => mem_addr_sig,
+        mem_data => mem_data_sig(31 downto 0)
+    );
+    SW_sig <= SW;
     -- IF stage
     IF_stage: entity work.IF_core
     port map(
@@ -173,7 +230,7 @@ begin
         read_reg2 => rs2_id,
         read_data1 => vector_read_data1_id,
         read_data2 => vector_read_data2_id,
-        debug => test_out
+        --debug => test_out
     );
 
     --Select the vector or scalar data from the register files
@@ -294,9 +351,12 @@ begin
         Branch => Branch_mem,
         Zero => zero_mem,
         DataOut => data_out_mem,
-        mem_debug => mem_debug,
+        --mem_debug => mem_debug,
         PCSrc => PCSrc_mem,
-        Flush => flush_mem
+        Flush => flush_mem,
+        --Network controller connections
+        mem_addr => mem_addr_sig,
+        mem_data => mem_data_sig
     );
 
     --MEM/WB pipeline register
