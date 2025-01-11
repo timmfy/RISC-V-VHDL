@@ -19,8 +19,8 @@ entity EX_MEM is
         alu_result_in : in std_logic_vector(63 downto 0);
         --read_data2_in : in std_logic_vector(63 downto 0);
         rd_in : in std_logic_vector(4 downto 0);
-        MemWrite_out : out std_logic;
-        MemRead_out : out std_logic;
+        --MemWrite_out : out std_logic;
+        --MemRead_out : out std_logic;
         MemSize_out : out std_logic_vector(1 downto 0);
         Branch_out : out std_logic;
         MemToReg_out : out std_logic;

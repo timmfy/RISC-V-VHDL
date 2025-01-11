@@ -99,19 +99,9 @@ begin
         "0011" when opcode = I_TYPE and funct3 = "110" else  -- ORI
         "0010" when opcode = I_TYPE and funct3 = "111" else  -- ANDI
 
-        -- Scalar Load and Store instructions
-        "0000" when (opcode = LOAD_TYPE or opcode = STORE_TYPE) else  -- ADD
-
-        -- Vector Load and Store instructions
-        "0000" when (opcode = V_LOAD_TYPE or opcode = V_STORE_TYPE) else  -- ADD
-
         -- Branch instruction
         "0001" when opcode = BRANCH_TYPE else  -- SUB (for comparison)
 
-        -- JALR, JAL, LUI, AUIPC instructions
-        "0000" when (opcode = JALR_TYPE or opcode = JAL_TYPE or opcode = LUI_TYPE or opcode = AUIPC_TYPE) else  -- Default ADD
-
-        -- Default case
         "0000";
 
 end architecture;
