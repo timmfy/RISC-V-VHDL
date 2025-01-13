@@ -12,7 +12,6 @@ entity MEM_core is
         MemWrite : in std_logic;
         MemSize_ex : in std_logic_vector(1 downto 0);
         MemSize_mem : in std_logic_vector(1 downto 0);
-
         Branch : in std_logic;
         Zero : in std_logic;
         mem_debug : out std_logic_vector(15 downto 0);
