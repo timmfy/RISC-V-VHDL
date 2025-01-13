@@ -47,30 +47,6 @@ architecture behavior of EX_core is
     signal forward_from_mem : std_logic;
     signal forward_from_wb : std_logic;
 begin
-<<<<<<< Updated upstream
-
-    next_pc <= std_logic_vector(unsigned(pc) + shift_left(unsigned(imm), 1));
-
-    forward_from_mem <= '1' when (
-        ((VecSig = '0' and VecSig_mem = '0') or (VecSig = '1' and VecSig_mem = '1')) 
-        and RegWrite_mem = '1'
-    ) else '0';
-
-    forward_from_wb <= '1' when (
-        ((VecSig = '0' and VecSig_wb = '0') or (VecSig = '1' and VecSig_wb = '1'))
-        and RegWrite_wb = '1'
-    ) else '0';
-
-    a <= alu_result_mem when (forward_from_mem = '1' and rs1 = rd_mem) else
-            data_out_wb when (forward_from_wb = '1' and rs1 = write_reg_wb) else 
-            read_data1;
-
-    read_data2_sig <= alu_result_mem when (forward_from_mem = '1' and rs2 = rd_mem) else
-                        data_out_wb when (forward_from_wb = '1' and rs2 = write_reg_wb) else
-                        read_data2_in;
-
-    b <= imm when ALUSrc = '1' else read_data2_sig;
-=======
     process(pc, imm, EX_forw_wb, EX_forw_mem, write_reg_wb, rd_mem, read_data1, read_data2_in, rs1, rs2, alu_result_mem, data_out_wb, VecSig, ALUSrc)
     begin
         next_pc <= std_logic_vector(unsigned(pc) + shift_left(unsigned(imm), 1));
@@ -98,7 +74,6 @@ begin
         end if;
 
     end process;
->>>>>>> Stashed changes
 
     alu: entity work.alu
         port map (
