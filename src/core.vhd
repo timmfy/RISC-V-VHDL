@@ -5,8 +5,11 @@ entity core is
     port (
         clk : in std_logic;
         reset : in std_logic;
+<<<<<<< Updated upstream
         test_out : out std_logic_vector(15 downto 0)
+=======
         --test_out : out std_logic_vector(15 downto 0)
+>>>>>>> Stashed changes
     );
 end entity core;
 
@@ -66,8 +69,11 @@ architecture behavior of core is
     signal next_pc_ex : std_logic_vector(63 downto 0);
     signal rs1_ex : std_logic_vector(4 downto 0);
     signal rs2_ex : std_logic_vector(4 downto 0);
+<<<<<<< Updated upstream
+=======
     signal EX_forw_wb : std_logic;
     signal EX_forw_mem : std_logic;
+>>>>>>> Stashed changes
     -- MEM stage
     signal MemWrite_mem : std_logic;
     signal MemRead_mem : std_logic;
@@ -94,7 +100,10 @@ architecture behavior of core is
     signal alu_result_wb : std_logic_vector(63 downto 0);
     signal write_data_wb : std_logic_vector(63 downto 0);
     signal mem_debug : std_logic_vector(15 downto 0);
+<<<<<<< Updated upstream
+=======
 
+>>>>>>> Stashed changes
 begin
     write_data_wb <= data_out_wb when MemToReg_wb = '1' else alu_result_wb;
     -- IF stage
@@ -176,10 +185,13 @@ begin
         read_reg1 => rs1_id,
         read_reg2 => rs2_id,
         read_data1 => vector_read_data1_id,
+<<<<<<< Updated upstream
         read_data2 => vector_read_data2_id,
         debug => test_out
+=======
         read_data2 => vector_read_data2_id
         --debug => test_out
+>>>>>>> Stashed changes
     );
 
     --Select the vector or scalar data from the register files
@@ -228,8 +240,12 @@ begin
         rs2_out => rs2_ex
     );
 
+<<<<<<< Updated upstream
+=======
     EX_forw_wb <= RegWrite_wb when (VecSig_ex = VecSig_wb) else '0';
     EX_forw_mem <= RegWrite_mem when (VecSig_ex = VecSig_mem) else '0';
+
+>>>>>>> Stashed changes
     -- EX stage
     EX_core_inst: entity work.EX_core
      port map(
@@ -238,10 +254,13 @@ begin
         VecSig => VecSig_ex,
         VecSig_mem => VecSig_mem,
         VecSig_wb => VecSig_wb,
+<<<<<<< Updated upstream
         RegWrite_mem => RegWrite_mem,
         RegWrite_wb => RegWrite_wb,
+=======
         EX_forw_mem => EX_forw_mem,
         EX_forw_wb => EX_forw_wb,
+>>>>>>> Stashed changes
         write_reg_wb => write_reg_wb,
         rd_mem => rd_mem,
         read_data1 => read_data1_ex,

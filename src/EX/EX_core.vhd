@@ -10,10 +10,13 @@ entity EX_core is
         VecSig     : in std_logic;
         VecSig_mem : in std_logic;                      -- Vector instruction in the MEM stage
         VecSig_wb  : in std_logic;                      -- Vector instruction in the WB stage
+<<<<<<< Updated upstream
         RegWrite_mem : in std_logic;                    -- Instruction in the MEM stage writes to a register
         RegWrite_wb : in std_logic;                     -- Instruction in the WB stage writes to a register
+=======
         EX_forw_mem : in std_logic;                    -- Instruction in the MEM stage writes to a register
         EX_forw_wb : in std_logic;                    -- Instruction in the WB stage writes to a register
+>>>>>>> Stashed changes
         write_reg_wb : in std_logic_vector(4 downto 0); -- Register to write to in the WB stage
         rd_mem : in std_logic_vector(4 downto 0);       -- Register to write to in the MEM stage
         read_data1 : in std_logic_vector(63 downto 0);
@@ -67,6 +70,7 @@ begin
                         read_data2_in;
 
     b <= imm when ALUSrc = '1' else read_data2_sig;
+=======
     process(pc, imm, EX_forw_wb, EX_forw_mem, write_reg_wb, rd_mem, read_data1, read_data2_in, rs1, rs2, alu_result_mem, data_out_wb, VecSig, ALUSrc)
     begin
         next_pc <= std_logic_vector(unsigned(pc) + shift_left(unsigned(imm), 1));
@@ -94,6 +98,7 @@ begin
         end if;
 
     end process;
+>>>>>>> Stashed changes
 
     alu: entity work.alu
         port map (
