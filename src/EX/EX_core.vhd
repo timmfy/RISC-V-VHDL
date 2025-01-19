@@ -10,8 +10,8 @@ entity EX_core is
         VecSig     : in std_logic;
         VecSig_mem : in std_logic;                      -- Vector instruction in the MEM stage
         VecSig_wb  : in std_logic;                      -- Vector instruction in the WB stage
-        RegWrite_mem : in std_logic;                    -- Instruction in the MEM stage writes to a register
-        RegWrite_wb : in std_logic;                     -- Instruction in the WB stage writes to a register
+        EX_forw_mem : in std_logic;                    -- Instruction in the MEM stage writes to a register
+        EX_forw_wb : in std_logic;                    -- Instruction in the WB stage writes to a register
         write_reg_wb : in std_logic_vector(4 downto 0); -- Register to write to in the WB stage
         rd_mem : in std_logic_vector(4 downto 0);       -- Register to write to in the MEM stage
         read_data1 : in std_logic_vector(63 downto 0);
@@ -32,27 +32,31 @@ end EX_core;
 architecture behavior of EX_core is
     signal a : std_logic_vector(63 downto 0);
     signal b : std_logic_vector(63 downto 0);
+    signal enable_scalar : std_logic;
+    signal enable_vector : std_logic;
     signal read_data2_sig : std_logic_vector(63 downto 0);
     signal scalar_result : std_logic_vector(63 downto 0);
     signal vector_result : std_logic_vector(63 downto 0);
     signal scalar_zero : std_logic;
     signal vector_zero : std_logic;
+    signal forward_from_mem : std_logic;
+    signal forward_from_wb : std_logic;
 begin
-    process(pc, imm, RegWrite_mem, RegWrite_wb, write_reg_wb, rd_mem, read_data1, read_data2_in, rs1, rs2, alu_result_mem, data_out_wb, VecSig, ALUSrc, VecSig_mem, VecSig_wb)
+    process(pc, imm, EX_forw_wb, EX_forw_mem, write_reg_wb, rd_mem, read_data1, read_data2_in, rs1, rs2, alu_result_mem, data_out_wb, VecSig, ALUSrc)
     begin
         next_pc <= std_logic_vector(unsigned(pc) + shift_left(unsigned(imm), 1));
         
-        if (VecSig = '0' and VecSig_mem = '0' and RegWrite_mem = '1' and (rs1 = rd_mem)) or (VecSig = '1' and VecSig_mem = '1' and RegWrite_mem = '1' and (rs1 = rd_mem)) then 
+        if EX_forw_mem = '1' and (rs1 = rd_mem) then
             a <= alu_result_mem;
-        elsif (VecSig = '0' and VecSig_wb = '0' and RegWrite_wb = '1' and (rs1 = write_reg_wb)) or (VecSig = '1' and VecSig_wb = '1' and RegWrite_wb = '1' and (rs1 = write_reg_wb)) then
+        elsif EX_forw_wb = '1' and (rs1 = write_reg_wb) then
             a <= data_out_wb;
         else
             a <= read_data1;
         end if;
         
-        if (VecSig = '0' and VecSig_mem = '0' and RegWrite_mem = '1' and (rs2 = rd_mem)) or (VecSig = '1' and VecSig_mem = '1' and RegWrite_mem = '1' and (rs2 = rd_mem)) then
+        if EX_forw_mem = '1' and (rs2 = rd_mem) then
             read_data2_sig <= alu_result_mem;
-        elsif (VecSig = '0' and VecSig_wb = '0' and RegWrite_wb = '1' and (rs2 = write_reg_wb)) or (VecSig = '1' and VecSig_wb = '1' and RegWrite_wb = '1' and (rs2 = write_reg_wb)) then
+        elsif EX_forw_wb = '1' and (rs2 = write_reg_wb) then
             read_data2_sig <= data_out_wb;
         else
             read_data2_sig <= read_data2_in;
@@ -82,8 +86,8 @@ begin
             result  => vector_result,
             zero    => vector_zero
         );
+    -- Use single multiplexer for result selection
     result <= vector_result when VecSig = '1' else scalar_result;
     zero <= vector_zero when VecSig = '1' else scalar_zero;
     read_data2_out <= read_data2_sig;
 end architecture;
-

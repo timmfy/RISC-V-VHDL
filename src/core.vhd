@@ -87,6 +87,8 @@ architecture behavior of core is
     signal next_pc_ex : std_logic_vector(63 downto 0);
     signal rs1_ex : std_logic_vector(4 downto 0);
     signal rs2_ex : std_logic_vector(4 downto 0);
+    signal EX_forw_wb : std_logic;
+    signal EX_forw_mem : std_logic;
     -- MEM stage
     signal MemWrite_mem : std_logic;
     signal MemRead_mem : std_logic;
@@ -279,6 +281,9 @@ begin
         rs2_out => rs2_ex
     );
 
+    EX_forw_wb <= RegWrite_wb when (VecSig_ex = VecSig_wb) else '0';
+    EX_forw_mem <= RegWrite_mem when (VecSig_ex = VecSig_mem) else '0';
+
     -- EX stage
     EX_core_inst: entity work.EX_core
      port map(
@@ -287,8 +292,8 @@ begin
         VecSig => VecSig_ex,
         VecSig_mem => VecSig_mem,
         VecSig_wb => VecSig_wb,
-        RegWrite_mem => RegWrite_mem,
-        RegWrite_wb => RegWrite_wb,
+        EX_forw_mem => EX_forw_mem,
+        EX_forw_wb => EX_forw_wb,
         write_reg_wb => write_reg_wb,
         rd_mem => rd_mem,
         read_data1 => read_data1_ex,
@@ -310,8 +315,8 @@ begin
      port map(
         clk => clk,
         --reset => reset,
-        --MemWrite_in => MemWrite_ex,
-        --MemRead_in => MemRead_ex,
+        MemWrite_in => MemWrite_ex,
+        MemRead_in => MemRead_ex,
         MemSize_in => MemSize_ex,
         Branch_in => Branch_ex,
         EX_flush => flush_mem,
@@ -321,10 +326,10 @@ begin
         next_pc_in => next_pc_ex,
         zero_in => zero_ex,
         alu_result_in => result_ex,
-        --read_data2_in => read_data2_out_ex,
+        read_data2_in => read_data2_out_ex,
         rd_in => rd_ex,
-        --MemWrite_out => MemWrite_mem,
-        --MemRead_out => MemRead_mem,
+        MemWrite_out => MemWrite_mem,
+        MemRead_out => MemRead_mem,
         MemSize_out => MemSize_mem,
         Branch_out => Branch_mem,
         MemToReg_out => MemToReg_mem,
@@ -333,7 +338,7 @@ begin
         next_pc_out => next_pc_mem,
         zero_out => zero_mem,
         alu_result_out => alu_result_mem,
-        --read_data2_out => read_data2_mem,
+        read_data2_out => read_data2_mem,
         rd_out => rd_mem
     );
 
@@ -341,12 +346,12 @@ begin
     MEM_core_inst: entity work.MEM_core
      port map(
         clk => clk,
-        Address_ex => result_ex(12 downto 0),
+        Address_ex => alu_result_mem(12 downto 0),
         Address_mem => alu_result_mem(2 downto 0),
-        DataIn => read_data2_out_ex,
-        MemRead => MemRead_ex,
-        MemWrite => MemWrite_ex,
-        MemSize_ex => MemSize_ex,
+        DataIn => read_data2_mem,
+        MemRead => MemRead_mem,
+        MemWrite => MemWrite_mem,
+        MemSize_ex => MemSize_mem,
         MemSize_mem => MemSize_mem,
         Branch => Branch_mem,
         Zero => zero_mem,
