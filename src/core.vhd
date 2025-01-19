@@ -231,7 +231,7 @@ begin
         read_reg1 => rs1_id,
         read_reg2 => rs2_id,
         read_data1 => vector_read_data1_id,
-        read_data2 => vector_read_data2_id,
+        read_data2 => vector_read_data2_id
         --debug => test_out
     );
 
