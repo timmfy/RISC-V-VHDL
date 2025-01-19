@@ -26,9 +26,6 @@ begin
     process(clk)
     begin
         if rising_edge(clk) then
-            if re = '1' then
-                do <= RAM(to_integer(unsigned(addr)));
-            end if;
             for i in 0 to 7 loop
                 if we(i) = '1' then
                     RAM(to_integer(unsigned(addr)))((i + 1) * 8 - 1 downto i * 8) <= di((i + 1) * 8 - 1 downto i * 8);
@@ -36,4 +33,5 @@ begin
             end loop;
         end if;
     end process;
+    do <= RAM(to_integer(unsigned(addr)));
 end Behavior;

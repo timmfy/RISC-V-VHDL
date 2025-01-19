@@ -10,13 +10,8 @@ entity EX_core is
         VecSig     : in std_logic;
         VecSig_mem : in std_logic;                      -- Vector instruction in the MEM stage
         VecSig_wb  : in std_logic;                      -- Vector instruction in the WB stage
-<<<<<<< Updated upstream
-        RegWrite_mem : in std_logic;                    -- Instruction in the MEM stage writes to a register
-        RegWrite_wb : in std_logic;                     -- Instruction in the WB stage writes to a register
-=======
         EX_forw_mem : in std_logic;                    -- Instruction in the MEM stage writes to a register
         EX_forw_wb : in std_logic;                    -- Instruction in the WB stage writes to a register
->>>>>>> Stashed changes
         write_reg_wb : in std_logic_vector(4 downto 0); -- Register to write to in the WB stage
         rd_mem : in std_logic_vector(4 downto 0);       -- Register to write to in the MEM stage
         read_data1 : in std_logic_vector(63 downto 0);

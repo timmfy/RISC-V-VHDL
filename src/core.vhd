@@ -5,7 +5,7 @@ entity core is
     port (
         clk : in std_logic;
         reset : in std_logic;
-        --test_out : out std_logic_vector(15 downto 0)
+        test_out : out std_logic_vector(15 downto 0)
     );
 end entity core;
 
@@ -174,8 +174,8 @@ begin
         read_reg1 => rs1_id,
         read_reg2 => rs2_id,
         read_data1 => vector_read_data1_id,
-        read_data2 => vector_read_data2_id
-        --debug => test_out
+        read_data2 => vector_read_data2_id,
+        debug => test_out
     );
 
     --Select the vector or scalar data from the register files
@@ -258,8 +258,8 @@ begin
      port map(
         clk => clk,
         --reset => reset,
-        --MemWrite_in => MemWrite_ex,
-        --MemRead_in => MemRead_ex,
+        MemWrite_in => MemWrite_ex,
+        MemRead_in => MemRead_ex,
         MemSize_in => MemSize_ex,
         Branch_in => Branch_ex,
         EX_flush => flush_mem,
@@ -269,10 +269,10 @@ begin
         next_pc_in => next_pc_ex,
         zero_in => zero_ex,
         alu_result_in => result_ex,
-        --read_data2_in => read_data2_out_ex,
+        read_data2_in => read_data2_out_ex,
         rd_in => rd_ex,
-        --MemWrite_out => MemWrite_mem,
-        --MemRead_out => MemRead_mem,
+        MemWrite_out => MemWrite_mem,
+        MemRead_out => MemRead_mem,
         MemSize_out => MemSize_mem,
         Branch_out => Branch_mem,
         MemToReg_out => MemToReg_mem,
@@ -281,7 +281,7 @@ begin
         next_pc_out => next_pc_mem,
         zero_out => zero_mem,
         alu_result_out => alu_result_mem,
-        --read_data2_out => read_data2_mem,
+        read_data2_out => read_data2_mem,
         rd_out => rd_mem
     );
 
@@ -289,12 +289,12 @@ begin
     MEM_core_inst: entity work.MEM_core
      port map(
         clk => clk,
-        Address_ex => result_ex(12 downto 0),
+        Address_ex => alu_result_mem(12 downto 0),
         Address_mem => alu_result_mem(2 downto 0),
-        DataIn => read_data2_out_ex,
-        MemRead => MemRead_ex,
-        MemWrite => MemWrite_ex,
-        MemSize_ex => MemSize_ex,
+        DataIn => read_data2_mem,
+        MemRead => MemRead_mem,
+        MemWrite => MemWrite_mem,
+        MemSize_ex => MemSize_mem,
         MemSize_mem => MemSize_mem,
         Branch => Branch_mem,
         Zero => zero_mem,
