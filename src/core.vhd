@@ -5,7 +5,7 @@ entity core is
     port (
         clk : in std_logic;
         reset : in std_logic;
-        --test_out : out std_logic_vector(15 downto 0)
+        test_out : out std_logic_vector(15 downto 0)
     );
 end entity core;
 
@@ -56,17 +56,23 @@ architecture behavior of core is
     signal pc_ex : std_logic_vector(63 downto 0);
     signal read_data1_ex : std_logic_vector(63 downto 0);
     signal read_data2_in_ex : std_logic_vector(63 downto 0);
+    signal read_data2_out_ex_scalar : std_logic_vector(63 downto 0);
+    signal read_data2_out_ex_vector : std_logic_vector(63 downto 0);
     signal read_data2_out_ex : std_logic_vector(63 downto 0);
     signal imm_ex : std_logic_vector(63 downto 0);
     signal funct3_ex : std_logic_vector(2 downto 0);
     signal rd_ex : std_logic_vector(4 downto 0);
     signal result_ex : std_logic_vector(63 downto 0);
+    signal vector_result : std_logic_vector(63 downto 0);
+    signal scalar_result : std_logic_vector(63 downto 0);
     signal zero_ex : std_logic;
     signal next_pc_ex : std_logic_vector(63 downto 0);
     signal rs1_ex : std_logic_vector(4 downto 0);
     signal rs2_ex : std_logic_vector(4 downto 0);
-    signal EX_forw_wb : std_logic;
-    signal EX_forw_mem : std_logic;
+    signal scalar_forw_wb : std_logic;
+    signal scalar_forw_mem : std_logic;
+    signal vector_forw_wb : std_logic;
+    signal vector_forw_mem : std_logic;
     -- MEM stage
     signal MemWrite_mem : std_logic;
     signal MemRead_mem : std_logic;
@@ -224,34 +230,55 @@ begin
         rs2_out => rs2_ex
     );
 
-    EX_forw_wb <= RegWrite_wb when (VecSig_ex = VecSig_wb) else '0';
-    EX_forw_mem <= RegWrite_mem when (VecSig_ex = VecSig_mem) else '0';
+    scalar_forw_wb <= RegWrite_wb when ((VecSig_wb or VecSig_ex) = '0') else '0';
+    scalar_forw_mem <= RegWrite_mem when ((VecSig_mem or VecSig_ex) = '0') else '0';
+    vector_forw_wb <= RegWrite_wb when ((VecSig_wb and VecSig_ex) = '1') else '0';
+    vector_forw_mem <= RegWrite_mem when ((VecSig_mem and VecSig_ex) = '1') else '0';
 
     -- EX stage
-    EX_core_inst: entity work.EX_core
+    scalar_EX_core_inst: entity work.scalar_EX_core
      port map(
         ALUOp => ALUOp_ex,
         ALUSrc => ALUSrc_ex,
-        VecSig => VecSig_ex,
-        VecSig_mem => VecSig_mem,
-        VecSig_wb => VecSig_wb,
-        EX_forw_mem => EX_forw_mem,
-        EX_forw_wb => EX_forw_wb,
+        scalar_forw_mem => scalar_forw_mem,
+        scalar_forw_wb => scalar_forw_wb,
         write_reg_wb => write_reg_wb,
         rd_mem => rd_mem,
         read_data1 => read_data1_ex,
         read_data2_in => read_data2_in_ex,
-        read_data2_out => read_data2_out_ex,
+        read_data2_out => read_data2_out_ex_scalar,
         rs1 => rs1_ex,
         rs2 => rs2_ex,
         imm => imm_ex,
         pc => pc_ex,
         alu_result_mem => alu_result_mem,
         data_out_wb => write_data_wb,
-        result => result_ex,
+        result => scalar_result,
         zero => zero_ex,
         next_pc => next_pc_ex
     );
+
+    vector_EX_core_inst: entity work.vector_EX_core
+     port map(
+        ALUOp => ALUOp_ex,
+        ALUSrc => ALUSrc_ex,
+        vector_forw_mem => vector_forw_mem,
+        vector_forw_wb => vector_forw_wb,
+        write_reg_wb => write_reg_wb,
+        rd_mem => rd_mem,
+        read_data1 => read_data1_ex,
+        read_data2_in => read_data2_in_ex,
+        rs1 => rs1_ex,
+        rs2 => rs2_ex,
+        imm => imm_ex,
+        alu_result_mem => alu_result_mem,
+        data_out_wb => write_data_wb,
+        read_data2_out => read_data2_out_ex_vector,
+        result => vector_result
+    );
+    
+    read_data2_out_ex <= read_data2_out_ex_scalar when VecSig_ex = '0' else read_data2_out_ex_vector;
+    result_ex <= vector_result when VecSig_ex = '1' else scalar_result;
 
     -- EX/MEM pipeline register
     EX_MEM_inst: entity work.EX_MEM
