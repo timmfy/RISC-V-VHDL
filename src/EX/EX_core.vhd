@@ -66,12 +66,12 @@ begin
             a       => a,
             b       => b,
             ALUOp   => ALUOp,
-            result  => scalar_result,
-            zero    => scalar_zero
+            result  => scalar_result
+            --zero    => scalar_zero
         );
     -- Use single multiplexer for result selection
     result <= scalar_result;
-    zero <= scalar_zero;
+    zero <= '1' when scalar_result = x"0000000000000000" else '0';
     read_data2_out <= read_data2_sig;
 end architecture;
 
@@ -136,8 +136,8 @@ begin
             a       => a,
             b       => b,
             ALUOp   => ALUOp,
-            result  => vector_result,
-            zero    => vector_zero
+            result  => vector_result
+            --zero    => vector_zero
         );
     read_data2_out <= read_data2_sig;
     result <= vector_result;

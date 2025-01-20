@@ -237,8 +237,8 @@ begin
         read_reg1 => rs1_id,
         read_reg2 => rs2_id,
         read_data1 => vector_read_data1_id,
-        read_data2 => vector_read_data2_id,
-        debug => test_out
+        read_data2 => vector_read_data2_id
+        --debug => test_out
     );
 
     --Select the vector or scalar data from the register files
@@ -373,17 +373,13 @@ begin
     MEM_core_inst: entity work.MEM_core
      port map(
         clk => clk,
-        Address_ex => alu_result_mem(12 downto 0),
-        Address_mem => alu_result_mem(2 downto 0),
         DataIn => read_data2_mem,
         MemRead => MemRead_mem,
         MemWrite => MemWrite_mem,
-        MemSize_ex => MemSize_mem,
-        MemSize_mem => MemSize_mem,
+        MemSize => MemSize_mem,
         Branch => Branch_mem,
-        Zero => zero_mem,
+        Alu_result => alu_result_mem,
         DataOut => data_out_mem,
-        --mem_debug => mem_debug,
         PCSrc => PCSrc_mem,
         Flush => flush_mem,
         --Network controller connections
@@ -395,7 +391,6 @@ begin
     MEM_WB_inst: entity work.MEM_WB
      port map(
         clk => clk,
-        --reset => reset,
         MemToReg_in => MemToReg_mem,
         RegWrite_in => RegWrite_mem,
         VecSig_in => VecSig_mem,
