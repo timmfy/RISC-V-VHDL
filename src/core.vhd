@@ -326,10 +326,7 @@ begin
         Alu_result => alu_result_mem,
         DataOut => data_out_mem,
         PCSrc => PCSrc_mem,
-        Flush => flush_mem,
-        --Network controller connections
-        mem_addr => mem_addr_sig,
-        mem_data => mem_data_sig
+        Flush => flush_mem
     );
 
     --MEM/WB pipeline register
