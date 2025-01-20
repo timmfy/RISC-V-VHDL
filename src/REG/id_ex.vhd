@@ -9,6 +9,7 @@ entity ID_EX is
         ALUOp_in      : in std_logic_vector(3 downto 0);    -- ALU operation
         ALUSrc_in     : in std_logic;                      -- ALU source (register or immediate)
         RegWrite_in   : in std_logic;                      -- Write to register file
+        VecSig_in     : in std_logic;
         MemRead_in    : in std_logic;                      -- Read from memory
         MemWrite_in   : in std_logic;                      -- Write to memory
         MemToReg_in   : in std_logic;                      -- Memory to register
@@ -25,6 +26,7 @@ entity ID_EX is
         rs2_in        : in std_logic_vector(4 downto 0);
         ALUOp_out         : out std_logic_vector(3 downto 0);    -- ALU operation
         ALUSrc_out        : out std_logic;                      -- ALU source (register or immediate)
+        VecSig_out        : out std_logic;
         RegWrite_out      : out std_logic;                      -- Write to register file
         MemRead_out       : out std_logic;                      -- Read from memory
         MemWrite_out      : out std_logic;                      -- Write to memory
@@ -50,6 +52,7 @@ begin
             if ID_flush = '0' then
                 ALUOp_out <= ALUOp_in;
                 ALUSrc_out <= ALUSrc_in;
+                VecSig_out <= VecSig_in;
                 RegWrite_out <= RegWrite_in;
                 MemRead_out <= MemRead_in;
                 MemWrite_out <= MemWrite_in;
@@ -67,6 +70,7 @@ begin
             else
                 ALUOp_out <= (others => '0');
                 ALUSrc_out <= '0';
+                VecSig_out <= '0';
                 RegWrite_out <= '0';
                 MemRead_out <= '0';
                 MemWrite_out <= '0';

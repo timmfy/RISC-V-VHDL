@@ -6,8 +6,8 @@ entity alu is
         a : in std_logic_vector(63 downto 0);
         b : in std_logic_vector(63 downto 0);
         ALUOp : in std_logic_vector(3 downto 0);
-        result : out std_logic_vector(63 downto 0);
-        zero : out std_logic
+        result : out std_logic_vector(63 downto 0)
+        --zero : out std_logic
     );
 end alu;
 
@@ -53,7 +53,7 @@ begin
     end process;
 
     result <= alu_results;
-    zero <= '1' when alu_results = x"0000000000000000" else '0';
+    --zero <= '1' when alu_results = x"0000000000000000" else '0';
 end behavioral;
 -- (63 downto 1 => '0') & '1' when ALUOp = "1000" and signed(a) < signed(b) else
 -- (others => '0') when ALUOp = "1000" and signed(a) >= signed(b) else
