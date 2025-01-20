@@ -11,7 +11,7 @@ entity MEM_core is
         MemSize : in std_logic_vector(1 downto 0);
         Branch : in std_logic;
         Alu_result : in std_logic_vector(63 downto 0);
-        --mem_debug : out std_logic_vector(15 downto 0);
+        mem_debug : out std_logic_vector(15 downto 0);
         DataOut : out std_logic_vector(63 downto 0);
         PCSrc : out std_logic;
         Flush : out std_logic
@@ -128,4 +128,5 @@ begin
         di => di,
         do => do
     );
+    mem_debug  <= do(15 downto 0);
 end architecture Behaviour;

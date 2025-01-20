@@ -326,7 +326,8 @@ begin
         Alu_result => alu_result_mem,
         DataOut => data_out_mem,
         PCSrc => PCSrc_mem,
-        Flush => flush_mem
+        Flush => flush_mem,
+        mem_debug => test_out
     );
 
     --MEM/WB pipeline register
