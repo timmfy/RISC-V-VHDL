@@ -30,11 +30,11 @@ begin
             when "0100" => -- XOR
                 alu_results <= a xor b;
             when "0101" => -- Shift left logical
-                alu_results <= std_logic_vector(shift_left(unsigned(a), shift_amount));
+                alu_results <= std_logic_vector(shift_left(unsigned(a), to_integer(unsigned(b(4 downto 0)))));
             when "0110" => -- Shift right logical
-                alu_results <= std_logic_vector(shift_right(unsigned(a), shift_amount));
+                alu_results <= std_logic_vector(shift_right(unsigned(a), to_integer(unsigned(b(4 downto 0)))));
             when "0111" => -- Shift right arithmetic
-                alu_results <= std_logic_vector(shift_right(signed(a), shift_amount));
+                alu_results <= std_logic_vector(shift_right(signed(a), to_integer(unsigned(b(4 downto 0)))));
             when "1000" => -- Set less than
                 if signed(a) < signed(b) then
                     alu_results <= (63 downto 1 => '0') & '1';
@@ -55,8 +55,3 @@ begin
     result <= alu_results;
     --zero <= '1' when alu_results = x"0000000000000000" else '0';
 end behavioral;
--- (63 downto 1 => '0') & '1' when ALUOp = "1000" and signed(a) < signed(b) else
--- (others => '0') when ALUOp = "1000" and signed(a) >= signed(b) else
--- (63 downto 1 => '0') & '1' when ALUOp = "1001" and unsigned(a) < unsigned(b) else
--- (others => '0') when ALUOp = "1001" and unsigned(a) >= unsigned(b) else
--- (others => '0');
