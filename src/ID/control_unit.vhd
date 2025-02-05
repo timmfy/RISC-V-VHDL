@@ -87,6 +87,9 @@ begin
         "0010" when opcode = V_TYPE and funct7 = "0010011" else -- AND
         "0011" when opcode = V_TYPE and funct7 = "0010101" else -- OR
         "0100" when opcode = V_TYPE and funct7 = "0010111" else -- XOR
+        "0101" when opcode = V_TYPE and funct7 = "1001011" else  -- SLL
+        "0110" when opcode = V_TYPE and funct7 = "1010001" else  -- SRL
+        "0111" when opcode = V_TYPE and funct7 = "1010011" else  -- SRA
 
         -- I-type instructions
         "0000" when opcode = I_TYPE and funct3 = "000" else  -- ADDI

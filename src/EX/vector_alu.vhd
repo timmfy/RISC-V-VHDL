@@ -62,6 +62,33 @@ begin
                                 std_logic_vector(unsigned(a(23 downto 16)) xor unsigned(b(23 downto 16))) &
                                 std_logic_vector(unsigned(a(15 downto 8)) xor unsigned(b(15 downto 8))) &
                                 std_logic_vector(unsigned(a(7 downto 0)) xor unsigned(b(7 downto 0)));
+            when "0101" => -- Shift left logical
+                alu_results <=  std_logic_vector(shift_left(unsigned(a(63 downto 56)), to_integer(unsigned(b(63 downto 56))))) &
+                                std_logic_vector(shift_left(unsigned(a(55 downto 48)), to_integer(unsigned(b(55 downto 48))))) &
+                                std_logic_vector(shift_left(unsigned(a(47 downto 40)), to_integer(unsigned(b(47 downto 40))))) &
+                                std_logic_vector(shift_left(unsigned(a(39 downto 32)), to_integer(unsigned(b(39 downto 32))))) &
+                                std_logic_vector(shift_left(unsigned(a(31 downto 24)), to_integer(unsigned(b(31 downto 24))))) &
+                                std_logic_vector(shift_left(unsigned(a(23 downto 16)), to_integer(unsigned(b(23 downto 16))))) &
+                                std_logic_vector(shift_left(unsigned(a(15 downto 8)), to_integer(unsigned(b(15 downto 8))))) &
+                                std_logic_vector(shift_left(unsigned(a(7 downto 0)), to_integer(unsigned(b(7 downto 0)))));
+            when "0110" => -- Shift right logical
+                alu_results <=  std_logic_vector(shift_right(unsigned(a(63 downto 56)), to_integer(unsigned(b(63 downto 56))))) &
+                                std_logic_vector(shift_right(unsigned(a(55 downto 48)), to_integer(unsigned(b(55 downto 48))))) &
+                                std_logic_vector(shift_right(unsigned(a(47 downto 40)), to_integer(unsigned(b(47 downto 40))))) &
+                                std_logic_vector(shift_right(unsigned(a(39 downto 32)), to_integer(unsigned(b(39 downto 32))))) &
+                                std_logic_vector(shift_right(unsigned(a(31 downto 24)), to_integer(unsigned(b(31 downto 24))))) &
+                                std_logic_vector(shift_right(unsigned(a(23 downto 16)), to_integer(unsigned(b(23 downto 16))))) &
+                                std_logic_vector(shift_right(unsigned(a(15 downto 8)), to_integer(unsigned(b(15 downto 8))))) &
+                                std_logic_vector(shift_right(unsigned(a(7 downto 0)), to_integer(unsigned(b(7 downto 0)))));
+            when "0111" => -- Shift right arithmetic
+                alu_results <=  std_logic_vector(shift_right(signed(a(63 downto 56)), to_integer(unsigned(b(63 downto 56))))) &
+                                std_logic_vector(shift_right(signed(a(55 downto 48)), to_integer(unsigned(b(55 downto 48))))) &
+                                std_logic_vector(shift_right(signed(a(47 downto 40)), to_integer(unsigned(b(47 downto 40))))) &
+                                std_logic_vector(shift_right(signed(a(39 downto 32)), to_integer(unsigned(b(39 downto 32))))) &
+                                std_logic_vector(shift_right(signed(a(31 downto 24)), to_integer(unsigned(b(31 downto 24))))) &
+                                std_logic_vector(shift_right(signed(a(23 downto 16)), to_integer(unsigned(b(23 downto 16))))) &
+                                std_logic_vector(shift_right(signed(a(15 downto 8)), to_integer(unsigned(b(15 downto 8))))) &
+                                std_logic_vector(shift_right(signed(a(7 downto 0)), to_integer(unsigned(b(7 downto 0)))));
             when others =>
                 alu_results <= (others => '0');
         end case;

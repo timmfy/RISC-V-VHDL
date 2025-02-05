@@ -17,6 +17,8 @@ architecture behavior of instruction_memory is
         x"0030B0D7", --vadd.vi v1 v1 3 (attention: imm and v1 are flipped cause in the documentation imm take the place of vs1 instaed of vs2)
         x"00213157", --vadd.vi v2 v2 2
         x"002081D7", --vadd.vv v3 v1 v2
+        x"A211B5D7", --vsrl.vi v11 v3 1
+        x"9611B657", --vsll.vi v12 v3 1
         x"08218257", --vsub.vv v4 v2 v3
         x"081232D7", --vsub.vi v5 v4 1
         x"2A520357", --vor.vv v6 v5 v4

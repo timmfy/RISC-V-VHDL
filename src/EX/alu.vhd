@@ -12,12 +12,10 @@ entity alu is
 end alu;
 
 architecture behavioral of alu is
-    signal shift_amount : integer;
     signal alu_results : std_logic_vector(63 downto 0);
 begin
     process(a, b, ALUOp)
     begin
-        shift_amount <= to_integer(unsigned(b(4 downto 0)));
         case ALUOp is
             when "0000" => -- Addition
                 alu_results <= std_logic_vector(unsigned(a) + unsigned(b));
