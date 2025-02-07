@@ -34,8 +34,8 @@ architecture behavior of instruction_memory is
         x"00831313", -- slli x6 x6 8
         x"05330313", -- addi x6 x6 83
         x"0062e2b3", -- xor x5 x5 x6
-        x"02008093", -- addi x1 x1 32
-        x"01810113", -- addi x2 x2 24
+        x"02000093", -- addi x1 x0 32
+        x"01800113", -- addi x2 x0 24
         x"00800193", -- addi x3 x0 8
         x"02808087", -- vl1re8.v v1 0(x1)
         x"02810107", -- vl1re8.v v2 0(x2)
