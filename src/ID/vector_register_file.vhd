@@ -20,9 +20,9 @@ end entity vector_register_file;
 architecture behavior of vector_register_file is
     type reg_array is array (0 to 31) of std_logic_vector(63 downto 0);
     signal registers : reg_array := (
-        0 => x"0000000000000000", -- x0
-        1 => x"0202020202020202", -- x1
-        2 => x"0303030303030303", -- x2
+        0 => x"0000000000000000", -- v0
+        --1 => x"0202020202020202", -- v1
+        --2 => x"0303030303030303", -- v2
         others => (others => '0')
     );
 begin
