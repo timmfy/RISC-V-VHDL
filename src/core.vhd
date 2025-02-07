@@ -232,10 +232,12 @@ begin
         rs2_out => rs2_ex
     );
 
-    scalar_forw_wb <= RegWrite_wb when ((VecSig_wb or VecSig_ex) = '0') else '0';
+    scalar_forw_wb <= RegWrite_wb when (((VecSig_wb or VecSig_ex) = '0')) else '0'; 
     scalar_forw_mem <= RegWrite_mem when ((VecSig_mem or VecSig_ex) = '0') else '0';
-    vector_forw_wb <= RegWrite_wb when ((VecSig_wb and VecSig_ex) = '1') else '0';
-    vector_forw_mem <= RegWrite_mem when ((VecSig_mem and VecSig_ex) = '1') else '0';
+    vector_forw_wb <= RegWrite_wb when (((VecSig_wb and VecSig_ex) = '1') or
+                (VecSig_wb = '0' and VecSig_ex = '1' and (MemRead_ex = '1' or MemWrite_ex = '1'))) else '0';
+    vector_forw_mem <= RegWrite_mem when ((VecSig_mem and VecSig_ex) = '1') or
+                (VecSig_mem = '0' and VecSig_ex = '1' and (MemRead_ex = '1' or MemWrite_ex = '1')) else '0';
 
     -- EX stage
     scalar_EX_core_inst: entity work.scalar_EX_core
