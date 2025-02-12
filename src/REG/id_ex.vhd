@@ -49,25 +49,7 @@ begin
     process(clk)
     begin
         if rising_edge(clk) then
-            if ID_flush = '0' then
-                ALUOp_out <= ALUOp_in;
-                ALUSrc_out <= ALUSrc_in;
-                VecSig_out <= VecSig_in;
-                RegWrite_out <= RegWrite_in;
-                MemRead_out <= MemRead_in;
-                MemWrite_out <= MemWrite_in;
-                MemToReg_out <= MemToReg_in;
-                MemSize_out <= MemSize_in;
-                Branch_out <= Branch_in;
-                read_data1_out <= read_data1_in;
-                read_data2_out <= read_data2_in;
-                imm_out <= imm_in;
-                rd_out <= rd_in;
-                pc_out <= pc_in;
-                funct3_out <= funct3_in;
-                rs1_out <= rs1_in;
-                rs2_out <= rs2_in;
-            else
+            if ID_flush = '1' then
                 ALUOp_out <= (others => '0');
                 ALUSrc_out <= '0';
                 VecSig_out <= '0';
@@ -85,6 +67,24 @@ begin
                 funct3_out <= (others => '0');
                 rs1_out <= (others => '0');
                 rs2_out <= (others => '0');
+            else
+                ALUOp_out <= ALUOp_in;
+                ALUSrc_out <= ALUSrc_in;
+                VecSig_out <= VecSig_in;
+                RegWrite_out <= RegWrite_in;
+                MemRead_out <= MemRead_in;
+                MemWrite_out <= MemWrite_in;
+                MemToReg_out <= MemToReg_in;
+                MemSize_out <= MemSize_in;
+                Branch_out <= Branch_in;
+                read_data1_out <= read_data1_in;
+                read_data2_out <= read_data2_in;
+                imm_out <= imm_in;
+                rd_out <= rd_in;
+                pc_out <= pc_in;
+                funct3_out <= funct3_in;
+                rs1_out <= rs1_in;
+                rs2_out <= rs2_in;
             end if;
         end if;
     end process;

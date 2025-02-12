@@ -14,17 +14,7 @@ end data_memory;
 
 architecture Behavior of data_memory is
   type ram_type is array (1023 downto 0) of std_logic_vector(63 downto 0);
-  signal RAM : ram_type := (
-  0 => x"0000000000000000",
-  1 => x"0000000000000000",
-  2 => x"8877665544332211",
-  3 => x"000000003f3f3f3f",
-  4 => x"060f0c0d00000000",
-  5 => x"2222222222222222",
-  6 => x"3333333333333333",
-  7 => x"4444444444444444",
-  others => (others => '0')
-  );
+  signal RAM : ram_type := (others => (others => '0'));
 
 begin
   process (clk)
@@ -37,5 +27,5 @@ begin
       end loop;
     end if;
   end process;
-  do <= RAM(to_integer(unsigned(addr)));
+  do <= RAM(to_integer(unsigned(addr))) when re = '1' else (others => '0');
 end Behavior;

@@ -14,8 +14,7 @@ entity program_counter is
 end entity program_counter;
 
 architecture behavior of program_counter is
-	signal pc_next : std_logic_vector(63 downto 0) := (others => '0');
-	signal here : std_logic := '0';
+	signal pc_next : std_logic_vector(63 downto 0) := x"00000000000000f0";
 begin
 	process(clk, reset)
 	begin
@@ -23,12 +22,11 @@ begin
 			pc_next <= (others => '0');
 		elsif rising_edge(clk) then
 			if pc_next >= x"00000000000000fc" then
-				pc_next <= x"0000000000000090";
+				pc_next <= x"00000000000000f0";
 			elsif PCWrite = '1' then
 				pc_next <= pc_next;
 			elsif pc_src = '1' then
 				pc_next <= branch_target;
-				here <= '1';
 			else
 				pc_next <= std_logic_vector(unsigned(pc_next) + 4);
 			end if;

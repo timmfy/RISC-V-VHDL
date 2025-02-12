@@ -90,6 +90,7 @@ architecture behavior of core is
     signal read_data2_mem : std_logic_vector(63 downto 0);
     signal rd_mem : std_logic_vector(4 downto 0);
     signal data_out_mem : std_logic_vector(63 downto 0);
+    signal mem_debug : std_logic_vector(63 downto 0);
     -- WB stage
     signal MemToReg_wb : std_logic;
     signal RegWrite_wb : std_logic;
@@ -99,6 +100,7 @@ architecture behavior of core is
     signal write_reg_wb : std_logic_vector(4 downto 0);
     signal alu_result_wb : std_logic_vector(63 downto 0);
     signal write_data_wb : std_logic_vector(63 downto 0);
+
 begin
     -- Forwarding data for the WB/ID stage
     write_data_wb <= data_out_wb when MemToReg_wb = '1' else alu_result_wb;
@@ -169,7 +171,6 @@ begin
         read_reg2 => rs2_id,
         read_data1 => scalar_read_data1_id,
         read_data2 => scalar_read_data2_id
-        --debug => test_out
     );
 
     --vector register file
@@ -183,7 +184,6 @@ begin
         read_reg2 => rs2_id,
         read_data1 => vector_read_data1_id,
         read_data2 => vector_read_data2_id
-        --debug => test_out
     );
 
     --Select the vector or scalar data from the register files
@@ -283,7 +283,7 @@ begin
     
     read_data2_out_ex <= read_data2_out_ex_scalar when VecSig_ex = '0' else read_data2_out_ex_vector;
     result_ex <= vector_result when VecSig_ex = '1' else scalar_result;
-
+    
     -- EX/MEM pipeline register
     EX_MEM_inst: entity work.EX_MEM
      port map(
@@ -329,7 +329,7 @@ begin
         DataOut => data_out_mem,
         PCSrc => PCSrc_mem,
         Flush => flush_mem,
-        mem_debug => test_out
+        mem_debug => mem_debug
     );
 
     --MEM/WB pipeline register
@@ -351,5 +351,5 @@ begin
         flush_out => flush_wb,
         alu_result_out => alu_result_wb
     );
-    --test_out <= mem_debug;
+    test_out <= mem_debug(15 downto 0);
 end architecture behavior;

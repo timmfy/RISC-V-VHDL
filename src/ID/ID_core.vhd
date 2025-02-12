@@ -64,6 +64,7 @@ begin
         MemToReg_ex => MemToReg_ex,
         VecSig => VecSig_sig,
         VecSig_ex => VecSig_ex,
+        opcode => opcode_sig,
         rd_ex => rd_ex,
         rs1 => rs1_sig,
         rs2 => rs2_sig,

@@ -6,6 +6,7 @@ entity hazard_detection_unit is
         MemToReg_ex : in std_logic;
         VecSig : in std_logic;
         VecSig_ex : in std_logic;
+        opcode : in std_logic_vector(6 downto 0);
         rs1 : in std_logic_vector(4 downto 0);
         rs2 : in std_logic_vector(4 downto 0);
         rd_ex : in std_logic_vector(4 downto 0);
@@ -19,7 +20,7 @@ architecture behavior of hazard_detection_unit is
     signal load_use_hazard : std_logic;
 begin
     load_use_hazard <= '1' when
-        ((VecSig = '0' and VecSig_ex = '0') or (VecSig = '1' and VecSig_ex = '1')) 
+        ((VecSig = '0' and VecSig_ex = '0') or (VecSig = '1' and VecSig_ex = '1') or (VecSig = '1' and VecSig_ex = '0' and (opcode = "0000111" or opcode = "0100111")))
         and ((rs1 = rd_ex) or (rs2 = rd_ex)) 
         and MemToReg_ex = '1'
     else '0';
